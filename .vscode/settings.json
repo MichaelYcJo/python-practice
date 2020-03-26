@@ -1,0 +1,10 @@
+{
+  "python.pythonPath": "venv\\Scripts\\python.exe",
+  "python.linting.pylintEnabled": false,
+  "python.linting.flake8Enabled": true,
+  "python.linting.enabled": true,
+  "python.formatting.provider": "black",
+
+  // settings메뉴 formatting on save메뉴를 통한 black 설정 후 글자수 제어
+  "python.linting.flake8Args": ["--max-line-length=88"]
+}
