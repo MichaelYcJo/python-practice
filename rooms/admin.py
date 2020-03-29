@@ -15,6 +15,23 @@ class RoomAdmin(admin.ModelAdmin):
 
     """ Room Admin Definition """
 
+    fieldsets = (
+        (
+            "Basic Info",
+            {"fields": ("name", "description", "country", "address", "price")},
+        ),
+        ("Times", {"fields": ("check_in", "check_out", "instant_book")}),
+        ("Spaces", {"fields": ("guests", "beds", "bedrooms", "baths")}),
+        (
+            "More About the Space",
+            {
+                "classes": ("collapse",),
+                "fields": ("amenities", "facilities", "house_rules"),
+            },
+        ),
+        ("Last Details", {"fields": ("host",)}),
+    )
+
     list_display = (
         "name",
         "country",
@@ -27,11 +44,33 @@ class RoomAdmin(admin.ModelAdmin):
         "check_in",
         "check_out",
         "instant_book",
+        "count_amenities",
     )
 
-    list_filter = ("instant_book", "city", "country")
+    # 우선순위 정렬
+    ordering = ("name", "price")
+
+    list_filter = (
+        "instant_book",
+        "host__superhost",
+        "room_type",
+        "amenities",
+        "facilities",
+        "house_rules",
+        "city",
+        "country",
+    )
 
     search_fields = ("=city", "^host__username")
+
+    filter_horizontal = ("amenities", "facilities", "house_rules")
+
+    # 여기서 self는 RoomAdmin을 의미, obj는 admin패널에서의 행(name, country ~ count_amenities가 한줄로 이루어진)을 의미
+    def count_amenities(self, obj):
+        return obj.amenities.count()
+
+    # print(obj.amenities.all()로 추적가능)
+    # count_amnenities.short_description = "편의시설개수"
 
 
 @admin.register(models.Photo)
