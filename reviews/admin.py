@@ -1,3 +1,5 @@
 from django.contrib import admin
 
-# Register your models here.
+""" Review Admin Definition """
+
+list_display = ("__str__", "rating_average")
