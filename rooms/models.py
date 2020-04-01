@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django_countries.fields import CountryField
 from core import models as core_models
 
@@ -97,6 +98,9 @@ class Room(core_models.TimeStampedModel):
     def save(self, *args, **kwargs):
         self.city = str.capitalize(self.city)
         super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse("rooms:detail", kwargs={"pk": self.pk})
 
     def total_rating(self):
         # reviews의 models.py 의 room의 related_name="reviews"를 가지고 있으므로 room은 reviews를 가지고 있음
