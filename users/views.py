@@ -87,9 +87,10 @@ def github_callback(request):
         if code is not None:
             token_request = requests.post(
                 f"https://github.com/login/oauth/access_token?client_id={client_id}&client_secret={client_secret}&code={code}",
-                headers={"Accept": "application/json"},
+                headers={"Accept": "application/json"},  # 해당 headers를 통해 json을 부여받음
             )
             token_json = token_request.json()
+            # 에러가 없다면 token_json에 있는 access token을 가져옴
             error = token_json.get("error", None)
             if error is not None:
                 raise GithubException("Can't get access token")
@@ -124,15 +125,16 @@ def github_callback(request):
                             login_method=models.User.LOGIN_GITHUB,
                             email_verified=True,
                         )
+                        # 어떤암호든 유저가 시도하는 암호설정은 작동하지않음
                         user.set_unusable_password()
                         user.save()
                     login(request, user)
-                    messages.success(request, f"Welcome back {user.first_name}")
+                    # messages.success(request, f"Welcome back {user.first_name}")
                     return redirect(reverse("core:home"))
                 else:
                     raise GithubException("Can't get your profile")
         else:
             raise GithubException("Can't get code")
     except GithubException as e:
-        messages.error(request, e)
+        # messages.error(request, e)
         return redirect(reverse("users:login"))
