@@ -7,31 +7,29 @@
 
 {% block content %}
 
-<div class="container rounded-xl mx-auto bg-gray-800  h-50vh mt-32 mb-24 bg-cover bg-center" style="background-image:url(https://images.unsplash.com/photo-1543832923-44667a44c804?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=942&q=80)">
+    <div class="container mx-auto pb-10">
+        
+        <div class="rounded-xl bg-gray-800  -mx-40  h-50vh mt-32 mb-24 bg-cover bg-center" style="background-image:url(https://images.unsplash.com/photo-1543832923-44667a44c804?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=942&q=80)"></div>
 
-</div>
-    
-    {% for room in rooms  %}
-    <h3>
-        <a href="{% url "rooms:detail" room.pk %}">
-            {{room.name}} / ${{room.price}}
-        </a>
-    </h3>
-    {% endfor %}
+        <div class="flex flex-wrap -mx-40 mb-10">
+            {% for room in rooms  %}
+            <!-- with room의 room은 partials로 전달되는 room 이고 뒤의 room은 for in 을 통해 전달되는 room 이다. -->
+                {% include 'partials/room_card.html' with room=room %}
+            {% endfor %}
+        <div class="flex items-center justify-center mx-auto container">
+            {% if page_obj.has_previous %}
+                <a href="?page={{page_obj.previous_page_number}}" class="text-teal-500">
+                    <i class="fas fa-arrow-left fa-lg"></i>
+                </a>
+            {% endif %}
 
-    <h5>
-    {% if page_obj.has_previous %}
-        <a href="?page={{page_obj.previous_page_number}}">Previous</a>
-    {% endif %}
+            <span class="mx-3 font-medium text-lg">{{page_obj.number}} of {{page_obj.paginator.num_pages}}</span>
 
-    Page {{page_obj.number}} of {{page_obj.paginator.num_pages}}
+            {% if page_obj.has_next  %}
+                <a href="?page={{page_obj.next_page_number}}" class="text-teal-500">
+                    <i class="fas fa-arrow-right fa-lg"></i>
+                </a>
+            {% endif %}
 
-    {% if page_obj.has_next  %}
-        <a href="?page={{page_obj.next_page_number}}">Next</a>
-    {% endif %}
-
-
-    </h5>
-
-
+        </div>
 {% endblock content %}
