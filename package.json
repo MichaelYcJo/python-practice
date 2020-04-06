@@ -1,0 +1,22 @@
+{
+  "name": "airbnb-clone-2020ver-",
+  "version": "1.0.0",
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/michael-cho77/Airbnb-clone-2020Ver-.git"
+  },
+  "scripts": {
+    "css": "gulp"
+  },
+  "homepage": "https://github.com/michael-cho77/Airbnb-clone-2020Ver-#readme",
+  "devDependencies": {
+    "autoprefixer": "^9.7.5",
+    "gulp": "^4.0.2",
+    "gulp-csso": "^4.0.1",
+    "gulp-postcss": "^8.0.0",
+    "gulp-sass": "^4.0.2",
+    "node-sass": "^4.13.1",
+    "tailwindcss": "^1.2.0"
+  }
+}
