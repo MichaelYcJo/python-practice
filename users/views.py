@@ -4,6 +4,7 @@ from django.views import View
 from django.views.generic import FormView
 from django.urls import reverse_lazy
 from django.shortcuts import render, redirect, reverse
+from django.core.files.base import ContentFile
 from django.contrib.auth import authenticate, login, logout
 from . import forms, models
 from config import settings
@@ -137,4 +138,81 @@ def github_callback(request):
             raise GithubException("Can't get code")
     except GithubException as e:
         # messages.error(request, e)
+        return redirect(reverse("users:login"))
+
+
+def kakao_login(request):
+    client_id = os.environ.get("KAKAO_ID")
+    if settings.DEBUG is False:
+        redirect_uri = "http://airbnb-clone.cbfai3acf3.ap-northeast-2.elasticbeanstalk.com/users/login/kakao/callback"
+        return redirect(
+            f"https://kauth.kakao.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code"
+        )
+    else:
+        redirect_uri = "http://127.0.0.1:8000/users/login/kakao/callback"
+        return redirect(
+            f"https://kauth.kakao.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code"
+        )
+
+
+class KakaoException(Exception):
+    pass
+
+
+def kakao_callback(request):
+    try:
+        code = request.GET.get("code")
+        client_id = os.environ.get("KAKAO_ID")
+        if settings.DEBUG is False:
+            redirect_uri = "http://airbnb-clone.cbfai3acf3.ap-northeast-2.elasticbeanstalk.com/users/login/kakao/callback"
+        else:
+            redirect_uri = "http://127.0.0.1:8000/users/login/kakao/callback"
+        token_request = requests.get(
+            f"https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id={client_id}&redirect_uri={redirect_uri}&code={code}"
+        )
+        print(token_request.json())  # access 확인용
+        token_json = token_request.json()
+        error = token_json.get("error", None)
+        if error is not None:
+            raise KakaoException("Can't get authorization code.")
+        access_token = token_json.get("access_token")
+        profile_request = requests.get(
+            "https://kapi.kakao.com/v2/user/me",
+            headers={"Authorization": f"Bearer {access_token}"},
+        )
+        profile_json = profile_request.json()
+        # print(f"카카오용 profile_json : {profile_json}")
+        kakao_account = profile_json.get("kakao_account")
+        email = kakao_account.get("email", None)
+        if email is None:
+            raise KakaoException("Please also give me your email")
+        profile = kakao_account.get("profile")
+        nickname = profile.get("nickname")
+        profile_image = profile.get("profile_image_url")
+
+        # 유저는 존재하지만 카카오톡을 통해 로그인하지 않는 경우
+        try:
+            user = models.User.objects.get(email=email)
+            if user.login_method != models.User.LOGING_KAKAO:
+                raise KakaoException(f"Please log in with: {user.login_method}")
+        except models.User.DoesNotExist:
+            user = models.User.objects.create(
+                email=email,
+                username=email,
+                first_name=nickname,
+                login_method=models.User.LOGING_KAKAO,
+                email_verified=True,
+            )
+            user.set_unusable_password()
+            user.save()
+            # 프로필 사진이 있는지 확인
+            if profile_image is not None:
+                photo_request = requests.get(profile_image)
+                # ContentFile()로 인하여 파일에 담기고  이 파일은 avater에 저장됨
+                user.avatar.save(
+                    f"{nickname}-avatar", ContentFile(photo_request.content)
+                )
+        login(request, user)
+        return redirect(reverse("core:home"))
+    except KakaoException as e:
         return redirect(reverse("users:login"))
