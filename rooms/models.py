@@ -80,6 +80,7 @@ class Room(core_models.TimeStampedModel):
     check_in = models.TimeField()
     check_out = models.TimeField()
     instant_book = models.BooleanField(default=False)
+    # 이때 user.rooms쿼리셋은 rooms가 참조하고있는 User모델에 생긴다.
     host = models.ForeignKey(
         "users.User", related_name="rooms", on_delete=models.CASCADE
     )
