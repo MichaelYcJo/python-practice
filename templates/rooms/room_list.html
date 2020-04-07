@@ -11,11 +11,12 @@
         
         <div class="rounded-xl bg-gray-800  -mx-40  h-50vh mt-32 mb-24 bg-cover bg-center" style="background-image:url(https://images.unsplash.com/photo-1543832923-44667a44c804?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=942&q=80)"></div>
 
-        <div class="flex flex-wrap -mx-40 mb-10">
+        <div class="flex flex-wrap mb-10 xl:w-125 xl:-mx-40 md:w-full lg: w-full">
             {% for room in rooms  %}
             <!-- with room의 room은 partials로 전달되는 room 이고 뒤의 room은 for in 을 통해 전달되는 room 이다. -->
                 {% include 'partials/room_card.html' with room=room %}
             {% endfor %}
+        </div>
         <div class="flex items-center justify-center mx-auto container">
             {% if page_obj.has_previous %}
                 <a href="?page={{page_obj.previous_page_number}}" class="text-teal-500">
@@ -31,5 +32,7 @@
                 </a>
             {% endif %}
 
+            </div>
+            
         </div>
 {% endblock content %}
