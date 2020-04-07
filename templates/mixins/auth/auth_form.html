@@ -1,5 +1,5 @@
 <!-- action이 생략되면 해당 url로 정보가 넘어감-->
-<form method="POST" class="w-full">
+<form method="POST" class="w-full" enctype="multipart/form-data">
     {% csrf_token %}
     
     {% if form.non_field_errors %}
