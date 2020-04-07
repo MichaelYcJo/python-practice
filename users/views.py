@@ -5,6 +5,7 @@ from django.views.generic import FormView
 from django.urls import reverse_lazy
 from django.shortcuts import render, redirect, reverse
 from django.core.files.base import ContentFile
+from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from . import forms, models
 from config import settings
@@ -94,6 +95,7 @@ def github_callback(request):
             # 에러가 없다면 token_json에 있는 access token을 가져옴
             error = token_json.get("error", None)
             if error is not None:
+                # 하단의 GithubException에 메세지가 전송되고 메세지처리됨
                 raise GithubException("Can't get access token")
             else:
                 access_token = token_json.get("access_token")
@@ -114,6 +116,7 @@ def github_callback(request):
                     try:
                         user = models.User.objects.get(email=email)
                         if user.login_method != models.User.LOGIN_GITHUB:
+                            # 하단의 GithubException에 메세지가 전송되고 메세지처리됨
                             raise GithubException(
                                 f"Please log in with: {user.login_method}"
                             )
@@ -130,14 +133,14 @@ def github_callback(request):
                         user.set_unusable_password()
                         user.save()
                     login(request, user)
-                    # messages.success(request, f"Welcome back {user.first_name}")
+                    messages.success(request, f"Welcome back {user.first_name}")
                     return redirect(reverse("core:home"))
                 else:
                     raise GithubException("Can't get your profile")
         else:
             raise GithubException("Can't get code")
     except GithubException as e:
-        # messages.error(request, e)
+        messages.error(request, e)
         return redirect(reverse("users:login"))
 
 
@@ -212,7 +215,9 @@ def kakao_callback(request):
                 user.avatar.save(
                     f"{nickname}-avatar", ContentFile(photo_request.content)
                 )
+        messages.success(request, f"Welcome back {user.first_name}")
         login(request, user)
         return redirect(reverse("core:home"))
     except KakaoException as e:
+        messages.error(request, e)
         return redirect(reverse("users:login"))
