@@ -1,8 +1,9 @@
 {% if user.avatar %}
-    <div class="h-20 w-20 rounded-full bg-cover" style="background-image: url({{user.avatar.url}});">
+<!-- h_and_w => room_detail user_avatar부분에서 적용-->
+    <div class="{{h_and_w|default:'h-20 w-20'}} rounded-full bg-cover" style="background-image: url({{user.avatar.url}});">
         <!-- 또는 <img src="{{user_obj.avatar.url}}" />-->
 {% else %}
-    <div class="h-20 w-20 bg-gray-700 rounded-full text-white flex justify-center items-center overflow-hidden">
-        <span class="text-3xl">{{user.first_name|first}}</span>
+    <div class="{{h_and_w|default:'h-20 w-20'}} bg-gray-700 rounded-full text-white flex justify-center items-center overflow-hidden">
+        <span class="{{text|default:'text-3xl'}}">{{user.first_name|first}}</span>
     {% endif %}
 </div>

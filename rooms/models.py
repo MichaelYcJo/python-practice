@@ -117,3 +117,16 @@ class Room(core_models.TimeStampedModel):
         # 변수옆에 ,를 찍음으로 array의 첫번째 value를 가지고옴
         (photo,) = self.photos.all()[:1]
         return photo.file.url
+
+    def get_next_four_photos(self):
+        photos = self.photos.all()[1:5]
+        return photos
+
+'''
+    # 침대 개수 복수일지 아닐지 판단
+    def get_beds(self):
+        if self.beds == 1:
+            return "1 bed"
+        else:
+            return f"{self.beds} beds"
+'''
