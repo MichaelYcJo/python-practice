@@ -31,6 +31,8 @@ class RoomDetail(DetailView):
     """ RoomDetail Definition """
 
     model = models.Room
+    # 이때 무엇을넣느냐에따라 object또는 모델의 소문자 형태로 context를 사용할 수 있게된다.
+    # 해당 경우 {{room}} 으로 반응
 
 
 class SearchView(View):
@@ -142,6 +144,18 @@ class EditRoomView(user_mixins.LoggedInOnlyView, UpdateView):
 
     def get_object(self, queryset=None):
         # 여기서의 super()은 기존의 get_object()를 가져와 overriding하는 것이다.
+        room = super().get_object(queryset=queryset)
+        if room.host.pk != self.request.user.pk:
+            raise Http404()
+        return room
+
+
+class RoomPhotosView(user_mixins.LoggedInOnlyView, DetailView):
+
+    model = models.Room
+    template_name = "rooms/room_photos.html"
+
+    def get_object(self, queryset=None):
         room = super().get_object(queryset=queryset)
         if room.host.pk != self.request.user.pk:
             raise Http404()
