@@ -114,9 +114,12 @@ class Room(core_models.TimeStampedModel):
         return 0
 
     def first_photo(self):
-        # 변수옆에 ,를 찍음으로 array의 첫번째 value를 가지고옴
-        (photo,) = self.photos.all()[:1]
-        return photo.file.url
+        try:
+            # 변수옆에 ,를 찍음으로 array의 첫번째 value를 가지고옴
+            (photo,) = self.photos.all()[:1]
+            return photo.file.url
+        except ValueError:
+            return None
 
     def get_next_four_photos(self):
         photos = self.photos.all()[1:5]
