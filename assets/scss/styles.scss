@@ -94,4 +94,12 @@ form {
   @apply border-b border-gray-400 pb-8 mt-8;
 }
 
+.cal-grid {
+  display: grid;
+  // 1fr:남은 자유 공간의 1/3(총fr)만큼의 크기
+  grid-template-columns: repeat(7, 1fr);
+  grid-gap: 10px;
+  justify-items: center;
+}
+
 @tailwind utilities;
