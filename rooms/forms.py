@@ -27,3 +27,17 @@ class SearchForm(forms.Form):
         queryset=models.Facility.objects.all(),
         widget=forms.CheckboxSelectMultiple,
     )
+
+
+class CreatePhotoForm(forms.ModelForm):
+    class Meta:
+        model = models.Photo
+        fields = ("caption", "file")
+
+    # view가 아니기 때문에 kwargs에 pk가 없음 따라서 view의 form_valid()를통해 pk값을 가져와야함
+    def save(self, pk, *args, **kwargs):
+        photo = super().save(commit=False)
+
+        room = models.Room.objects.get(pk=pk)
+        photo.room = room
+        photo.save()
