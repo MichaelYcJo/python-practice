@@ -7,6 +7,7 @@ from django.shortcuts import render, redirect, reverse
 from django.core.files.base import ContentFile
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib.messages.views import SuccessMessageMixin
 from . import forms, models, mixins
@@ -301,3 +302,16 @@ class UpdatePasswordView(
 
     def get_success_url(self):
         return self.request.user.get_absolute_url()
+
+
+@login_required
+def switch_hosting(request):
+    try:
+        # is_hosting을 session에서 delete함
+        del request.session["is_hosting"]
+        # 또는 request.session.pop("is_hosting", True)
+
+    except KeyError:
+        # 해당 key가 존재하지 않으면 에러 발생하는 것을 이용해 is_hosting을 부여함
+        request.session["is_hosting"] = True
+    return redirect(reverse("core:home"))
