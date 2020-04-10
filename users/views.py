@@ -1,5 +1,7 @@
 import os
 import requests
+from django.utils import translation
+from django.http import HttpResponse
 from django.views import View
 from django.views.generic import FormView, DetailView, UpdateView
 from django.urls import reverse_lazy
@@ -315,3 +317,11 @@ def switch_hosting(request):
         # 해당 key가 존재하지 않으면 에러 발생하는 것을 이용해 is_hosting을 부여함
         request.session["is_hosting"] = True
     return redirect(reverse("core:home"))
+
+
+def switch_language(request):
+    lang = request.GET.get("lang", None)
+    if lang is not None:
+        # venv/Lib/site-packages/django/utils/translation/__init__.py의 LANGUAGE_SESSION_KEY를 따옴
+        request.session[translation.LANGUAGE_SESSION_KEY] = lang
+    return HttpResponse(status=200)

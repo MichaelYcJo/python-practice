@@ -1,6 +1,25 @@
-<footer class="container mx-auto text-center py-10 border-t font-medium text-gray-500 flex flex-col">
+{% load i18n %}
+<footer class="container mx-auto text-center py-10 border-t font-medium text-gray-500">
+    <div class="flex flex-col">
     <span>
-        Have a Good Day.
+        {% trans "Have a Good Day." %}
     </span>
-    <span>&copy; 2020 CloneBnB. All rights reserved.</span>
+    <span>&copy; 2020 CloneBnB. {% trans "All rights reserved" %}.</span>
+    </div>
+    <div class="mt-10 flex">
+        {% get_current_language as LANGUAGE_CODE %}
+        <select class="w-1/5" id="js-lang">
+            <option value="en"
+                {% if LANGUAGE_CODE == 'en' %}
+                selected
+                {% endif %}
+            >English</option>
+            <option value="ko"
+                {% if LANGUAGE_CODE == 'ko' %}
+                    selected
+                {% endif %}
+            >Korean</option>
+        </select>
+    </div>
 </footer>
+
