@@ -6,13 +6,14 @@
                 {% if request.session.is_hosting %}
                     {% trans "Stop hosting" %}
                 {% else %}
-                    {% trans "Stop hosting" %}
+                    {% trans "Start hosting" %} 
                 {% endif %}
             </a>
         </li>
         {% if request.session.is_hosting %}
             <li class="nav_link"><a href="{% url 'rooms:create' %}">{% trans "Create Room" %}</a></li>
         {% endif %}
+        <li class="nav_link"><a href="{% url 'lists:see-favs' %}">{% trans "Favs" %} ({{user.list.rooms.count}})</a></li>
         <li class="nav_link"><a href="{{user.get_absolute_url}}">{% trans "Profile" %}</a></li>
         <li class="nav_link"><a href="{% url "users:logout" %}">{% trans "Log out" %}</a></li>
     {% else %}
