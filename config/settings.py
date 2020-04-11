@@ -41,7 +41,7 @@ DJANGO_APPS = [
     "django.contrib.staticfiles",
 ]
 
-THIRD_PARTY_APPS = ["django_countries", "django_seed"]
+THIRD_PARTY_APPS = ["django_countries", "django_seed", "storages"]
 
 PROJECT_APPS = [
     "core.apps.CoreConfig",
@@ -144,7 +144,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = "/static/"
-
+#STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 
 AUTH_USER_MODEL = "users.User"
@@ -173,11 +173,22 @@ LOGIN_URL = "/users/login/"
 
 LOCALE_PATHS = (os.path.join(BASE_DIR, "locale"),)
 
+if not DEBUG:
+    # Sentry
+    DEFAULT_FILE_STORAGE = "config.custom_storages.UploadStorage"
+    STATICFILES_STORAGE = "config.custom_storages.StaticStorage"
+    AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
+    AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
+    AWS_STORAGE_BUCKET_NAME = "airbnb-clone2020"
+    AWS_AUTO_CREATE_BUCKET = True
+    AWS_BUCKET_ACL = "public-read"
 
-# Sentry
+    AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
+    AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
+    STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/static/"
 # send_default_pill -> 유저가 어떻게 에러를 접헀는지 알려줌
 
-if not DEBUG:
+
     sentry_sdk.init(
         dsn=os.environ.get("SENTRY_URL"),
         integrations=[DjangoIntegration()],
