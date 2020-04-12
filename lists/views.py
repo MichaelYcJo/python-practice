@@ -1,9 +1,11 @@
 from django.shortcuts import redirect, reverse
+from django.contrib.auth.decorators import login_required
 from django.views.generic import TemplateView
 from rooms import models as room_models
 from . import models
 
 
+@login_required
 def toggle_room(request, room_pk):
     action = request.GET.get("action", None)
     room = room_models.Room.objects.get_or_none(pk=room_pk)
@@ -30,4 +32,3 @@ def see_favs(request):
     user = request.user
     user.lists.all()
 """
-
