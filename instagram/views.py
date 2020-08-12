@@ -32,12 +32,14 @@ def public_post_list(request):
     #serializer = PostSerializer(qs, many=True)
     return Response(serializer.data)
 
-
-
-
 class PostViewSet(ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
+
+    def perform_create(self, serializer):
+        author = self.request.user  # User or AnonymousUser
+        ip = self.request.META['REMOTE_ADDR']
+        serializer.save(author=author, ip=ip)
 
     @action(detail=False, methods=['GET'])
     def public(self, request):
