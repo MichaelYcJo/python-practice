@@ -2,10 +2,13 @@ from django.shortcuts import render
 from rest_framework import generics
 from rest_framework.decorators import api_view, action
 from rest_framework.generics import RetrieveAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
+
+from .permissions import IsAuthorOrReadonly
 from .serializers import PostSerializer
 from .models import Post
 
@@ -35,6 +38,7 @@ def public_post_list(request):
 class PostViewSet(ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
+    permission_classes = [IsAuthenticated, IsAuthorOrReadonly]
 
     def perform_create(self, serializer):
         author = self.request.user  # User or AnonymousUser
