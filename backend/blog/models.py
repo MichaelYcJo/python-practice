@@ -27,6 +27,34 @@ class BlogPost(models.Model):
     month = models.CharField(max_length=3)
     day = models.CharField(max_length=2)
     content = models.TextField()
-    featured = models.BooleanField(default=False)
+    featured = models.BooleanField(default=False) #추천
     date_created = models.DateTimeField(default=datetime.now, blank=True)
 
+    def save(self, *args, **kwargs):
+        original_slug = slugify(self.title)
+        queryset = BlogPost.objects.all().filter(slug__iexact=original_slug).count()
+
+        count = 1
+        slug = original_slug 
+
+    #무한 루프 돌면서 다시 하단의 쿼리가 0 (=False) 가 될때까지 슬러그에 +=1 되는 형태
+        while(queryset):
+            slug = original_slug + '-' + str(count)
+            count += 1
+            queryset = BlogPost.objects.all().filter(slug__iexact=slug).count()
+        
+        self.slug = slug
+            
+        # 다른글을 추천하면 이전의 추천글은 취소됨     
+        if self.featured:
+            try:
+                temp = BlogPost.objects.get(featured=True)
+                if self != temp:
+                    temp.featured = False
+                    temp.save()
+            except BlogPost.DoesNotExist:
+                pass
+        super(BlogPost, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return self.title
