@@ -63,6 +63,7 @@ const Blog = () => {
             );
         });
 
+
         for (let i = 0; i < list.length; i += 2) {
             result.push(
                 <div key={i} className='row mb-2'>
@@ -98,7 +99,6 @@ const Blog = () => {
                     <Link className="p-2 text-muted" to="/category/travel">Travel</Link>
                 </nav>
             </div>
-
             <div className="jumbotron p-4 p-md-5 text-white rounded bg-dark">
                 <div className="col-md-6 px-0">
                     <h1 className="display-4 font-italic">{featuredBlog.title}</h1>
@@ -106,6 +106,7 @@ const Blog = () => {
                     <p className="lead mb-0"><Link to={`/blog/${featuredBlog.slug}`} className="text-white font-weight-bold">Continue reading...</Link></p>
                 </div>
             </div>
+
             {getBlogs()}
 
         </div>
