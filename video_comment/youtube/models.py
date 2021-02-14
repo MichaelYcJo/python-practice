@@ -1,0 +1,14 @@
+from django.db import models
+
+class Video(models.Model):
+    title = models.CharField(max_length=30)
+    description = models.TextField(max_length=300)
+    path = models.CharField(max_length=60)
+    datetime = models.DateTimeField(auto_now=True, blank=False, null=False)
+    user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
+
+class Comment(models.Model):
+    text = models.TextField(max_length=300)
+    datetime = models.DateTimeField(auto_now=True, blank=False, null=False)
+    user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
+    video = models.ForeignKey(Video, on_delete=models.CASCADE) #Video는 Video모델이 반드시 상단에 있어야 조회가능 , 'Video'는 lazy의 개념(하단에있어도 처리가능) 
