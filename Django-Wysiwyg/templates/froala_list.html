@@ -1,0 +1,17 @@
+
+<h1>메인 화면</h1>
+
+
+<hr>
+{% for post in post_list %}
+    <h3>
+ 
+            {{ post.title }}
+
+        
+    </h3>
+    <div>{{ post.content | safe }}</div>
+    <!-- <div>{{ post.content  }}</div> -->
+
+    <hr>
+{% endfor %}

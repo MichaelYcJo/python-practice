@@ -1,0 +1,11 @@
+<form method="post" action="
+    {% if action == "update-page" %}
+        {% url "page_update" page.slug %}
+    {% elif action == "create-page" %}
+        {% url 'page_create' %}
+    {% endif %}
+ ">
+       {% csrf_token %}
+       {{ form.as_p }}
+       <input type="submit" value="Enregistrer" />
+ </form>

@@ -1,0 +1,16 @@
+<head>
+    <!-- django-quill-editor Media -->
+    {% include 'django_quill/media.html' %}
+
+    {{ form.media }}
+</head>
+
+<div class = "container">
+    {{form.title}}
+    <form action="" method="POST">{% csrf_token %}
+    {{ form.content }}
+        <input class="btn btn dark" type="submit" value="제출하기">
+    </form>
+</div>
+
+
