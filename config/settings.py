@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
+from django.urls import reverse_lazy
 import environ, os
 
 env = environ.Env(
@@ -52,6 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'accounts',
+    'bootstrap4',
 ]
 
 MIDDLEWARE = [
@@ -139,3 +141,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
+
+
+LOGIN_REDIRECT_URL = reverse_lazy('accounts:hello_world')
+LOGOUT_REDIRECT_URL = reverse_lazy('accounts:login')
