@@ -1,6 +1,4 @@
 from django.shortcuts import render
-
-# Create your views here.
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, DeleteView
