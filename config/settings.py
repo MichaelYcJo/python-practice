@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'article',
     'comment',
     'project',
+    'subscribe',
     'bootstrap4',
 ]
 
