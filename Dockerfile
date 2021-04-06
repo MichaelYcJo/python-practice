@@ -8,10 +8,15 @@ WORKDIR /home/django-pinterest/
 
 RUN pip install -r requirements.txt
 
+# 뒤에 추가되었기때문에 따로 추가해주어야함
+RUN pip install gunicorn
+
 RUN echo "SECRET_KEY=TEST" >.env
 
 RUN python manage.py migrate
 
 EXPOSE 8000
 
-CMD ["python", "manage.py", "runserver", "0.0.0:8000"]
+CMD ["gunicorn", "config.wsgi", "--bind", "0.0.0:8000"]
+
+#CMD ["python", "manage.py", "runserver", "0.0.0:8000"]
