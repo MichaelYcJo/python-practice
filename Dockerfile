@@ -15,6 +15,8 @@ RUN echo "SECRET_KEY=TEST" >.env
 
 RUN python manage.py migrate
 
+RUN python manage.py collectstatic
+
 EXPOSE 8000
 
 CMD ["gunicorn", "config.wsgi", "--bind", "0.0.0:8000"]
