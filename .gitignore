@@ -236,3 +236,4 @@ Thumbs.db #thumbnail cache on Windows
 
 #Custom
 .env
+staticfiles/
