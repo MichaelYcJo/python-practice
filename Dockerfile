@@ -2,7 +2,7 @@ FROM python:3.9.0
 
 WORKDIR /home/
 
-RUN echo "testing"
+RUN echo "testing1"
 
 RUN git clone https://github.com/michael-cho77/django-pinterest.git
 
@@ -15,13 +15,9 @@ RUN pip install gunicorn
 
 RUN pip install mysqlclient
 
-RUN python manage.py migrate
-
-RUN python manage.py collectstatic
-
 EXPOSE 8000
 
-CMD ["bash", "-c", "python manage.py migrate --settings=config.settings.deploy && gunicorn config.wsgi --env DJANGO_SETTINGS_MODULE=config.settings.deploy --bind 0.0.0.0:8000"]
+CMD ["bash", "-c", "python manage.py collectstatic --noinput --settings=config.settings.deploy && python manage.py migrate --settings=config.settings.deploy && gunicorn config.wsgi --env DJANGO_SETTINGS_MODULE=config.settings.deploy --bind 0.0.0.0:8000"]
 
 #CMD ["gunicorn", "config.wsgi", "--bind", "0.0.0:8000"]
 #CMD ["python", "manage.py", "runserver", "0.0.0:8000"]
