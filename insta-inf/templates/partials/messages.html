@@ -1,0 +1,72 @@
+<style>
+.alert_messages{
+    position: absolute;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    display: -webkit-box;
+    display: flex;
+    -webkit-box-pack: center;
+    justify-content: center;
+
+
+
+}
+
+.alert_messages > li{
+    height: 30px;
+    font-size: medium;
+    background-color: gray;
+    z-index: 999;
+    margin-top: 120px;
+    border-radius: 9999px;
+    color: white;
+    text-align: center;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    width: 16rem;
+    -webkit-animation: messageFadeIn 5s ease-in-out forwards;
+    animation: messageFadeIn 5s ease-in-out forwards;
+}
+
+.message.error {
+    background-color: #e53e3e;
+  }
+.message.info {
+    background-color: #4299e1;
+  }
+.message.success {
+    background-color: #48bb78;
+  }
+.message.warning {
+    background-color: #f6e05e;
+  }
+
+
+@keyframes messageFadeIn {
+    0%,
+    to {
+      opacity: 0;
+      -webkit-transform: translateY(-50px);
+      transform: translateY(-50px);
+    }
+    5%,
+    95% {
+      opacity: 1;
+      -webkit-transform: translateY(50px);
+      transform: translateY(50px);
+    }
+  }
+
+</style>
+
+{% if messages %}
+    <ul class="messages alert_messages" id="top-0 mx-auto left-0 right-0 flex justify-center">
+        {% for message in messages %}
+        <li class="message {% if message.tags %}{{ message.tags }}{% endif %}"">{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}

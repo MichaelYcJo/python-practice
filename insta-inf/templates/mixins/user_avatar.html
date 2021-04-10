@@ -1,0 +1,32 @@
+{% load static %}
+
+
+<style>
+    .default_profile {
+        width: 5rem;
+        height: 5rem;
+        background-color: #4a5568;
+        border-radius: 9999px;
+        color: #fff;
+        display: -webkit-box;
+        display: flex;
+        -webkit-box-pack: center;
+        justify-content: center;
+        -webkit-box-align: center;
+        align-items: center;
+        font-size: 1.5rem;
+      }
+      
+
+</style>
+
+
+
+{% if post.author.profile.picture %}
+     <img src="{{ post.author.profile.picture.url }}" alt="프로필이미지">
+{% elif user.is_authenticated and not post.author.profile.picture%}
+    <div class="default_profile">{{ user.nickname|first }}</div>
+{% else %}
+<div class="default_profile">{{ N }}</div>
+
+    {% endif %}

@@ -1,0 +1,78 @@
+{% load static %}
+      
+
+</style>
+
+<div class="side_box" style="">
+    {% if user_profile %}
+    <div class="user_profile">
+        <div class="profile_thumb">
+            {% if user_profile.picture %}
+            <img src="{{ user_profile.picture.url }}" alt="프로필사진">
+            {% else %}
+            <div class="default_profile" style="width: 3rem; height:3rem;">{{ user_profile.nickname|first }}</div>
+            {% endif %}
+        </div>
+        <div class="detail">
+            <div class="id m_text">{{ user_profile.user }}</div>
+            <div class="ko_name">{{ user_profile.nickname }} </div>
+        </div>
+    </div>
+    {% else %}
+
+    <div class="user_profile">
+      
+            <div class="default_profile" style="width: 3rem; height:3rem;"> N </div>
+        <div class="detail">
+            <div class="id m_text">비회원</div>
+            <div class="ko_name">익명의접속자</div>
+        </div>
+    </div>
+
+    {% endif %}
+
+    <article class="story">
+        <header class="story_header">
+            <div>스토리</div>
+            <div class="more"></div>
+        </header>
+
+        <div class="scroll_inner">
+            {% if follow_post_list %}
+            {% for post in follow_post_list %}
+            <a href="{% url 'post:post_detail' post.pk %}">
+            <div class="thumb_user">
+                <div class="profile_thumb">
+                    <img src="{{ post.photo.url }}" alt="프로필사진">
+                </div>
+                <div class="detail">
+                    <div class="id">{{ post.content }}</div>
+                    <div class="time">{{ post.updated_at|timesince }}전 작성 </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% endif %}
+            </a>
+        </div>
+    </article>
+
+    <article class="recommend">
+        <header class="reco_header">
+            <div>회원님을 위한 추천</div>
+            <div class="more"></div>
+        </header>
+        {% for post in posts|slice:"0:10" %}
+        <a href="{% url 'post:post_detail' post.pk %}">
+        <div class="thumb_user">
+            <div class="profile_thumb">
+                <img src="{{ post.photo.url }}" alt="프로필사진">
+            </div>
+            <div class="detail">
+                <div class="id">{{ post.content }}</div>
+                <div class="time">{{ post.updated_at|timesince }}</div>
+            </div>
+        </div>
+        </a>
+        {% endfor %}
+    </article>
+</div>

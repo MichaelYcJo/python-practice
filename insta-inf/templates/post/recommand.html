@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head %}
+
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<link rel="stylesheet" href="{% static 'css/common.css' %}">
+<link rel="stylesheet" href="{% static 'css/recommand.css' %}">
+
+
+{% endblock %}
+
+{% block content %}
+
+
+
+<div class="recommand_menu">
+    <div style="font-weight: bold; margin-bottom:10px;">다양한 회원님들과 만나보세요</div>
+    <div class="scroll_inner">
+        {% for user in users|slice:"0:6" %}
+        <a href="{% url 'accounts:myprofile' user.pk %}">
+        <div class="user">
+            <div class="thumb_img">
+            {% if user.picture %}
+                <img src="{{ user.picture.url }}" alt="">
+            {% else %}
+                <div class="default_profile" style="width: 3rem; height: 3rem;">{{ user.nickname|first }}</div>
+            {% endif %}
+        </div>
+        <div class="id">{{ user.nickname }}</div>
+    </div>
+    </a>
+    {% endfor %}
+</div>
+</div>
+<div id="recommand_main_container">
+
+    <section class="inner">
+        <div style="margin-bottom: 30px; margin-top: 30px; font-weight:bold; font-size:large;">회원들이 올린 다양한 사진들을 감상하세요</div>
+      <div class="hori_cont">
+      
+    
+      <div class="mylist_contents contents_container active">
+        {% for post in post_list|slice:"0:12" %}
+        
+  
+        <div class="pic">
+          <a href="{% url 'post:post_detail' post.pk %}"><img src="{{ post.photo.url }}" alt="" /></a>
+        </div>
+  
+        {% endfor %}
+      </div>
+  
+  </section>
+  </div>
+
+
+            
+    
+    
+
+
+   
+
+{% endblock %}
