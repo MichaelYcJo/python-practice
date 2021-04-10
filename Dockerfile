@@ -15,8 +15,6 @@ RUN pip install gunicorn
 
 RUN pip install mysqlclient
 
-RUN echo "SECRET_KEY=TEST" >.env
-
 RUN python manage.py migrate
 
 RUN python manage.py collectstatic
