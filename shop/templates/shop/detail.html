@@ -1,42 +1,24 @@
-  
 {% extends 'base.html' %}
 
-{% block title %}Category Page
+{% block title %}Product Detail
 {% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-2">
-        <div class="list-group">
-            <a href="/" class="list-group-item {% if not current_category %}active{% endif %}">All</a>
-            {% for c in categories %}
-             <a href="{{c.get_absolute_url}}" class="list-group-item {% if current_category.slug == c.slug %}active{% endif %}">{{c.name}}</a>
-            {% endfor %}
+    <div class="row">
+        <div class="col-4">
+            <img src="{{product.image.url}}" width="100%">
         </div>
-    </div>
-    <div class="col">
-        <div class="alert alert-info">
-            {% if current_category %}
-                {{current_category.name}}
-            {% else %}
-                All Products
-            {% endif %}
-        </div>
-        <div class="row">
-            {% for product in products %}
-            <div class="col-4">
-                <div class="card">
-                    {%if product.image%}<img class="cart-img-top" src="{{product.image.url}}" alt="Product Image">{%endif%}
-                    <div class="card-body">
-                        <h5 class="card-title">{{product.name}}</h5>
-                        <p class="card-text">{{product.description}} <span class="badge badge-secondary">{{product.price}}</span></p>
-                        <a href="{{product.get_absolute_url}}" class="btn btn-primary">View Detail</a>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
+        <div class="col">
+            <h1 class="display-6">{{product.name}}</h1>
+            <p><span class="badge badge-secondary">Price</span>{{product.price}}</p>
 
-</div>
+            <form action="{% url 'cart:product_add' product.id %}" method="post">
+                {{add_to_cart}}
+                {% csrf_token %}
+                <input type="submit" class="btn btn-primary btn-sm" value="Add to Cart">
+            </form>
+
+            <h5><span class="badge badge-secondary">Description</span>{{product.description|linebreaks}}</h5>
+        </div>
+    </div>
 {% endblock %}
