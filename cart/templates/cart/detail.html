@@ -55,6 +55,15 @@ Shopping Cart
         </tr>
         </tbody>
     </table>
-
-  
+    <p>
+        Add Coupon:
+    </p>
+    <form action="{% url 'coupon:add' %}" method="post">
+        {% csrf_token %}
+        {{add_coupon}}
+        <input type="submit" value="Add">
+    </form>
+    <p class="text-right">
+        <a href="{% url "shop:product_all" %}" class='btn btn-secondary'>Continue shopping</a>
+    </p>
 {% endblock %}
