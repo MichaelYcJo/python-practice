@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.naver',
     'shop',
     'cart',
+    'coupon',
 ]
 
 MIDDLEWARE = [
