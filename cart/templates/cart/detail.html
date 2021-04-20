@@ -65,5 +65,6 @@ Shopping Cart
     </form>
     <p class="text-right">
         <a href="{% url "shop:product_all" %}" class='btn btn-secondary'>Continue shopping</a>
+        <a href="{% url "orders:order_create" %}" class='btn btn-secondary'>CheckOut</a>
     </p>
 {% endblock %}
