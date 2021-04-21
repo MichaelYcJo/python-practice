@@ -32,7 +32,7 @@ $(function () {
                     // 결제 완료후 보여줄 메시지
                     var msg = '결제가 완료되었습니다.';
                     msg += '고유 ID : ' + rsp.imp_uid;
-                    
+
                     // iamport쪽에 요청을 보내서 서버 결제저장정보와 같은지 확인
                     ImpTransaction(e, order_id, rsp.merchant_uid, rsp.imp_uid, rsp.paid_amount);
                 } else {
@@ -62,7 +62,7 @@ function AjaxCreateOrder(e) {
     request.done(function (data) {
         if (data.order_id) {
             order_id = data.order_id;
-        } 
+        }
     });
     request.fail(function (jqXHR, textStatus) {
         if (jqXHR.status == 404) {
@@ -122,6 +122,7 @@ function ImpTransaction(e, order_id, merchant_id, imp_id, amount) {
         }
     });
     request.done(function (data) {
+        // view의 oreder_complete로 전송함
         if (data.works) {
             $(location).attr('href', location.origin + order_complete_url + '?order_id=' + order_id)
         }
