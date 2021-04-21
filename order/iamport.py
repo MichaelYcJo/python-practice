@@ -1,13 +1,20 @@
-import requests
+import requests, os
 from django.conf import settings
 
 # API인증으로 토큰 가져오기
 def get_token():
+    '''
     #settings 값을 제대로 못받아오는 오류 발생 environ으로 해야할까?
     access_data = {
         'imp_key':settings.IAMPORT_KEY,
         'imp_secret':settings.IAMPORT_SECRET
     }
+    '''
+    access_data = {
+        'imp_key': os.environ['IAMPORT_KEY'],
+        'imp_secret': os.environ['IAMPORT_SECRET_KEY']
+    }
+
     url="https://api.iamport.kr/users/getToken"
     req = requests.post(url, data=access_data)
 

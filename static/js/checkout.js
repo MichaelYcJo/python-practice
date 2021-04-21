@@ -29,9 +29,11 @@ $(function () {
                 amount: amount
             }, function (rsp) {
                 if (rsp.success) {
+                    // 결제 완료후 보여줄 메시지
                     var msg = '결제가 완료되었습니다.';
                     msg += '고유 ID : ' + rsp.imp_uid;
-                    // 결제 완료후 보여줄 메시지
+                    
+                    // iamport쪽에 요청을 보내서 서버 결제저장정보와 같은지 확인
                     ImpTransaction(e, order_id, rsp.merchant_uid, rsp.imp_uid, rsp.paid_amount);
                 } else {
                     var msg = '결제에 실패하였습니다.';
@@ -47,16 +49,20 @@ $(function () {
 function AjaxCreateOrder(e) {
     e.preventDefault();
     var order_id = '';
+
     var request = $.ajax({
         method: 'POST',
+        //url은 사전에 order/create.html에서 정의되었다. { url "orders:order_create_ajax" }
         url: order_create_url,
+        // async: True로 하면 비동기처리가되어 결제 과정이 꼬일수 있기때문에 False로 처리한다.
         async: false,
         data: $('.order-form').serialize()
     });
+    // request에서 응답이 왔다면
     request.done(function (data) {
         if (data.order_id) {
             order_id = data.order_id;
-        }
+        } 
     });
     request.fail(function (jqXHR, textStatus) {
         if (jqXHR.status == 404) {
