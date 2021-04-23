@@ -4,6 +4,7 @@ from .models import Order, OrderItem
 from django.http import HttpResponse
 
 
+# modeladmin - 어떤 모델admin인가 ,queryset = 누구를 선택해서 오는가+
 def export_to_csv(modeladmin, request, queryset):
     #모델의 필드정보를 가지고 올 수 있다. 
     opts = modeladmin.model._meta
@@ -33,8 +34,21 @@ class OrderItemInline(admin.TabularInline):
     raw_id_fields = ['product']
 
 
+from django.urls import reverse
+from django.utils.safestring import mark_safe
+
+def order_detail(obj):
+    url = reverse('orders:admin_order_detail', args=[obj.id])
+    html = mark_safe(f"<a href='{url}'>Detail</a>")
+    return html
+order_detail.short_description = 'Detail'
+
+def order_pdf(obj):
+    pass
+
+
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['id','first_name','last_name', 'email','address','postal_code','city','paid', 'created','updated']
+    list_display = ['id','first_name','last_name', 'email','address','postal_code','city','paid', order_detail, order_pdf, 'created','updated']
     list_filter = ['paid','created','updated']
     inlines = [OrderItemInline]
     actions = [export_to_csv]
