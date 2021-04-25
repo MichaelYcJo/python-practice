@@ -44,7 +44,9 @@ def order_detail(obj):
 order_detail.short_description = 'Detail'
 
 def order_pdf(obj):
-    pass
+    url = reverse('orders:admin_order_pdf', args=[obj.id])
+    html = mark_safe(f"<a href='{url}'>PDF</a>")
+    return html
 
 
 class OrderAdmin(admin.ModelAdmin):
