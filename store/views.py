@@ -2,6 +2,8 @@ from django.contrib import messages
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 
+from carts.models import CartItem
+from carts.views import _cart_id
 from category.models import Category
 from store.models import Product
 
@@ -28,11 +30,13 @@ def store(request, category_slug=None):
 def product_detail(request, category_slug, product_slug):
     try:
         single_product = Product.objects.get(category__slug=category_slug, slug=product_slug)
-
+        # CartItem을 기준으로 cart에서 cart_id에 접근하는 로직
+        in_cart = CartItem.objects.filter(cart__cart_id=_cart_id(request), product=single_product).exists()
     except Exception as e:
         raise e
 
     context = {
         'single_product': single_product,
+        'in_cart'       : in_cart,
     }
     return render(request, 'store/product_detail.html', context)
