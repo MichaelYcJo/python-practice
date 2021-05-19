@@ -103,7 +103,18 @@ def login(request):
 
             auth.login(request, user)
             messages.success(request, 'You are now logged in.')
-            #url = request.META.get('HTTP_REFERER')
+            url = request.META.get('HTTP_REFERER')
+            try:
+                query = requests.utils.urlparse(url).query
+                # next=/cart/checkout/
+                params = dict(x.split('=') for x in query.split('&'))
+                if 'next' in params:
+                    nextpage = params['next']
+                    return redirect(nextpage)
+                    
+            except:
+                return redirect('dashboard')
+
             return redirect('dashboard')
 
         else:
