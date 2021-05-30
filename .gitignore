@@ -237,3 +237,4 @@ Thumbs.db #thumbnail cache on Windows
 #Custom
 .env
 staticfiles/
+aws_pragmatic_key.pem
