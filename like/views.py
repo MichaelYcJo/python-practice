@@ -15,6 +15,18 @@ from article.models import Article
 from like.models import LikeRecord
 
 
+@transaction.atomic
+def db_transaction(user, article):
+
+    article.like += 1
+    article.save()
+
+    if LikeRecord.objects.filter(user=user, article=article).exists():
+        raise ValidationError('Like already exists')
+    else:
+        LikeRecord(user=user, article=article).save()
+
+
 @method_decorator(login_required, 'get')
 class LikeArticleView(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
@@ -26,6 +38,7 @@ class LikeArticleView(RedirectView):
         article = get_object_or_404(Article, pk=kwargs['pk'])
 
         try:
+            db_transaction(user, article)
             messages.add_message(self.request, messages.SUCCESS, '좋아요가 반영되었습니다.')
         except ValidationError:
             messages.add_message(self.request, messages.ERROR, '좋아요는 한번만 가능합니다.')
