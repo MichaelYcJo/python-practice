@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'comment',
     'project',
     'subscribe',
+    'like',
     'bootstrap4',
 ]
 
