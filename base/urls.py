@@ -6,5 +6,5 @@ from base.views import getRoutes, getProducts, getProduct
 urlpatterns = [
     path('', getRoutes, name="routes"),
     path('products/', getProducts, name="products"),
-    path('product/<str:pk>/', getProduct, name="product"),
+    path('products/<str:pk>/', getProduct, name="product"),
 ]

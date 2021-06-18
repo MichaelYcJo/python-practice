@@ -24,5 +24,7 @@ def getProducts(request):
 @api_view(['GET'])
 def getProduct(request, pk):
     product = Product.objects.get(_id=pk)
+    print('안와?')
+    print(product)
     serializer = ProductSerializer(product, many=False)
     return Response(serializer.data)
