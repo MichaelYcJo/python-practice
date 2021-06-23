@@ -21,7 +21,7 @@ export default function CartScreen({ match, location, history }) {
     }, [dispatch, productId, qty])
 
     const removeFromCartHandler = (id) => {
-        console.log('remove', id)
+        dispatch(removeFromCart(id))
 
     }
 
@@ -75,7 +75,7 @@ export default function CartScreen({ match, location, history }) {
                                     <Button
                                         type='button'
                                         variant='light'
-                                        onClick={() => removeFromCartHandler(item._id)}
+                                        onClick={() => removeFromCartHandler(item.product)}
                                     >
                                         <i className='fas fa-trash'></i>
                                     </Button>
