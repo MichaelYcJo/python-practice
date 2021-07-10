@@ -49,4 +49,4 @@ function CheckoutSteps({ step1, step2, step3, step4 }) {
     )
 }
 
-export default
+export default CheckoutSteps
