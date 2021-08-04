@@ -1,13 +1,13 @@
 import 'App.scss';
-import PostList from 'PostList';
+import { BrowserRouter } from 'react-router-dom';
+import Root from 'pages'
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        Init Page
-        <PostList />
-      </header>
+    <div>
+      <BrowserRouter>
+        <Root />
+      </BrowserRouter>
     </div>
   );
 }
