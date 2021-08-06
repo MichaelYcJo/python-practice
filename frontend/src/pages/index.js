@@ -1,9 +1,9 @@
 import React from 'react'
 import AppLayout from 'components/AppLayout'
 import { Route } from 'react-router-dom'
+import AccountsRoutes from "./accounts"
 import About from './About'
 import Home from './Home'
-import AccountsRoutes from "./accounts"
 
 export default function Root() {
     return (
