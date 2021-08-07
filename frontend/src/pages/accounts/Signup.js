@@ -1,75 +1,103 @@
-import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
-import { Alert } from "antd";
-import axios from 'axios';
+import React, { useState } from "react";
+import { Form, Input, Button, notification } from "antd";
+import { SmileOutlined, FrownOutlined } from "@ant-design/icons";
+import { useHistory } from "react-router-dom";
+import axios from "axios";
 
-function Signup() {
+export default function Signup() {
     const history = useHistory();
-    const [inputs, setInputs] = useState({ username: "", password: "" });
-    const [loading, setLoading] = useState(false);
-    const [errors, setErrors] = useState({});
-    const [formDisabled, setFormDisabled] = useState(true);
+    const [fieldErrors, setFieldErrors] = useState({});
 
+    const onFinish = values => {
+        async function fn() {
+            const { username, password } = values;
 
-    const onSubmit = (e) => {
-        e.preventDefault();
+            setFieldErrors({});
 
-        setErrors({});
+            const data = { username, password };
+            try {
+                await axios.post("http://localhost:8000/accounts/signup/", data);
 
-        console.log({ inputs })
+                notification.open({
+                    message: "회원가입 성공",
+                    description: "로그인 페이지로 이동합니다.",
+                    icon: <SmileOutlined style={{ color: "#108ee9" }} />
+                });
 
-        axios.post("http://localhost:8000/accounts/signup/", inputs)
-            .then(response => {
-                console.log("response:", response);
                 history.push("/accounts/login");
-            })
-            .catch(error => {
-                console.log("error:", error);
+            } catch (error) {
                 if (error.response) {
-                    setErrors({
-                        username: (error.response.data.username || []).join(" "),
-                        password: (error.response.data.password || []).join(" ")
+                    notification.open({
+                        message: "회원가입 실패",
+                        description: "아이디/암호를 확인해주세요.",
+                        icon: <FrownOutlined style={{ color: "#ff3333" }} />
                     });
-                }
 
-            })
-            .finally(() => {
-                setLoading(false);
-            });
-        console.log("onSubmit:", inputs);
+                    const { data: fieldsErrorMessages } = error.response;
+                    // fieldsErrorMessages => { username: "m1 m2", password: [] }
+                    // python: mydict.items()
+                    setFieldErrors(
+                        Object.entries(fieldsErrorMessages).reduce(
+                            (acc, [fieldName, errors]) => {
+                                // errors : ["m1", "m2"].join(" ") => "m1 "m2"
+                                acc[fieldName] = {
+                                    validateStatus: "error",
+                                    help: errors.join(" ")
+                                };
+                                return acc;
+                            },
+                            {}
+                        )
+                    );
+                }
+            }
+        }
+        fn();
     };
 
-    useEffect(() => {
-        const isEnabled = Object.values(inputs).every(s => s.length > 0);
-        setFormDisabled(!isEnabled);
-    }, [inputs]);
-
-
-    const onChange = e => {
-        const { name, value } = e.target;
-        setInputs(prev => ({
-            ...prev,
-            [name]: value
-        }));
-
-    }
-
     return (
-        <div>
+        <Form
+            {...layout}
+            onFinish={onFinish}
+            //   onFinishFailed={onFinishFailed}
+            autoComplete={"false"}
+        >
+            <Form.Item
+                label="Username"
+                name="username"
+                rules={[
+                    { required: true, message: "Please input your username!" },
+                    { min: 5, message: "5글자 입력해주세요." }
+                ]}
+                hasFeedback
+                {...fieldErrors.username}
+            >
+                <Input />
+            </Form.Item>
 
-            <form onSubmit={onSubmit}>
-                <div>
-                    <input type="text" name="username" onChange={onChange} />
-                    {errors.username && <Alert type="error" message={errors.username} />}
-                </div>
-                <div>
-                    <input type="password" name="password" onChange={onChange} />
-                    {errors.password && <Alert type="error" message={errors.password} />}
-                </div>
-                <input type="submit" value="회원가입" disabled={loading || formDisabled} />
-            </form>
-        </div>
+            <Form.Item
+                label="Password"
+                name="password"
+                rules={[{ required: true, message: "Please input your password!" }]}
+                {...fieldErrors.password}
+            >
+                <Input.Password />
+            </Form.Item>
+
+            <Form.Item {...tailLayout}>
+                <Button type="primary" htmlType="submit">
+                    Submit
+                </Button>
+            </Form.Item>
+        </Form>
     );
 }
 
-export default Signup;
+const layout = {
+    labelCol: { span: 8 },
+    wrapperCol: { span: 16 }
+};
+
+const tailLayout = {
+    wrapperCol: { offset: 8, span: 16 }
+};
