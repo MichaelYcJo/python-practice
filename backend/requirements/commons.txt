@@ -1,6 +1,6 @@
 Django==3.2.6
 djangorestframework
-djangorestframework-jwt
+djangorestframework-jwt==1.11.0
 django-cors-headers
 django-pydenticon
 pillow
