@@ -1,24 +1,39 @@
-import { Avatar, Card } from 'antd'
-import React from 'react'
-import { HeartFilled, UserOutlined } from '@ant-design/icons';
+import React from "react";
+import { Avatar, Card } from "antd";
+import { HeartOutlined, HeartFilled, UserOutlined } from "@ant-design/icons";
+import "./Post.scss";
 
-export default function Post({ post }) {
+function Post({ post }) {
+    const { author, caption, location, photo, tag_set, like_user_set } = post;
+    const { username, name, avatar_url } = author;
     return (
-        <div>
-            <Card cover={<img src={post.photo} alt={post.caption} />}
-                actions={[<HeartFilled />]}
+        <div className="post">
+            <Card
+                hoverable
+                cover={<img src={photo} alt={caption} />}
+                actions={[<HeartOutlined />]}
             >
                 <Card.Meta
                     avatar={
                         <Avatar
                             size="large"
-                            icon={<UserOutlined />}
+                            icon={
+                                <img
+                                    src={`http://localhost:8000` + avatar_url}
+                                    alt={username}
+                                />
+                            }
                         />
-                    } title={post.location} description={post.caption} />
-                {post.caption}, {post.location}
-                <img alt='귀여운고퍼' src={post.photo} style={{ width: '100px' }} />
+                    }
+                    title={location}
+                    description={caption}
+                />
             </Card>
+
+            {/* <img src={photo} alt={caption} style={{ width: "100px" }} />
+      {caption}, {location} */}
         </div>
-    )
+    );
 }
 
+export default Post;
