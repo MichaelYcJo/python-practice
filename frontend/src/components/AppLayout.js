@@ -3,8 +3,6 @@ import React from "react";
 import { Input, Menu } from "antd";
 import "./AppLayout.scss";
 import LogoImage from "assets/logo.png";
-import StoryList from "./StoryList";
-import SuggestionList from "./SuggestionList";
 
 function AppLayout({ children, sidebar }) {
     return (
@@ -25,10 +23,7 @@ function AppLayout({ children, sidebar }) {
                 </div>
             </div>
             <div className="contents">{children}</div>
-            <div className="sidebar">
-                <StoryList />
-                <SuggestionList />
-            </div>
+            <div className="sidebar">{sidebar}</div>
             <div className="footer">&copy; 2020. Ask Company.</div>
         </div>
     );

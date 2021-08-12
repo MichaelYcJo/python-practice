@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import { Card, Form, Input, Button, notification } from "antd";
 import { SmileOutlined, FrownOutlined } from "@ant-design/icons";
 import { useHistory, useLocation } from "react-router-dom";
-import axios from "axios";
+import Axios from "axios";
 import { useAppContext } from "store";
 import { setToken } from "store";
+import { parseErrorMessages } from "utils/forms";
 
 export default function Login() {
     const { dispatch } = useAppContext();
@@ -24,7 +26,7 @@ export default function Login() {
 
             const data = { username, password };
             try {
-                const response = await axios.post(
+                const response = await Axios.post(
                     "http://localhost:8000/accounts/token/",
                     data
                 );
@@ -51,19 +53,7 @@ export default function Login() {
                     const { data: fieldsErrorMessages } = error.response;
                     // fieldsErrorMessages => { username: "m1 m2", password: [] }
                     // python: mydict.items()
-                    setFieldErrors(
-                        Object.entries(fieldsErrorMessages).reduce(
-                            (acc, [fieldName, errors]) => {
-                                // errors : ["m1", "m2"].join(" ") => "m1 "m2"
-                                acc[fieldName] = {
-                                    validateStatus: "error",
-                                    help: errors.join(" ")
-                                };
-                                return acc;
-                            },
-                            {}
-                        )
-                    );
+                    setFieldErrors(parseErrorMessages(fieldsErrorMessages));
                 }
             }
         }
@@ -75,6 +65,7 @@ export default function Login() {
             <Form
                 {...layout}
                 onFinish={onFinish}
+                //   onFinishFailed={onFinishFailed}
                 autoComplete={"false"}
             >
                 <Form.Item
