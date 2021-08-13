@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Avatar, Comment as AntdComment, Tooltip } from "antd";
 import moment from "moment";
@@ -12,13 +13,7 @@ export default function Comment({ comment }) {
     return (
         <AntdComment
             author={displayName}
-            avatar={
-                <Avatar
-                    // FIXME: avatar_url에 host지정
-                    src={"http://localhost:8000" + avatar_url}
-                    alt={displayName}
-                />
-            }
+            avatar={<Avatar src={avatar_url} alt={displayName} />}
             content={<p>{message}</p>}
             datetime={
                 <Tooltip title={moment().format(created_at)}>
