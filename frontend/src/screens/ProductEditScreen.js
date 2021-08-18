@@ -76,6 +76,11 @@ function ProductEditScreen({ match, history }) {
 
         formData.append('image', file)
         formData.append('product_id', productId)
+        /* formData확인 로직 
+        for (var pair of formData.entries()) {
+            console.log(pair[0] + ', ' + pair[1]);
+        }
+        */
 
         setUploading(true)
 
