@@ -1,13 +1,15 @@
-import React, { useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col } from 'react-bootstrap'
 import Product from '../components/Product'
 import Loader from '../components/Loader'
 import Message from '../components/Message'
 import Paginate from '../components/Paginate'
+import ProductCarousel from '../components/ProductCarousel'
 import { listProducts } from '../actions/productActions'
 
-export default function HomeScreen({ history }) {
+
+function HomeScreen({ history }) {
     const dispatch = useDispatch()
     const productList = useSelector(state => state.productList)
     const { error, loading, products, page, pages } = productList
@@ -19,15 +21,14 @@ export default function HomeScreen({ history }) {
 
     }, [dispatch, keyword])
 
-
     return (
         <div>
+            {!keyword && <ProductCarousel />}
 
             <h1>Latest Products</h1>
             {loading ? <Loader />
                 : error ? <Message variant='danger'>{error}</Message>
                     :
-
                     <div>
                         <Row>
                             {products.map(product => (
@@ -39,8 +40,8 @@ export default function HomeScreen({ history }) {
                         <Paginate page={page} pages={pages} keyword={keyword} />
                     </div>
             }
-
-
         </div>
     )
 }
+
+export default HomeScreen
