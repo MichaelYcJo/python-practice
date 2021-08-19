@@ -6,17 +6,22 @@ import Loader from '../components/Loader'
 import Message from '../components/Message'
 import { listProducts } from '../actions/productActions'
 
-export default function HomeScreen() {
+export default function HomeScreen({ history }) {
     const dispatch = useDispatch()
     const productList = useSelector(state => state.productList)
     const { error, loading, products } = productList
 
-    useEffect(() => {
-        dispatch(listProducts())
+    let keyword = history.location.search
 
-    }, [dispatch])
+    useEffect(() => {
+        dispatch(listProducts(keyword))
+
+    }, [dispatch, keyword])
+
+
     return (
         <div>
+
             <h1>Latest Products</h1>
             {loading ? <Loader />
                 : error ? <Message variant='danger'>{error}</Message>
