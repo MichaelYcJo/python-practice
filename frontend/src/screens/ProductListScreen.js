@@ -4,6 +4,7 @@ import { Table, Button, Row, Col } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import Loader from '../components/Loader'
 import Message from '../components/Message'
+import Paginate from '../components/Paginate'
 import { listProducts, deleteProduct, createProduct } from '../actions/productActions'
 import { PRODUCT_CREATE_RESET } from '../constants/productConstants'
 
@@ -12,7 +13,7 @@ function ProductListScreen({ history, match }) {
     const dispatch = useDispatch()
 
     const productList = useSelector(state => state.productList)
-    const { loading, error, products } = productList
+    const { loading, error, products, pages, page } = productList
 
     const productDelete = useSelector(state => state.productDelete)
     const { loading: loadingDelete, error: errorDelete, success: successDelete } = productDelete
@@ -115,6 +116,7 @@ function ProductListScreen({ history, match }) {
                                     ))}
                                 </tbody>
                             </Table>
+                            <Paginate pages={pages} page={page} isAdmin={true} />
                         </div>
                     )}
         </div>

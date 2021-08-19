@@ -4,12 +4,13 @@ import { Row, Col } from 'react-bootstrap'
 import Product from '../components/Product'
 import Loader from '../components/Loader'
 import Message from '../components/Message'
+import Paginate from '../components/Paginate'
 import { listProducts } from '../actions/productActions'
 
 export default function HomeScreen({ history }) {
     const dispatch = useDispatch()
     const productList = useSelector(state => state.productList)
-    const { error, loading, products } = productList
+    const { error, loading, products, page, pages } = productList
 
     let keyword = history.location.search
 
@@ -35,6 +36,7 @@ export default function HomeScreen({ history }) {
                                 </Col>
                             ))}
                         </Row>
+                        <Paginate page={page} pages={pages} keyword={keyword} />
                     </div>
             }
 
