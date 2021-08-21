@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-9*o()k_m!bwu*k9(a3)l-*8y1ukay2!owq*g_zw*-6*2@sq=#h
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'https://drf-shop.herokuapp.com/']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'drf-shop.herokuapp.com']
 
 
 # Application definition
@@ -185,6 +185,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True
+
 
 if os.getcwd() == '/app':
     DEBUG = False
