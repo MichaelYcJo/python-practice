@@ -1,37 +1,45 @@
 import uvicorn
 
-from enum import Enum
-from fastapi import FastAPI, Request
-from typing import Optional
+from typing import Optional, List  # 추가: List
+
+from fastapi import FastAPI
+from pydantic import BaseModel, HttpUrl
 
 
 app = FastAPI()
 
-class UserLevel(str, Enum):
-    a = "a"
-    b = "b"
-    c = "c"
+
+# 추가: Item 클래스
+class Item(BaseModel):
+    name: str
+    price: float
+    amount: int = 0
 
 
-@app.get("/")
-def hello():
-    return "Hello, Worsld!"
+class User(BaseModel):
+    name: str
+    password: str
+    avatar_url: Optional[HttpUrl] = None
+    inventory: List[Item] = []  # 추가: inventory
 
 
-@app.get("/users")
-def get_users(grade: UserLevel = UserLevel.a, limit: Optional[int] = None):
-    context = {
-        "grade": grade,
-        "limit": limit
-    }
+@app.post("/users")
+def create_user(user: User):
+    return user
 
-    return context
 
-@app.get("/users/{user_id:int}")
-def get_user(user_id: float, request: Request):
-    print(request.path_params)  # {'user_id': 123} 출력
-    return {"user_id": user_id}  # {"user_id": 123.0} 응답
-
+# 추가: get_user()
+@app.get("/users/me")
+def get_user():
+    fake_user = User(
+        name="FastCampus",
+        password="1234",
+        inventory=[
+            Item(name="전설 무기", price=1_000_000),
+            Item(name="전설 방어구", price=900_000),
+        ]
+    )
+    return fake_user
 
 if __name__ == "__main__":
     uvicorn.run("main:app", reload=True)
