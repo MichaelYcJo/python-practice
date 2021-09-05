@@ -1,18 +1,17 @@
-import React, { useState } from 'react'
-import Navbar from 'components/Navbar'
-import { MainContainer, MainContent, MainItems, MainH1, MainP, MainBtn } from 'components/Main/MainElements'
-import Sidebar from 'components/Sidebar'
+import React from 'react'
 
+import { MainContainer, MainContent, MainItems, MainH1, MainP, MainBtn } from 'components/Main/MainElements'
+
+
+import Products from 'components/Products';
+import { productData, productDataTwo } from 'components/Products/data';
+import Feature from 'components/Feature';
+import Footer from 'components/Footer';
 
 export default function Main() {
-    const [isOpen, setIsOpen] = useState(false);
-    const toggle = () => {
-        setIsOpen(!isOpen);
-    }
+
     return (
         <MainContainer>
-            <Navbar toggle={toggle} />
-            <Sidebar isOpen={isOpen} toggle={toggle} />
             <MainContent>
                 <MainItems>
                     <MainH1>Attractive Ever</MainH1>
@@ -20,6 +19,10 @@ export default function Main() {
                     <MainBtn>Click</MainBtn>
                 </MainItems>
             </MainContent>
+            <Products heading='Choose your favorite' data={productData} />
+            <Feature />
+            <Products heading='Recommand for You' data={productDataTwo} />
+            <Footer />
         </MainContainer>
     )
 }

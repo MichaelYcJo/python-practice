@@ -1,9 +1,10 @@
 import styled from 'styled-components';
 import { NavLink as Link } from 'react-router-dom';
-import { FaShopify } from 'react-icons/fa';
+import { VscMenu } from 'react-icons/vsc';
 
 export const Nav = styled.nav`
-    background: transparent;
+    /*background: transparent;*/
+    background-color: #0d0909;
     height: 80px;
     display: flex;
     justify-content: center;
@@ -35,10 +36,11 @@ export const NavIcon = styled.div`
     p {
     transform: translate(-175%, 100%);
     font-weight: bold;
+    margin-top: 0.63rem;
     }
 `;
 
-export const Bars = styled(FaShopify)`
+export const Bars = styled(VscMenu)`
     font-size: 2rem;
     transform: translate(-50%, -15%);
 `;
