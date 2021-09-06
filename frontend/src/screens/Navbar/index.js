@@ -1,12 +1,13 @@
 
 import React from 'react';
-import { Nav, NavLink, NavIcon, Bars } from './NavbarContainer';
+import { Nav, NavLink, NavIcon, TempSearchContainer, Bars } from './NavbarContainer';
 
 const Navbar = ({ toggle }) => {
     return (
         <>
             <Nav>
                 <NavLink to='/'>Michael-Shop</NavLink>
+                <TempSearchContainer to='/'><input value="" placeholder='Temp Search' /></TempSearchContainer>
                 <NavIcon onClick={toggle}>
                     <p>Menu</p>
                     <Bars />

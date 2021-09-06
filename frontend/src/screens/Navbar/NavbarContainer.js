@@ -7,8 +7,20 @@ export const Nav = styled.nav`
     background-color: #0d0909;
     height: 80px;
     display: flex;
-    justify-content: center;
     font-weight: 700;
+`;
+
+export const TempSearchContainer = styled.div`
+    display: flex;
+    align-items: center;
+    color: #fff;
+    margin: 0 auto;
+
+    input{
+      width: 100%;   
+    }
+
+
 `;
 
 export const NavLink = styled(Link)`
@@ -17,6 +29,7 @@ export const NavLink = styled(Link)`
     display: flex;
     align-items: center;
     text-decoration: none;
+    padding: 0 1.5rem;
     cursor: pointer;
   @media screen and (max-width: 400px) {
     position: absolute;
