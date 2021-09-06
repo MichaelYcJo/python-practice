@@ -1,12 +1,12 @@
 import React from 'react'
 
-import { MainContainer, MainContent, MainItems, MainH1, MainP, MainBtn } from 'components/Main/MainElements'
+import { MainContainer, MainContent, MainItems, MainH1, MainP, MainBtn } from 'screens/Main/MainContainer'
 
 
-import Products from 'components/Products';
-import { productData, productDataTwo } from 'components/Products/data';
-import Feature from 'components/Feature';
-import Footer from 'components/Footer';
+import Products from 'screens/Products';
+import { productData, productDataTwo } from 'screens/Products/data';
+import Feature from 'screens/Feature';
+import Footer from 'screens/Footer';
 
 export default function Main() {
 

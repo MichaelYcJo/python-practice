@@ -14,7 +14,7 @@ import {
     SocialLogo,
     SocialIcons,
     SocialIconLink
-} from './FooterElements';
+} from './FooterContainer';
 
 const Footer = () => {
     return (

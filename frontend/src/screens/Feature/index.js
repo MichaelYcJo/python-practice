@@ -1,5 +1,5 @@
 import React from 'react';
-import { FeatureContainer, FeatureButton } from 'components/Feature/FeatureElements';
+import { FeatureContainer, FeatureButton } from 'screens/Feature/FeatureContainer';
 
 const Feature = () => {
     return (

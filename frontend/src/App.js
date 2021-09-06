@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
-import Navbar from 'components/Navbar'
-import Sidebar from 'components/Sidebar'
-import Main from 'components/Main';
+import Navbar from 'screens/Navbar'
+import Sidebar from 'screens/Sidebar'
+import Main from 'screens/Main';
 import { GlobalStyle } from 'globalStyles';
 
 

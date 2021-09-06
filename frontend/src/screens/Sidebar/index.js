@@ -7,7 +7,7 @@ import {
     SidebarLink,
     SidebarRoute,
     SideBtnWrap
-} from 'components/Sidebar/SidebarElements';
+} from 'screens/Sidebar/SidebarContainer';
 
 const Sidebar = ({ isOpen, toggle }) => {
     return (
