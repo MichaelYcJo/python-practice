@@ -1,12 +1,34 @@
 import styled from "styled-components";
-import ImgBg from "assets/images/main.jpg"
 
+
+/*
+import ImgBg from "assets/images/main.jpg"
 export const MainContainer = styled.div`
   background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.1)),
     url(${ImgBg});
   height: 100vh;
   background-position: center;
   background-size: cover;
+`;
+*/
+
+export const MainContainer = styled.div`
+
+  height: 100vh;
+  background-position: center;
+  background-size: cover;
+
+  video{
+    width: 100%;
+    height: 100vh;
+    object-fit: cover;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: -1;
+  }
 `;
 
 export const MainContent = styled.div`
@@ -35,7 +57,7 @@ export const MainItems = styled.div`
 `;
 
 export const MainH1 = styled.h1`
-  font-size: clamp(2.5rem, 10vw, 5rem);
+  font-size: clamp(2.5rem, 10vw, 4rem);
   margin-bottom: 1rem;
   box-shadow: 3px 5px #e9ba23;
   letter-spacing: 3px;
@@ -43,7 +65,7 @@ export const MainH1 = styled.h1`
 `;
 
 export const MainP = styled.p`
-  font-size: clamp(2rem, 2.5vw, 3rem);
+  font-size: clamp(2rem, 2.5vw, 2.5rem);
   margin-bottom: 2rem;
 `;
 
