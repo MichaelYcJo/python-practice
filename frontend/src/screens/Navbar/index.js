@@ -7,7 +7,7 @@ const Navbar = ({ toggle }) => {
         <>
             <Nav>
                 <NavLink to='/'>Michael-Shop</NavLink>
-                <TempSearchContainer to='/'><input value="" placeholder='Temp Search' /></TempSearchContainer>
+                <TempSearchContainer to='/'><input value="" placeholder='Temp Search' readOnly /></TempSearchContainer>
                 <NavIcon onClick={toggle}>
                     <p>Menu</p>
                     <Bars />

@@ -5,8 +5,11 @@ import {
     CloseIcon,
     SidebarMenu,
     SidebarLink,
-    SidebarRoute,
-    SideBtnWrap
+    //SidebarRoute,
+    //SideBtnWrap,
+    AuthWrap,
+    LoginRoute,
+    RegisterRoute
 } from 'screens/Sidebar/SidebarContainer';
 
 const Sidebar = ({ isOpen, toggle }) => {
@@ -20,9 +23,15 @@ const Sidebar = ({ isOpen, toggle }) => {
                 <SidebarLink to='/'>Men</SidebarLink>
                 <SidebarLink to='/'>Women</SidebarLink>
             </SidebarMenu>
-            <SideBtnWrap>
+            <AuthWrap>
+                <RegisterRoute to='/'>Register</RegisterRoute>
+                <LoginRoute to='/accounts/login'>Log In</LoginRoute>
+            </AuthWrap>
+
+            {/*<SideBtnWrap>
                 <SidebarRoute to='/'>Order Now</SidebarRoute>
-            </SideBtnWrap>
+            </SideBtnWrap> */}
+
         </SidebarContainer>
     );
 };

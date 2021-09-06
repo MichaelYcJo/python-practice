@@ -81,3 +81,43 @@ export const SidebarRoute = styled(Link)`
     color: #010606;
   }
 `;
+
+export const AuthWrap = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+
+
+export const LoginRoute = styled(Link)`
+  white-space: nowrap;
+  padding: 6px 10px;
+  color: #fff;
+  font-size: 14px;
+  outline: none;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+  text-decoration: none;
+  &:hover {
+    transition: 0.2s ease-in-out;
+    background: #fff;
+    color: #010606;
+  }
+`;
+
+export const RegisterRoute = styled(Link)`
+  white-space: nowrap;
+  padding: 6px 10px;
+  color: #fff;
+  font-size: 14px;
+  outline: none;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+  text-decoration: none;
+  &:hover {
+    transition: 0.2s ease-in-out;
+    background: #fff;
+    color: #010606;
+  }
+`;
