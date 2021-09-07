@@ -4,6 +4,7 @@ import Navbar from 'screens/Navbar'
 import Sidebar from 'screens/Sidebar'
 import Main from 'screens/Main';
 import Login from 'screens/Auth/Login';
+import Register from 'screens/Auth/Register';
 import { GlobalStyle } from 'globalStyles';
 
 
@@ -24,6 +25,7 @@ function App() {
 
         <Route path='/' component={Main} exact />
         <Route path='/accounts/login' component={Login} exact />
+        <Route path='/accounts/register' component={Register} exact />
         <Route path='/product' component={Main} exact />
       </Router>
 

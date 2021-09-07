@@ -13,5 +13,5 @@ const StyledButton = styled.button`
 `;
 
 export default function Button({ content }) {
-    return <StyledButton>{content}</StyledButton>;
+  return <StyledButton>{content}</StyledButton>;
 }

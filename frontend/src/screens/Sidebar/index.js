@@ -24,7 +24,7 @@ const Sidebar = ({ isOpen, toggle }) => {
                 <SidebarLink to='/'>Women</SidebarLink>
             </SidebarMenu>
             <AuthWrap>
-                <RegisterRoute to='/'>Register</RegisterRoute>
+                <RegisterRoute to='/accounts/register'>Register</RegisterRoute>
                 <LoginRoute to='/accounts/login'>Log In</LoginRoute>
             </AuthWrap>
 
