@@ -1,29 +1,46 @@
 
-import Button from "components/Auth/Button";
-import Input from "components/Auth/Input";
-import { ButtonContainer, InputContainer, EmailWrapper, EmailInput, EmailAuthBtn, RegisterContainer, WelcomeText } from './RegisterContainer'
-import './register.css'
+import React, { useState } from "react";
+import RegisterPresenter from './RegisterPresenter'
 
 export const Login = () => {
+    const [userName, setUserName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("")
+    const [toggleAuthInput, setToggleAuthInput] = useState(false)
+
+    const onClick = () => {
+        setToggleAuthInput(true) //!toggleAuthInput
+    }
+
+    const isFormValid = () => {
+        if (
+            userName === "" ||
+            email === "" ||
+            password === ""
+        ) {
+            alert("All fields are required.");
+            return false;
+        }
+    }
+
+    const handleSubmit = () => {
+        if (!isFormValid()) {
+            return;
+        }
+    }
 
     return (
-        <RegisterContainer>
-            <WelcomeText>Register</WelcomeText>
-
-            <InputContainer>
-                <EmailWrapper>
-                    <EmailInput type="text" placeholder="Email" />
-                    <EmailAuthBtn >Check Email</EmailAuthBtn>
-                </EmailWrapper>
-                <Input type="password" placeholder="Password" />
-                <Input type="password" placeholder="Confirm Password" />
-                <Input type="text" placeholder="Name" />
-            </InputContainer>
-            <ButtonContainer>
-                <Button content="Register" />
-            </ButtonContainer>
-
-        </RegisterContainer>
+        <RegisterPresenter
+            userName={userName}
+            setUserName={setUserName}
+            email={email}
+            setEmail={setEmail}
+            password={password}
+            setPassword={setPassword}
+            toggleAuthInput={toggleAuthInput}
+            onClick={onClick}
+            handleSubmit={handleSubmit}
+        />
     )
 }
 

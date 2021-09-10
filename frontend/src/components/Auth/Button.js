@@ -15,3 +15,7 @@ const StyledButton = styled.button`
 export default function Button({ content }) {
   return <StyledButton>{content}</StyledButton>;
 }
+
+export function SubmitButton({ content, fnc }) {
+  return <StyledButton type='submit' onClick={fnc}>{content}</StyledButton>;
+}

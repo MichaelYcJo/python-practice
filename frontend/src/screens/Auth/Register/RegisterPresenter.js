@@ -1,5 +1,8 @@
+import React from 'react'
 import styled from "styled-components";
-
+import Button, { SubmitButton } from "components/Auth/Button";
+import Input from "components/Auth/Input";
+import './register.css'
 
 
 export const EmailWrapper = styled.div`
@@ -51,7 +54,7 @@ export const RegisterContainer = styled.div`
     align-items: center;
     flex-direction: column;
     height: 80vh;
-    width: 30vw;
+    width: 35vw;
     background: rgba(255, 255, 255, 0.15);
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
     backdrop-filter: blur(8.5px);
@@ -90,7 +93,7 @@ export const RegisterContainer = styled.div`
     height: 50vh;
     }
     @media only screen and (min-width: 1280px) {
-    width: 30vw;
+    width: 35vw;
     height: 80vh;
     }
 `;
@@ -104,7 +107,7 @@ export const InputContainer = styled.div`
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
-  height: 40%;
+  height: 50%;
   width: 100%;
 `;
 
@@ -115,3 +118,40 @@ export const ButtonContainer = styled.div`
   align-items: center;
   justify-content: center;
 `;
+
+
+
+export default function RegisterPresenter({ userName,
+  setUserName,
+  email,
+  setEmail,
+  password,
+  setPassword,
+  toggleAuthInput,
+  onClick,
+  handleSubmit }) {
+  return (
+    <div>
+      <RegisterContainer>
+        <WelcomeText>Register</WelcomeText>
+
+        <InputContainer>
+          <EmailWrapper>
+            <EmailInput type="text" placeholder="Email" />
+            <EmailAuthBtn onClick={onClick} >Check Email</EmailAuthBtn>
+          </EmailWrapper>
+          {toggleAuthInput && <Input type="text" placeholder="Active Code" />}
+
+          <Input type="password" placeholder="Password" />
+          <Input type="password" placeholder="Confirm Password" />
+          <Input type="text" placeholder="Name" />
+        </InputContainer>
+        <ButtonContainer>
+          <SubmitButton content="Register" fnc={handleSubmit} />
+        </ButtonContainer>
+
+      </RegisterContainer>
+
+    </div>
+  )
+}
