@@ -1,4 +1,4 @@
-import requests
+import requests, json
 from urllib.request import urlretrieve
 from urllib.parse import quote
 
@@ -7,30 +7,55 @@ from urllib.parse import quote_plus
 from bs4 import BeautifulSoup
 
 
+clayful_id = None
+path = "./info.json"
 
-for i in range(1, 52):
+href_data = []
+src_data = []
+json_data = []
+
+for i in range(1, 57):
     url = f"https://myrobotsolution.com/store/?page={i}&"
     response = requests.get(url) 
-
-    print(response.status_code)
 
     html = response.text 
     soup = BeautifulSoup(html, 'html.parser') 
 
+    href_clayful_id = soup.select('.list-type2 > ul > li > .item-type1 > a')
 
 
-    img = soup.select('.item-type1 > a > div.img > img' )
+    for i in href_clayful_id:
+        href_data.append({
+            "clay_ful_id" : i.get('href').split('=')[-1]
+        })
+
+    img = soup.select('.list-type2 > ul > li > .item-type1 > a > div.img > img' )
+
 
     for i in img:
         src = i.get('src').split('v1')[0]
-        src_qutoe = i.get('src').split('/')[-1]
-        print(src)
-        print(src_qutoe)
+        image_name = i.get('src').split('/')[-1]
 
-        full_src = src + 'v1/' + quote_plus(src_qutoe)
+        src_data.append({
+            "image_name" : i.get('src').split('/')[-1]
+        })
+
+ 
+        full_src = src + 'v1/' + quote_plus(image_name)
         print('전체 URL', full_src)
-        urlretrieve(full_src, './imags/' + src_qutoe)
+        urlretrieve(full_src, './images/' + image_name)
 
+
+
+for i, j in zip(href_data, src_data):
+    json_data.append({
+        "clay_ful_id" : i['clay_ful_id'],
+        "image_path" : j['image_name']
+    })
+
+with open(path, 'w',  encoding='UTF-8-sig') as f:
+    json.dump(json_data, f, ensure_ascii = False, indent=4)
+        
 
 
 '''
