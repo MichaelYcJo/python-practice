@@ -29,7 +29,6 @@ class UserManager(BaseUserManager):
             last_name= 'admin',
             phone= '0'
         )
-        print(password, email)
         user.is_active = True
         user.is_superuser = True
         user.is_staff = True
