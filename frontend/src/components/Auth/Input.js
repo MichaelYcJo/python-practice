@@ -28,6 +28,21 @@ const StyledInput = styled.input`
 `;
 
 
-export default function Input({ type, placeholder }) {
-    return <StyledInput type={type} placeholder={placeholder} />;
+export default function Input({
+  type,
+  placeholder,
+  value,
+  stateFn,
+
+
+}) {
+  return <StyledInput
+    type={type ? type : "text"}
+    placeholder={placeholder}
+    defaultValue={value}
+    onChange={e => stateFn(e.target.value)}
+
+  />;
 }
+
+

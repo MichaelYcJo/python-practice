@@ -107,7 +107,7 @@ export const InputContainer = styled.div`
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
-  height: 50%;
+  height: 60%;
   width: 100%;
 `;
 
@@ -121,12 +121,19 @@ export const ButtonContainer = styled.div`
 
 
 
-export default function RegisterPresenter({ userName,
-  setUserName,
+export default function RegisterPresenter({
   email,
   setEmail,
   password,
   setPassword,
+  confirmPassword,
+  setConfirmPassword,
+  firstName,
+  setFirstName,
+  lastName,
+  setLastName,
+  phoneNumber,
+  setPhoneNumber,
   toggleAuthInput,
   onClick,
   handleSubmit }) {
@@ -137,17 +144,53 @@ export default function RegisterPresenter({ userName,
 
         <InputContainer>
           <EmailWrapper>
-            <EmailInput type="text" placeholder="Email" />
+            <EmailInput
+              type='email'
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
             <EmailAuthBtn onClick={onClick} >Check Email</EmailAuthBtn>
           </EmailWrapper>
           {toggleAuthInput && <Input type="text" placeholder="Active Code" />}
 
-          <Input type="password" placeholder="Password" />
-          <Input type="password" placeholder="Confirm Password" />
-          <Input type="text" placeholder="Name" />
+          <Input
+            type="password"
+            placeholder="Password"
+            value={password}
+            stateFn={e => setPassword(e)}
+          />
+          <Input
+            type="password"
+            placeholder="Confirm Password"
+            value={confirmPassword}
+            stateFn={e => setConfirmPassword(e)}
+          />
+
+          <Input
+            placeholder="First Name"
+            value={firstName}
+            stateFn={e => setFirstName(e)}
+          />
+
+          <Input
+            placeholder="Last name"
+            value={lastName}
+            stateFn={e => setLastName(e)}
+          />
+          <Input
+            type="text"
+            placeholder="Phone Number"
+            defa={phoneNumber}
+            stateFn={e => setPhoneNumber(e)}
+
+          />
         </InputContainer>
         <ButtonContainer>
-          <SubmitButton content="Register" fnc={handleSubmit} />
+          <SubmitButton
+            content="Register"
+            fnc={handleSubmit}
+          />
         </ButtonContainer>
 
       </RegisterContainer>
