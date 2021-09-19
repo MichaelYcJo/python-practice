@@ -10,19 +10,14 @@ from accounts.serializers import UserSerializer
 
 @api_view(['POST'])
 def registerUser(request):
-    print('왔어요왔어')
     data = request.data
-    try:
-        user = User.objects.create(
-            email = data['email'],
-            password = data['password'],
-            first_name = data['first_name'],
-            last_name = data['last_name'],
-            phone = data['phone']
-        )
+    serializer = UserSerializer(data = request.data, context = {'request': request})
+    response_data = {}
 
-        serializer = UserSerializer(user, many=False)
-        return Response(serializer.data)
-    except:
-        message = {'detail': 'User with this email already exists'}
-        return Response(message, status=status.HTTP_400_BAD_REQUEST) 
+    if serializer.is_valid():
+        user = serializer.save()
+        response_data['response'] = 'Successfully registered new user'
+    else:
+        response_data['response'] = 'Failed to register new user'
+        response_data['error'] = serializer.errors
+    return Response(response_data)

@@ -181,7 +181,7 @@ export default function RegisterPresenter({
           <Input
             type="text"
             placeholder="Phone Number"
-            defa={phoneNumber}
+            value={phoneNumber}
             stateFn={e => setPhoneNumber(e)}
 
           />
