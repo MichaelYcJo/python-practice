@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from .models import User
 
-
 class UserSerializer(serializers.ModelSerializer):
     confirm_password = serializers.CharField(write_only=True)
 
@@ -20,6 +19,12 @@ class UserSerializer(serializers.ModelSerializer):
         )
         extra_kwargs ={'password':{'write_only':True}}
         read_only_fields = ("id", "email_checked" )
+    
+
+    def validate_phone(self, phone):
+        if len(phone) > 13:
+            raise serializers.ValidationError('-을 포함하여 13글자를 넘을 수 없습니다')
+        return phone
 
     def validate_first_name(self, value):
         return value.upper()
@@ -35,6 +40,8 @@ class UserSerializer(serializers.ModelSerializer):
         password = self.validated_data['password']
         confirm_password = self.validated_data['confirm_password']
 
+
+
         if password == confirm_password:
             #check exist email
             if User.objects.filter(email=user.email).exists():
@@ -46,7 +53,6 @@ class UserSerializer(serializers.ModelSerializer):
                 user.last_name = self.validated_data['last_name']
                 user.phone = self.validated_data['phone']
                 user.save()
-                    
                 return user
         else:
             raise serializers.ValidationError({'password': 'Both Passwords Must Be Matched!'})

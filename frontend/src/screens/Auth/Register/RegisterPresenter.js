@@ -119,9 +119,20 @@ export const ButtonContainer = styled.div`
   justify-content: center;
 `;
 
+export const ErrorContainer = styled.p`
+width: 60%;
+  color:red;
+  font-size: 0.8rem;
+  margin: 0;
+  text-align: center;
+  letter-spacing: 0;
+`;
+
 
 
 export default function RegisterPresenter({
+  errorType,
+  error,
   email,
   setEmail,
   password,
@@ -151,7 +162,9 @@ export default function RegisterPresenter({
               onChange={(e) => setEmail(e.target.value)}
             />
             <EmailAuthBtn onClick={onClick} >Check Email</EmailAuthBtn>
+
           </EmailWrapper>
+          {errorType === "email" && <ErrorContainer>{error}</ErrorContainer>}
           {toggleAuthInput && <Input type="text" placeholder="Active Code" />}
 
           <Input
@@ -160,6 +173,7 @@ export default function RegisterPresenter({
             value={password}
             stateFn={e => setPassword(e)}
           />
+          {errorType === "password" && <ErrorContainer>{error}</ErrorContainer>}
           <Input
             type="password"
             placeholder="Confirm Password"
@@ -185,6 +199,7 @@ export default function RegisterPresenter({
             stateFn={e => setPhoneNumber(e)}
 
           />
+
         </InputContainer>
         <ButtonContainer>
           <SubmitButton

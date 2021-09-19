@@ -10,14 +10,15 @@ from accounts.serializers import UserSerializer
 
 @api_view(['POST'])
 def registerUser(request):
-    data = request.data
     serializer = UserSerializer(data = request.data, context = {'request': request})
-    response_data = {}
+    data = {}
 
     if serializer.is_valid():
         user = serializer.save()
-        response_data['response'] = 'Successfully registered new user'
+        data['response'] = 'Successfully registered new user'
+        status_code = status.HTTP_201_CREATED
     else:
-        response_data['response'] = 'Failed to register new user'
-        response_data['error'] = serializer.errors
-    return Response(response_data)
+        data = serializer.errors
+        # FIXME - EmailField에 대해서 선제적으로 validation을 잡아주어서 error raise가 불가
+        status_code = status.HTTP_202_ACCEPTED
+    return Response(status=status_code, data=data)

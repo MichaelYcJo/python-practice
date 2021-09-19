@@ -12,6 +12,8 @@ export const Register = () => {
     const [lastName, setLastName] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [toggleAuthInput, setToggleAuthInput] = useState(false)
+    const [errorType, setErrorType] = useState("")
+    const [error, setError] = useState("");
 
     const onClick = () => {
         alert('아직 개발되지 않은 기능입니다')
@@ -39,7 +41,7 @@ export const Register = () => {
         }
         //setLoading(true);
         try {
-            const { status } = await api.createAccount({
+            const { status, data } = await api.createAccount({
                 email,
                 password,
                 confirm_password: confirmPassword,
@@ -50,10 +52,31 @@ export const Register = () => {
             });
             if (status === 201) {
                 alert("Account created. Sign in, please.");
+                //location Login
+                window.location.href = "/accounts/login"
+
                 //navigate("SignIn", { email, password });
+            } else if (status === 202) {
+                if (data.email) {
+                    setErrorType("email")
+                    setError(data.email[0])
+                }
             }
         } catch (e) {
-            alert("The email is taken");
+            const status_code = e.response.status;
+            if (status_code === 400) {
+                if (e.response.data.email) {
+                    setErrorType('email')
+                    setError(e.response.data.email)
+                }
+                if (e.response.data.password) {
+                    setErrorType('password')
+                    setError(e.response.data.password)
+                }
+            } else {
+                alert('API Connect Failed')
+            }
+            //alert("The email is taken");
         } finally {
             //setLoading(false);
         }
@@ -76,6 +99,8 @@ export const Register = () => {
             toggleAuthInput={toggleAuthInput}
             onClick={onClick}
             handleSubmit={handleSubmit}
+            error={error}
+            errorType={errorType}
         />
     )
 }
