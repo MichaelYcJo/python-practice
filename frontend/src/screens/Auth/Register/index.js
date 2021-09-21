@@ -29,7 +29,8 @@ export const Register = () => {
             lastName === "" ||
             phoneNumber === ""
         ) {
-            alert("All fields are required.");
+            setErrorType('blank')
+            setError("All fields are required")
             return false;
         }
         return true;

@@ -40,8 +40,6 @@ class UserSerializer(serializers.ModelSerializer):
         password = self.validated_data['password']
         confirm_password = self.validated_data['confirm_password']
 
-
-
         if password == confirm_password:
             #check exist email
             if User.objects.filter(email=user.email).exists():
@@ -56,10 +54,3 @@ class UserSerializer(serializers.ModelSerializer):
                 return user
         else:
             raise serializers.ValidationError({'password': 'Both Passwords Must Be Matched!'})
-    
-
-
-
-
-
-

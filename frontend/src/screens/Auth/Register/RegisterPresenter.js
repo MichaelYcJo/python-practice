@@ -199,8 +199,9 @@ export default function RegisterPresenter({
             stateFn={e => setPhoneNumber(e)}
 
           />
-
         </InputContainer>
+        {errorType === "blank" && <ErrorContainer>{error}</ErrorContainer>}
+
         <ButtonContainer>
           <SubmitButton
             content="Register"
