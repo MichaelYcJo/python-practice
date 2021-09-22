@@ -9,7 +9,7 @@ from accounts.serializers import UserSerializer
 
 
 @api_view(['POST'])
-def registerUser(request):
+def register(request):
     serializer = UserSerializer(data = request.data, context = {'request': request})
     data = {}
 
