@@ -12,7 +12,8 @@ const callApi = async (method, path, data, params = {}) => {
 };
 
 const apiList = {
-    createAccount: form => callApi("post", "/accounts/register/", form)
+    createAccount: form => callApi("post", "/accounts/register/", form),
+    login: form => callApi("post", "/accounts/login/", form)
 
 };
 

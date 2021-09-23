@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import Button from "components/Auth/Button";
+import { SubmitButton } from "components/Auth/Button";
 import Icon from "components/Auth/Icon";
 import Input from "components/Auth/Input";
 import { FaFacebookF, FaInstagram, FaTwitter } from "react-icons/fa";
@@ -103,14 +103,32 @@ export const ForgotPassword = styled.h4`
   cursor: pointer;
 `;
 
+const FacebookBackground =
+  "linear-gradient(to right, #0546A0 0%, #0546A0 40%, #663FB6 100%)";
+const InstagramBackground =
+  "linear-gradient(to right, #A12AC4 0%, #ED586C 40%, #F0A853 100%)";
+const TwitterBackground =
+  "linear-gradient(to right, #56C1E1 0%, #35A9CE 50%)";
 
-export const LoginPresenter = () => {
-  const FacebookBackground =
-    "linear-gradient(to right, #0546A0 0%, #0546A0 40%, #663FB6 100%)";
-  const InstagramBackground =
-    "linear-gradient(to right, #A12AC4 0%, #ED586C 40%, #F0A853 100%)";
-  const TwitterBackground =
-    "linear-gradient(to right, #56C1E1 0%, #35A9CE 50%)";
+export const ErrorContainer = styled.p`
+width: 60%;
+  color:red;
+  font-size: 0.8rem;
+  margin: 0;
+  text-align: center;
+  letter-spacing: 0;
+`;
+
+
+export const LoginPresenter = ({
+  email,
+  setEmail,
+  password,
+  setPassword,
+  errorType,
+  error,
+  handleSubmit
+}) => {
 
   return (
     <>
@@ -118,11 +136,23 @@ export const LoginPresenter = () => {
       <LoginContainer>
         <WelcomeText>Welcome</WelcomeText>
         <InputContainer>
-          <Input type="text" placeholder="Email" />
-          <Input type="password" placeholder="Password" />
+          <Input
+            placeholder="Email"
+            value={email}
+            stateFn={(e) => setEmail(e)}
+          />
+          <Input
+            type="password"
+            placeholder="Password"
+            value={password}
+            stateFn={e => setPassword(e)}
+          />
         </InputContainer>
+        {errorType === "invalid" && <ErrorContainer>{error}</ErrorContainer>}
+
+
         <ButtonContainer>
-          <Button content="Log In" />
+          <SubmitButton content="Log In" fnc={handleSubmit} />
         </ButtonContainer>
         <LoginWith>OR LOGIN WITH</LoginWith>
         <HorizontalRule />
