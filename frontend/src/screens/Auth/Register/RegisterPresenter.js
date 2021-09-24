@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from "styled-components";
-import Button, { SubmitButton } from "components/Auth/Button";
+import { SubmitButton } from "components/Auth/Button";
 import Input from "components/Auth/Input";
 import './register.css'
 

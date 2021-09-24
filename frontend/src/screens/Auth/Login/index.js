@@ -1,12 +1,14 @@
 
 import React, { useState } from "react";
+import { useRecoilState } from 'recoil';
+import { userState } from 'recoil/userRecoil';
 import LoginPresenter from "./LoginPresenter";
 import api from 'api'
 
 
 export const Login = () => {
     //console.log(props, 'props');
-
+    const [token, setToken] = useRecoilState(userState); // useRecoilState 을 통한 value, setter 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errorType, setErrorType] = useState("")
@@ -28,10 +30,8 @@ export const Login = () => {
         try {
             const { status, data } = await api.login(formData);
             if (status === 200) {
-                alert("어디한번 뱉어보거라");
-                console.log(data);
-                //location Login
-                //navigate("SignIn", { email, password });
+                const { refresh } = data;
+                setToken({ 'token': refresh, 'isLoggedIn': true });
             }
         } catch (e) {
             const status_code = e.response.status;
@@ -44,6 +44,7 @@ export const Login = () => {
         } finally {
             //setLoading(false);
         }
+
     };
 
     return (
