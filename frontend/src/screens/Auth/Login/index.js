@@ -1,14 +1,10 @@
 
 import React, { useState } from "react";
-import { useRecoilState } from 'recoil';
-import { userState } from 'recoil/userRecoil';
 import LoginPresenter from "./LoginPresenter";
 import api from 'api'
 
 
 export const Login = () => {
-    //console.log(props, 'props');
-    const [token, setToken] = useRecoilState(userState); // useRecoilState 을 통한 value, setter 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errorType, setErrorType] = useState("")
@@ -31,7 +27,7 @@ export const Login = () => {
             const { status, data } = await api.login(formData);
             if (status === 200) {
                 const { refresh } = data;
-                setToken({ 'token': refresh, 'isLoggedIn': true });
+                localStorage.setItem('token', refresh);
             }
         } catch (e) {
             const status_code = e.response.status;
