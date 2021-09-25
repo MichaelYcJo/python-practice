@@ -1,13 +1,15 @@
 import { atom, selector } from 'recoil';
 
 export const getToken = () => {
-    const token = localStorage.getItem('token');
-    const isLoggedIn = !!token;
+    const token = localStorage.getItem('token') ? localStorage.getItem('token') : null;
+    const isLoggedIn = token ? true : false;
 
-    return {
+    const return_data = {
         token,
-        isLoggedIn,
+        isLoggedIn
     }
+
+    return return_data
 }
 
 

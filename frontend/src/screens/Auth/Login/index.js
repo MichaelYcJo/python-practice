@@ -1,14 +1,27 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import LoginPresenter from "./LoginPresenter";
 import api from 'api'
+import { useRecoilState } from "recoil";
+import { userState } from "recoil/userRecoil";
 
 
-export const Login = () => {
+export const Login = ({ location, history }) => {
+
+    const [userInfo, setUserInfo] = useRecoilState(userState)
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errorType, setErrorType] = useState("")
     const [error, setError] = useState("");
+
+    const redirect = location.search ? location.search.split('=')[1] : '/'
+
+
+    useEffect(() => {
+        if (userInfo.token) {
+            history.push(redirect)
+        }
+    }, [history, userInfo, redirect])
 
     const isFormValid = () => {
         if (email === "" || password === "") {
@@ -27,6 +40,7 @@ export const Login = () => {
             const { status, data } = await api.login(formData);
             if (status === 200) {
                 const { refresh } = data;
+                setUserInfo({ 'token': refresh, 'isLoggedIn': true });
                 localStorage.setItem('token', refresh);
             }
         } catch (e) {
