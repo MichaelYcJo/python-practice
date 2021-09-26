@@ -39,9 +39,9 @@ export const Login = ({ location, history }) => {
         try {
             const { status, data } = await api.login(formData);
             if (status === 200) {
-                const { refresh } = data;
-                setUserInfo({ 'token': refresh, 'isLoggedIn': true });
-                localStorage.setItem('token', refresh);
+                const { access } = data;
+                setUserInfo({ 'token': access, 'isLoggedIn': true });
+                localStorage.setItem('token', access);
             }
         } catch (e) {
             const status_code = e.response.status;

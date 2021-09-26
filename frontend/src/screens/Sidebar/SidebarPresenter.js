@@ -138,7 +138,7 @@ export const SidebarPresenter = ({ isOpen, toggle, isLoggedIn }) => {
 
       {isLoggedIn ?
         <AuthWrap>
-          <LinkView to='/accounts/mypage'>MyPage</LinkView>
+          <LinkView to='/accounts/profile'>MyPage</LinkView>
           <LogOut onClick={logOut}>Log Out</LogOut>
         </AuthWrap>
         :
