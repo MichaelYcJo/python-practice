@@ -1,38 +1,17 @@
 import React from 'react';
-import {
-    SidebarContainer,
-    Icon,
-    CloseIcon,
-    SidebarMenu,
-    SidebarLink,
-    //SidebarRoute,
-    //SideBtnWrap,
-    AuthWrap,
-    LoginRoute,
-    RegisterRoute
-} from 'screens/Sidebar/SidebarContainer';
+import { useRecoilValue } from 'recoil';
+import { userState } from 'recoil/userRecoil'
+import SidebarPresenter from 'screens/Sidebar/SidebarPresenter';
 
 const Sidebar = ({ isOpen, toggle }) => {
+    const { isLoggedIn } = useRecoilValue(userState)
+
     return (
-        <SidebarContainer isOpen={isOpen} onClick={toggle}>
-            <Icon onClick={toggle}>
-                <CloseIcon />
-            </Icon>
-            <SidebarMenu>
-                <SidebarLink to='/'>New Releases</SidebarLink>
-                <SidebarLink to='/'>Men</SidebarLink>
-                <SidebarLink to='/'>Women</SidebarLink>
-            </SidebarMenu>
-            <AuthWrap>
-                <RegisterRoute to='/accounts/register'>Register</RegisterRoute>
-                <LoginRoute to='/accounts/login'>Log In</LoginRoute>
-            </AuthWrap>
-
-            {/*<SideBtnWrap>
-                <SidebarRoute to='/'>Order Now</SidebarRoute>
-            </SideBtnWrap> */}
-
-        </SidebarContainer>
+        <SidebarPresenter
+            isOpen={isOpen}
+            toggle={toggle}
+            isLoggedIn={isLoggedIn}
+        />
     );
 };
 

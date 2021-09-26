@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { FaTimes } from 'react-icons/fa';
+import { logOut } from 'recoil/userRecoil';
 
 export const SidebarContainer = styled.aside`
   position: fixed;
@@ -87,8 +88,7 @@ export const AuthWrap = styled.div`
   justify-content: center;
 `;
 
-
-export const LoginRoute = styled(Link)`
+export const LinkView = styled(Link)`
   white-space: nowrap;
   padding: 6px 10px;
   color: #fff;
@@ -105,7 +105,7 @@ export const LoginRoute = styled(Link)`
   }
 `;
 
-export const RegisterRoute = styled(Link)`
+export const LogOut = styled.div`
   white-space: nowrap;
   padding: 6px 10px;
   color: #fff;
@@ -121,3 +121,39 @@ export const RegisterRoute = styled(Link)`
     color: #010606;
   }
 `;
+
+
+export const SidebarPresenter = ({ isOpen, toggle, isLoggedIn }) => {
+
+  return (
+    <SidebarContainer isOpen={isOpen} onClick={toggle}>
+      <Icon onClick={toggle}>
+        <CloseIcon />
+      </Icon>
+      <SidebarMenu>
+        <SidebarLink to='/'>New Releases</SidebarLink>
+        <SidebarLink to='/'>Men</SidebarLink>
+        <SidebarLink to='/'>Women</SidebarLink>
+      </SidebarMenu>
+
+      {isLoggedIn ?
+        <AuthWrap>
+          <LinkView to='/accounts/mypage'>MyPage</LinkView>
+          <LogOut onClick={logOut}>Log Out</LogOut>
+        </AuthWrap>
+        :
+        <AuthWrap>
+          <LinkView to='/accounts/register'>Register</LinkView>
+          <LinkView to='/accounts/login'>Log In</LinkView>
+        </AuthWrap>
+      }
+
+      {/*<SideBtnWrap>
+                <SidebarRoute to='/'>Order Now</SidebarRoute>
+            </SideBtnWrap> */}
+
+    </SidebarContainer>
+  )
+}
+
+export default SidebarPresenter;

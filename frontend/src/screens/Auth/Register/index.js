@@ -1,7 +1,6 @@
 
 import React, { useState } from "react";
 import RegisterPresenter from './RegisterPresenter'
-
 import api from 'api'
 
 export const Register = () => {

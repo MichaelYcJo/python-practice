@@ -12,6 +12,10 @@ export const getToken = () => {
     return return_data
 }
 
+export const logOut = () => {
+    localStorage.removeItem('token');
+    window.location.href = '/';
+}
 
 export const userState = atom({
     key: 'users',
