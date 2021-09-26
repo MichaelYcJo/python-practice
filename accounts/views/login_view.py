@@ -16,3 +16,12 @@ import jwt
 
 class LogIn(TokenObtainPairView):
     serializer_class = LoginTokenSerializer
+
+
+from rest_framework.views import APIView
+class TokenTestView(APIView):
+    permission_classes = (IsAuthenticated,)
+    
+    def get(self, request):
+        content = {'message': 'Hello, World!'}
+        return Response(content)
