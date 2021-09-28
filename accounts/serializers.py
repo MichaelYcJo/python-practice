@@ -1,9 +1,10 @@
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import serializers
-
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from .models import User
+from accounts.models import User
+
+import redis
 
 class UserSerializer(serializers.ModelSerializer):
     confirm_password = serializers.CharField(write_only=True)
@@ -25,6 +26,11 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields = ("id", "email_checked" )
     
 
+    def validate_email(self, email):
+        if User.objects.filter(email=email).exists():
+            raise serializers.ValidationError({'email': 'A user with that email already exists'})
+        return email
+
     def validate_phone(self, phone):
         if len(phone) > 13:
             raise serializers.ValidationError('-을 포함하여 13글자를 넘을 수 없습니다')
@@ -35,27 +41,17 @@ class UserSerializer(serializers.ModelSerializer):
     
     def validate_last_name(self, value):
         return value.upper()
-
-    def save(self):
-        #request = self.context.get("request")
-        user = User(
-            email = self.validated_data['email']
-        )
-        password = self.validated_data['password']
-        confirm_password = self.validated_data['confirm_password']
+    
+    def create(self, validated_data):
+        password = validated_data.pop('password', None)
+        confirm_password = validated_data.pop('confirm_password', None)
 
         if password == confirm_password:
-            #check exist email
-            if User.objects.filter(email=user.email).exists():
-                raise serializers.ValidationError({'email': 'A user with that email already exists'})
-            else:
-                #save signup data
-                user.set_password(password)
-                user.first_name = self.validated_data['first_name']
-                user.last_name = self.validated_data['last_name']
-                user.phone = self.validated_data['phone']
-                user.save()
-                return user
+            instance = self.Meta.model(**validated_data)
+            if password is not None:
+                instance.set_password(password)
+            instance.save()
+            return instance
         else:
             raise serializers.ValidationError({'password': 'Both Passwords Must Be Matched!'})
 
@@ -65,7 +61,11 @@ class LoginTokenSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
+        r = redis.StrictRedis(host="localhost", port=6379, charset="utf-8", decode_responses=True)
+        r.set(f'{user.id}-refresh', str(token))
 
         # Add custom claims
         token['email'] = user.email
+        #print(r.get(f'{user.id}-refresh'))
+
         return token
