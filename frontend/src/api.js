@@ -1,28 +1,52 @@
 import axios from "axios";
 
-const callApi = async (method, path, data, jwt, params = {}) => {
-    const headers = {
-        Authorization: `Bearer ${jwt}`,
-        "Content-Type": "application/json"
-    };
-    const baseUrl = `http://127.0.0.1:8000/api/v1`;
-    const fullUrl = `${baseUrl}${path}`;
-    if (method === "get" || method === "delete") {
-        return axios[method](fullUrl, { headers, params });
-    } else {
-        if (path === "/accounts/register/") {
-            return axios[method](fullUrl, data);
-        } else {
-            return axios[method](fullUrl, data, { headers });
+
+const baseURL = 'http://127.0.0.1:8000/api/v1';
+
+export const axiosInstance = axios.create({
+    baseURL: baseURL,
+    timeout: 5000,
+    headers: {
+        Authorization: localStorage.getItem('access_token')
+            ? 'Bearer ' + localStorage.getItem('access_token')
+            : null,
+        'Content-Type': 'application/json',
+        accept: 'application/json',
+    },
+});
+
+
+axiosInstance.interceptors.response.use(
+    (response) => {
+        return response;
+    },
+    (error) => {
+        const {
+            config,
+            response: { status },
+        } = error;
+
+        const originalRequest = config;
+        console.log('실행!')
+
+        if (status === 401) {
+            const refreshToken = localStorage.getItem('refresh_token');
+            axios({
+                method: 'post',
+                url: `${baseURL}/accounts/token/refresh/`,
+                data: { refresh: refreshToken },
+            }).then((response) => {
+                const accessTokens = response.data.access;
+
+
+                localStorage.setItem('access_token', accessTokens);
+
+                originalRequest.headers = { 'Authorization': 'Bearer ' + accessTokens };
+                return axios(originalRequest);
+            });
         }
-    }
-};
+        return Promise.reject(error);
+    },
+);
 
-const apiList = {
-    createAccount: form => callApi("post", "/accounts/register/", form),
-    login: form => callApi("post", "/accounts/login/", form),
-    userProfile: jwt => callApi("get", "/accounts/profile/", null, jwt),
-
-};
-
-export default apiList;
+export default axiosInstance;

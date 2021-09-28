@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import LoginPresenter from "./LoginPresenter";
-import api from 'api'
+import axiosInstance from 'api'
 import { useRecoilState } from "recoil";
 import { userState } from "recoil/userRecoil";
 
@@ -18,10 +18,10 @@ export const Login = ({ location, history }) => {
 
 
     useEffect(() => {
-        if (userInfo.token) {
-            history.push(redirect)
+        if (userInfo.access_token) {
+            window.location = redirect
         }
-    }, [history, userInfo, redirect])
+    }, [userInfo, redirect])
 
     const isFormValid = () => {
         if (email === "" || password === "") {
@@ -37,11 +37,13 @@ export const Login = ({ location, history }) => {
         }
         const formData = { email, password }
         try {
-            const { status, data } = await api.login(formData);
+            const { status, data } = await axiosInstance.post(
+                '/accounts/login/', formData);
             if (status === 200) {
-                const { access } = data;
-                setUserInfo({ 'token': access, 'isLoggedIn': true });
-                localStorage.setItem('token', access);
+                const { access, refresh } = data;
+                setUserInfo({ 'access_token': access, 'refresh_token': refresh, 'isLoggedIn': true });
+                localStorage.setItem('access_token', access);
+                localStorage.setItem('refresh_token', refresh);
             }
         } catch (e) {
             const status_code = e.response.status;

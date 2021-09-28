@@ -1,11 +1,13 @@
 import { atom, selector } from 'recoil';
 
 export const getToken = () => {
-    const token = localStorage.getItem('token') ? localStorage.getItem('token') : null;
-    const isLoggedIn = token ? true : false;
+    const access_token = localStorage.getItem('access_token') ? localStorage.getItem('access_token') : null;
+    const refresh_token = localStorage.getItem('refresh_token') ? localStorage.getItem('refresh_token') : null;
+    const isLoggedIn = access_token ? true : false;
 
     const return_data = {
-        token,
+        access_token,
+        refresh_token,
         isLoggedIn
     }
 
@@ -13,7 +15,8 @@ export const getToken = () => {
 }
 
 export const logOut = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
     window.location.href = '/';
 }
 
