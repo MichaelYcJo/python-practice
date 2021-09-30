@@ -2,14 +2,14 @@ import React from "react";
 import { useRecoilValue } from 'recoil';
 import { userState } from 'recoil/userRecoil'
 
-import api from 'api'
+import axiosInstance from 'api'
 import UserProfilePresenter from "./UserProfilePresenter";
 
 
 export const UserProfile = () => {
-    const { token } = useRecoilValue(userState)
+    const { access_token } = useRecoilValue(userState)
     try {
-        const { status, data } = api.userProfile(token);
+        const { status, data } = axiosInstance.get('/accounts/profile/')
         if (status === 200) {
             console.log(data);
         }
