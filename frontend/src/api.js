@@ -2,19 +2,27 @@ import axios from "axios";
 
 
 const baseURL = 'http://127.0.0.1:8000/api/v1';
+const ACCESS_TOKEN = 'access_token';
+const REFRESH_TOKEN = 'refresh_token';
 
 export const axiosInstance = axios.create({
     baseURL: baseURL,
     timeout: 5000,
     headers: {
-        Authorization: localStorage.getItem('access_token')
-            ? 'Bearer ' + localStorage.getItem('access_token')
+        Authorization: localStorage.getItem(ACCESS_TOKEN)
+            ? 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
             : null,
         'Content-Type': 'application/json',
         accept: 'application/json',
     },
 });
 
+axiosInstance.interceptors.request.use(function (config) {
+    const token = localStorage.getItem(ACCESS_TOKEN);
+    config.headers.Authorization = "Bearer " + token;
+
+    return config;
+});
 
 axiosInstance.interceptors.response.use(
     (response) => {
@@ -27,10 +35,9 @@ axiosInstance.interceptors.response.use(
         } = error;
 
         const originalRequest = config;
-        console.log('실행!')
 
         if (status === 401) {
-            const refreshToken = localStorage.getItem('refresh_token');
+            const refreshToken = localStorage.getItem(REFRESH_TOKEN);
             axios({
                 method: 'post',
                 url: `${baseURL}/accounts/token/refresh/`,
@@ -38,8 +45,7 @@ axiosInstance.interceptors.response.use(
             }).then((response) => {
                 const accessTokens = response.data.access;
 
-
-                localStorage.setItem('access_token', accessTokens);
+                localStorage.setItem(ACCESS_TOKEN, accessTokens);
 
                 originalRequest.headers = { 'Authorization': 'Bearer ' + accessTokens };
                 return axios(originalRequest);
