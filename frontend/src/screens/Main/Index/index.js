@@ -1,10 +1,10 @@
 import React from 'react'
 
-import { MainContainer, MainContent, MainItems, MainH1, MainP, MainBtn } from 'screens/Main/MainContainer'
+import { MainContainer, MainContent, MainItems, MainH1, MainP, MainBtn } from 'screens/Main/Index/MainContainer'
 import MainBackground from 'assets/videos/MainBackground.mp4'
 
-import Products from 'screens/Products';
-import { productData, productDataTwo } from 'screens/Products/data';
+import Products from 'screens/Main/Products';
+import { productData, productDataTwo } from 'screens/Main/Products/data';
 import Feature from 'screens/Feature';
 import Footer from 'screens/Footer';
 

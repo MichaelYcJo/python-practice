@@ -16,7 +16,8 @@ export const UserProfile = () => {
         // refresh 토큰을 통한 access토큰 발급 실패시 로그아웃 처리및 로그인 페이지로
         axiosInstance.get('/accounts/profile/')
         .then(response => {
-            return response           
+            const {data} = response;
+           //console.log(data)          
         }).catch(() => {
             const refreshToken = localStorage.getItem(REFRESH_TOKEN);
             axios({

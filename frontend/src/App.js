@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import Navbar from 'screens/Navbar'
 import Sidebar from 'screens/Sidebar'
-import Main from 'screens/Main';
+import Main from 'screens/Main/Index';
+import Products from 'screens/Main/Products';
 import Login from 'screens/Auth/Login';
 import Register from 'screens/Auth/Register';
 import UserProfile from 'screens/UserProfile';
@@ -27,7 +28,7 @@ function App() {
           <Navbar toggle={toggle} />
           <Sidebar isOpen={isOpen} toggle={toggle} />
           <Route path='/' component={Main} exact />
-          <Route path='/product' component={Main} exact />
+          <Route path='/products' component={Products} exact />
           <Route path='/accounts/login' component={Login} exact />
           <Route path='/accounts/register' component={Register} exact />
           <Route path='/accounts/profile' component={UserProfile} exact />
