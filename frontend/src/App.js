@@ -3,7 +3,8 @@ import { BrowserRouter as Router, Route } from 'react-router-dom';
 import Navbar from 'screens/Navbar'
 import Sidebar from 'screens/Sidebar'
 import Main from 'screens/Main/Index';
-import Products from 'screens/Main/Products';
+import MainProducts from 'screens/Main/Products';
+import Products from 'screens/Products';
 import Login from 'screens/Auth/Login';
 import Register from 'screens/Auth/Register';
 import UserProfile from 'screens/UserProfile';

@@ -132,7 +132,7 @@ export const SidebarPresenter = ({ isOpen, toggle, isLoggedIn }) => {
       </Icon>
       <SidebarMenu>
         <SidebarLink to='/'>New Releases</SidebarLink>
-        <SidebarLink to='/'>Men</SidebarLink>
+        <SidebarLink to='/products'>Men</SidebarLink>
         <SidebarLink to='/'>Women</SidebarLink>
       </SidebarMenu>
 
