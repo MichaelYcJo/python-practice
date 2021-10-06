@@ -29,7 +29,7 @@ import {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #0d0909;
+    background-color: #f5f5f5;
     position: relative;
     &:hover ${Info}{
       opacity: 1;
