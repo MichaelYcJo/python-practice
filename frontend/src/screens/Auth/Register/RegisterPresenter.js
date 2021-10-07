@@ -1,18 +1,33 @@
 import React from 'react'
-import styled from "styled-components";
+import styled,  { createGlobalStyle } from "styled-components";
 import { SubmitButton } from "components/Auth/Button";
 import Input from "components/Auth/Input";
-import './register.css'
+import img from 'assets/images/main.jpg'
 
 
-export const EmailWrapper = styled.div`
+
+const RegisterGlobalStyle = createGlobalStyle`
+
+  body {
+    background-image: url(${img});
+    background-size: cover;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    font-family: "Raleway", sans-serif;
+  }
+`;
+
+
+const EmailWrapper = styled.div`
   display: flex;
   justify-content: space-around;
   align-items: center;
   width: 85%;
 `;
 
-export const EmailInput = styled.input`
+const EmailInput = styled.input`
 background: rgba(255, 255, 255, 0.15);
 box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
 border-radius: 2rem;
@@ -38,7 +53,7 @@ font-weight: bold;
 }
 `;
 
-export const EmailAuthBtn = styled.button`
+const EmailAuthBtn = styled.button`
   background: linear-gradient(to right, #14163c 0%, #03217b 79%);
   width: 30%;
   height: 3rem;
@@ -48,12 +63,12 @@ export const EmailAuthBtn = styled.button`
   cursor: pointer;
 `;
 
-export const RegisterContainer = styled.div`
+const RegisterContainer = styled.div`
     margin: auto;
     display: flex;
     align-items: center;
     flex-direction: column;
-    height: 80vh;
+    height: 100vh;
     width: 35vw;
     background: rgba(255, 255, 255, 0.15);
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
@@ -98,11 +113,11 @@ export const RegisterContainer = styled.div`
     }
 `;
 
-export const WelcomeText = styled.h2`
+const WelcomeText = styled.h2`
   margin: 3rem 0 2rem 0;
 `;
 
-export const InputContainer = styled.div`
+const InputContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-around;
@@ -111,7 +126,7 @@ export const InputContainer = styled.div`
   width: 100%;
 `;
 
-export const ButtonContainer = styled.div`
+const ButtonContainer = styled.div`
   margin: 1rem 0 2rem 0;
   width: 100%;
   display: flex;
@@ -119,7 +134,7 @@ export const ButtonContainer = styled.div`
   justify-content: center;
 `;
 
-export const ErrorContainer = styled.p`
+const ErrorContainer = styled.p`
 width: 60%;
   color:red;
   font-size: 0.8rem;
@@ -150,6 +165,7 @@ export default function RegisterPresenter({
   handleSubmit }) {
   return (
     <div>
+      <RegisterGlobalStyle/>
       <RegisterContainer>
         <WelcomeText>Register</WelcomeText>
 
