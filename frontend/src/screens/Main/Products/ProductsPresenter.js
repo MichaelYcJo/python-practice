@@ -4,8 +4,8 @@ export const ProductsContainer = styled.div`
   /* width: 100vw; */
   min-height: 100vh;
   padding: 5rem calc((100vw - 1300px) / 2);
-  background: #150f0f;
-  color: #fff;
+  background: #fff;
+  color: #150f0f;
 `;
 
 export const ProductWrapper = styled.div`
@@ -71,3 +71,28 @@ export const ProductButton = styled.button`
     color: #000;
   }
 `;
+
+const ProductsPresenter = ({heading, data}) => {
+  return (
+    <ProductsContainer>
+    <ProductsHeading>{heading}</ProductsHeading>
+    <ProductWrapper>
+        {data.map((product, index) => {
+            return (
+                <ProductCard key={index}>
+                    <ProductImg src={product.img} alt={product.alt} />
+                    <ProductInfo>
+                        <ProductTitle>{product.name}</ProductTitle>
+                        <ProductDesc>{product.desc}</ProductDesc>
+                        <ProductPrice>{product.price}</ProductPrice>
+                        <ProductButton>{product.button}</ProductButton>
+                    </ProductInfo>
+                </ProductCard>
+            );
+        })}
+    </ProductWrapper>
+</ProductsContainer>
+  )
+}
+
+export default ProductsPresenter;
