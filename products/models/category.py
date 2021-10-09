@@ -13,5 +13,9 @@ class ProductCategory(models.Model):
     parent_category = models.ForeignKey('self', related_name="parent_category_name", on_delete=models.CASCADE,
                                         null=True, blank=True)
 
+    class Meta:
+        verbose_name = "category"
+        verbose_name_plural = "categories"
+
     def __str__(self):
         return self.name
