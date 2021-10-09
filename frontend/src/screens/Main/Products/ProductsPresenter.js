@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import Product from 'screens/Products/Product'
 
 export const ProductsContainer = styled.div`
   /* width: 100vw; */
@@ -72,23 +73,18 @@ export const ProductButton = styled.button`
   }
 `;
 
+
+
+
 const ProductsPresenter = ({heading, data}) => {
   return (
     <ProductsContainer>
     <ProductsHeading>{heading}</ProductsHeading>
     <ProductWrapper>
-        {data.map((product, index) => {
-            return (
-                <ProductCard key={index}>
-                    <ProductImg src={product.img} alt={product.alt} />
-                    <ProductInfo>
-                        <ProductTitle>{product.name}</ProductTitle>
-                        <ProductDesc>{product.desc}</ProductDesc>
-                        <ProductPrice>{product.price}</ProductPrice>
-                        <ProductButton>{product.button}</ProductButton>
-                    </ProductInfo>
-                </ProductCard>
-            );
+      {data.map((item) => {
+        return (
+              <Product item={item} key={item.id} />
+            )
         })}
     </ProductWrapper>
 </ProductsContainer>
