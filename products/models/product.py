@@ -1,7 +1,13 @@
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
 
 # Create your models here.
+
+class ProductStatus(models.TextChoices):
+    SOLD_OUT = 'sold-out', _("재고 소진")
+    PLACED = 'placed', _("판매 중")
+
 
 
 class Product(models.Model):
@@ -15,7 +21,11 @@ class Product(models.Model):
         max_digits=7, decimal_places=2, null=True, blank=True)
     countInStock = models.IntegerField(null=True, blank=True, default=0)
     recommendation_rank = models.IntegerField(default=0, null=True)
-    is_published = models.BooleanField(default=True)
+    product_status = models.CharField(
+        max_length=100,
+        choices=ProductStatus.choices,
+        default=ProductStatus.PLACED,
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
