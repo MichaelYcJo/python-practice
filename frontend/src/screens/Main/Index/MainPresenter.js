@@ -1,16 +1,11 @@
 import styled from "styled-components";
+import MainBackground from 'assets/videos/MainBackground.mp4'
 
+import Products from 'screens/Main/Products';
+import { productData, productDataTwo } from 'screens/Main/Products/data';
+import Feature from 'screens/Feature';
+import Footer from 'screens/Footer';
 
-/*
-import ImgBg from "assets/images/main.jpg"
-export const MainContainer = styled.div`
-  background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.1)),
-    url(${ImgBg});
-  height: 100vh;
-  background-position: center;
-  background-size: cover;
-`;
-*/
 
 export const MainContainer = styled.div`
 
@@ -83,3 +78,27 @@ export const MainBtn = styled.button`
     color: #000;
   }
 `;
+
+const MainPresenter = () =>{
+
+return (
+  <MainContainer>
+      <MainContent>
+          <MainItems>
+              <video muted autoPlay loop>
+                  <source src={MainBackground} type="video/mp4" />
+              </video>
+              <MainH1>Find Your Style</MainH1>
+              <MainP>Attractive Ever</MainP>
+              <MainBtn>Click</MainBtn>
+          </MainItems>
+      </MainContent>
+      <Products heading='Choose your favorite' data={productData} />
+      <Feature />
+      <Products heading='Recommand for You' data={productDataTwo} />
+      <Footer />
+  </MainContainer>
+)
+}
+
+export default MainPresenter;

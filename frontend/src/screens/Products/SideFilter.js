@@ -93,7 +93,7 @@ export default function SideFilter() {
                                     type="checkbox"
                                     id="check"
                                     ></input>
-                                    <label id="check" htmlFor="check"> <CheckContent>재고 소진 상품 제외</CheckContent></label>
+                                    <label id="check" htmlFor="check"> <CheckContent>품절 상품 제외</CheckContent></label>
                                 </li>
                             </ul>
                         </li>
