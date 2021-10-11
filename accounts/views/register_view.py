@@ -16,6 +16,9 @@ def register(request):
 
     if serializer.is_valid():
         user = serializer.save()
+        # 이메일 인증전까지 임시
+        user.is_active = True
+        user.save()
         data['response'] = 'Successfully registered new user'
         status_code = status.HTTP_201_CREATED
     else:
