@@ -11,6 +11,6 @@ class ProductAdmin(admin.ModelAdmin):
 
 @admin.register(ProductCategory)
 class ProductCategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'parent_category')
+    list_display = ('name', 'depth', 'parent_category')
     list_filter = ('name', 'parent_category')
     search_fields = ('name',)

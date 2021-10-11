@@ -161,8 +161,6 @@ REST_FRAMEWORK = {
 }
 
 
-# Django project settings.py
-
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),

@@ -17,9 +17,8 @@ class Product(models.Model):
     product_image  = models.ImageField(null=True, blank=True, upload_to='products/')
     brand = models.CharField(max_length=200, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
-    price = models.DecimalField(
-        max_digits=7, decimal_places=2, null=True, blank=True)
-    countInStock = models.IntegerField(null=True, blank=True, default=0)
+    price = models.FloatField(default=0)
+    count_in_stock = models.IntegerField(null=True, blank=True, default=0)
     recommendation_rank = models.IntegerField(default=0, null=True)
     product_status = models.CharField(
         max_length=100,
