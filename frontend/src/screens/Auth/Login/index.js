@@ -38,7 +38,7 @@ export const Login = ({ location, history }) => {
         const formData = { email, password }
         try {
             const { status, data } = await axiosInstance.post(
-                '/accounts/login/', formData);
+                '/accounts/login', formData);
             if (status === 200) {
                 const { access, refresh } = data;
                 setUserInfo({ 'access_token': access, 'refresh_token': refresh, 'isLoggedIn': true });

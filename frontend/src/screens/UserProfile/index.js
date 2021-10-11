@@ -14,10 +14,10 @@ export const UserProfile = () => {
     try {
         // 성공했다면 api.js의 interceptors를 통해 access토큰 재발급
         // refresh 토큰을 통한 access토큰 발급 실패시 로그아웃 처리및 로그인 페이지로
-        axiosInstance.get('/accounts/profile/')
+        axiosInstance.get('/accounts/profile')
         .then(response => {
             const {data} = response;
-           //console.log(data)          
+           console.log(data)          
         }).catch(() => {
             const refreshToken = localStorage.getItem(REFRESH_TOKEN);
             axios({

@@ -42,7 +42,7 @@ export const Register = () => {
         //setLoading(true);
         try {
             const { status, data } = await axiosInstance.post(
-                "/accounts/register/", {
+                "/accounts/register", {
                 email,
                 password,
                 confirm_password: confirmPassword,
