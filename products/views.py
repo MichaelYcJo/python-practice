@@ -15,7 +15,7 @@ def product_list(request):
     products = Product.objects.all().order_by('-created_at')
 
     paginator = PageNumberPagination()
-    paginator.page_size = 10
+    paginator.page_size = 8
 
     results = paginator.paginate_queryset(products, request)
     serializer = ProductSerializer(results, many=True)

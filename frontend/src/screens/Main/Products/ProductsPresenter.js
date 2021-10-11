@@ -83,7 +83,7 @@ const ProductsPresenter = ({heading, data}) => {
     <ProductWrapper>
       {data.map((item) => {
         return (
-              <Product item={item} key={item.id} />
+              <Product product={item} key={item.alt} />
             )
         })}
     </ProductWrapper>

@@ -1,37 +1,32 @@
-import React from 'react'
-import styled from "styled-components";
-import { popularProducts } from "data";
-import Product from "./Product";
-import SideFilter from './SideFilter';
+import axiosInstance from 'api';
+import React, { useEffect } from 'react'
+import { useRecoilState } from 'recoil';
+import { productState } from 'recoil/productRecoil';
 
+import ProductPresenger from './ProductPresenter';
 
-const Container = styled.div`
-    padding: 20px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-`;
+export default function Products({location}) {
+  const [products, setProduct] = useRecoilState(productState)
 
-const SectionHeader = styled.h1`
-  color: #fff;
-  height: 10%;
-  font-size: 2rem;
-  padding : 40px 48px 30px 48px;
-`;
+  
+  useEffect(() => {
+    const {search}  = location;
+  
+    axiosInstance.get(
+      `/products/list${search}`, )
+      .then(response => {
+        setProduct(response.data.results)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+    }, [location, setProduct])
 
-
-const Products = () => {
   return (
     <>
-    <SectionHeader>Header</SectionHeader>
-    <SideFilter />
-    <Container>
-      {popularProducts.map((item) => (
-        <Product item={item} key={item.id} />
-      ))}
-    </Container>
+      <ProductPresenger products={products} />
     </>
   );
 };
 
-export default Products;
+

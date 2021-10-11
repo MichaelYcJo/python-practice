@@ -93,9 +93,9 @@ return (
               <MainBtn>Click</MainBtn>
           </MainItems>
       </MainContent>
-      <Products heading='Choose your favorite' data={productData} />
+        <Products heading='Choose your favorite' data={productData} />
       <Feature />
-      <Products heading='Recommand for You' data={productDataTwo} />
+        <Products heading='Recommand for You' data={productDataTwo} />
       <Footer />
   </MainContainer>
 )

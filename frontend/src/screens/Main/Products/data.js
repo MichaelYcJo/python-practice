@@ -7,60 +7,72 @@ import product6 from 'assets/images/product-6.jpg';
 
 export const productData = [
     {
-        img: product1,
+        product_image: product1,
         alt: 'Check Suit',
         name: 'Check Suit',
         desc:
             'Blue, Check Pattern, for Gentlemen',
         price: '$19.99',
-        button: 'Add to Cart'
+        category: {
+            name: 'Hoodies',
+        }
     },
     {
-        img: product2,
+        product_image: product2,
         alt: 'Cloth',
         name: 'European Cloth',
         desc:
             ' European Cloth',
         price: '$16.99',
-        button: 'Add to Cart'
+        category: {
+            name: 'Hoodies',
+        }
     },
     {
-        img: product3,
+        product_image: product3,
         alt: 'Hoody',
         name: 'Hacker Hood',
         desc:
             'Hacker Hood',
         price: '$14.99',
-        button: 'Add to Cart'
+        category: {
+            name: 'Hoodies',
+        }
     }
 ];
 
 export const productDataTwo = [
     {
-        img: product4,
+        product_image: product4,
         alt: 'YellowHood',
         name: 'YellowHood',
         desc:
             'YellowHood',
         price: '$9.99',
-        button: 'Add to Cart'
+        category: {
+            name: 'Hoodies',
+        }
     },
     {
-        img: product5,
+        product_image: product5,
         alt: 'BlockHood',
         name: 'BlockHood',
         desc:
             'BlockHood',
         price: '$9.99',
-        button: 'Add to Cart'
+        category: {
+            name: 'Hoodies',
+        }
     },
     {
-        img: product6,
+        product_image: product6,
         alt: 'Suit',
         name: 'Suit',
         desc:
             'for Gentlemen',
         price: '$19.99',
-        button: 'Add to Cart'
+        category: {
+            name: 'Hoodies',
+        }
     },
 ];

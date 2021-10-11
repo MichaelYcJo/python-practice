@@ -28,8 +28,8 @@ import {
   const ImageContainer = styled.div`
     flex: 1;
     margin: 5px;
-    min-width: 280px;
-    height: 350px;
+    min-width: 340px;
+    height: 430px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -41,14 +41,15 @@ import {
   `;
   
   const Circle = styled.div`
-    width: 200px;
-    height: 200px;
+    width: 300px;
+    height: 300px;
     border-radius: 50%;
     background-color: white;
     position: absolute;
   `;
   
   const Image = styled.img`
+    max-width: 210px;
     height: 75%;
     z-index: 2;
   `;
@@ -86,7 +87,7 @@ width: 66.666666666%;
 const ProductStatus = styled.div`
     height: 24px; 
     font-size: 0.8rem;
-    color: #fe0000;
+    color: ${props => props.red ? '#fe0000' : '#03ac13'};
 `;
 
 const ProductName = styled.p`
@@ -110,13 +111,13 @@ const ProductPrice = styled.div`
  font-size: 0.9rem;
 `;
   
-  const Product = ({ item }) => {
+  const Product = ({ product }) => {
     return (
       <>
       <Container>
         <ImageContainer>
           <Circle />
-          <Image src={item.img} />
+          <Image src={`http://127.0.0.1:8000${product.product_image}`} />
           <Info>
             <Icon>
               <ShoppingCartOutlined />
@@ -131,13 +132,17 @@ const ProductPrice = styled.div`
         </ImageContainer>
         <ProductContainer>
           <ProductDisplay>
-            <ProductStatus>품절</ProductStatus>
+            {product.product_status === 'placed' ?  
+              <ProductStatus green> 판매 중</ProductStatus> :
+              <ProductStatus red> 품절</ProductStatus>
+             }
+          
             <ProductName>
-              <span>Good Stuff</span>
+              <span>{product.name}</span>
             </ProductName>
-            <ProductCategory>Cloth</ProductCategory>
+            <ProductCategory>{product.category.name}</ProductCategory>
           </ProductDisplay>
-          <ProductPrice> 139,000 원</ProductPrice>
+          <ProductPrice> {product.price}원</ProductPrice>
         </ProductContainer>
       </Container>
 
