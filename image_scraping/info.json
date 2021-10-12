@@ -1,5 +1,21 @@
 ﻿[
     {
+        "clay_ful_id": "UNY7HVAD2NJJ",
+        "image_path": "product/thumbnail/TCV1.png"
+    },
+    {
+        "clay_ful_id": "ARAZ7547NNFA",
+        "image_path": "product/thumbnail/TCV2.png"
+    },
+    {
+        "clay_ful_id": "BTJ4JYZK3NS2",
+        "image_path": "product/thumbnail/TCW1.png"
+    },
+    {
+        "clay_ful_id": "N478TNSJJ5QU",
+        "image_path": "product/thumbnail/Group_1.png"
+    },
+    {
         "clay_ful_id": "2E7G8KG3462N",
         "image_path": "product/thumbnail/YCII-150.png"
     },
@@ -44,12 +60,20 @@
         "image_path": "product/thumbnail/SC-70.png"
     },
     {
+        "clay_ful_id": "2N96YPUP479K",
+        "image_path": "product/thumbnail/EDUCATION_CONVEYOR_NED.jpg"
+    },
+    {
         "clay_ful_id": "AQ4CFB5TQE8X",
         "image_path": "product/thumbnail/SC-70.png"
     },
     {
         "clay_ful_id": "WF887YL5G72B",
         "image_path": "product/thumbnail/SC-70.png"
+    },
+    {
+        "clay_ful_id": "NT37RDMXNJ7B",
+        "image_path": "product/thumbnail/NiryoOne_VisionSet_Focus.jpg"
     },
     {
         "clay_ful_id": "RP5ZLUR2PMDQ",
@@ -64,24 +88,12 @@
         "image_path": "product/thumbnail/SC-70.png"
     },
     {
-        "clay_ful_id": "TVKSK63C43XS",
-        "image_path": "product/thumbnail/niryo_front.jpg"
-    },
-    {
         "clay_ful_id": "PXJZP3GGRJ3Z",
         "image_path": "product/thumbnail/썸네일_1.png"
     },
     {
         "clay_ful_id": "8CS5YZPTWA8M",
         "image_path": "product/thumbnail/썸네일.png"
-    },
-    {
-        "clay_ful_id": "QQ5B9NKGA5U2",
-        "image_path": "product/thumbnail/썸네일.png"
-    },
-    {
-        "clay_ful_id": "N2Y25XPN4J8N",
-        "image_path": "product/thumbnail/썸네일_이미지.png"
     },
     {
         "clay_ful_id": "JSVSC4FNYSGF",
@@ -1080,24 +1092,8 @@
         "image_path": "product/thumbnail/20210818_112136.png"
     },
     {
-        "clay_ful_id": "Y9TAP2DCS52V",
-        "image_path": "product/thumbnail/20210818_110027.png"
-    },
-    {
-        "clay_ful_id": "MRQX8M4BSEDD",
-        "image_path": "product/thumbnail/20210818_105430.png"
-    },
-    {
-        "clay_ful_id": "R4W27HFBCNQJ",
-        "image_path": "product/thumbnail/20210818_103851.png"
-    },
-    {
         "clay_ful_id": "AHTK9UTCFYSE",
         "image_path": "product/thumbnail/Rebel-S6-0.75-1.jpg"
-    },
-    {
-        "clay_ful_id": "X72NFCYGTC49",
-        "image_path": "product/thumbnail/20210818_101718.png"
     },
     {
         "clay_ful_id": "PAMH47E8JFV8",
@@ -1126,10 +1122,6 @@
     {
         "clay_ful_id": "7R26A5J8385V",
         "image_path": "product/thumbnail/NJ4-220-2.7-1.jpg"
-    },
-    {
-        "clay_ful_id": "DPPQVZQKXUSG",
-        "image_path": "product/thumbnail/20210818_091942.png"
     },
     {
         "clay_ful_id": "VLU892DKDBKM",
@@ -1874,10 +1866,6 @@
     {
         "clay_ful_id": "CZXJ756YEZ65",
         "image_path": "product/thumbnail/l_3807-13-302091-198x198_2a59ad90-d404-11eb-a547-31ea8da130cc.jpeg"
-    },
-    {
-        "clay_ful_id": "2LDZCFEGAKJU",
-        "image_path": "product/thumbnail/mobilerobot_2_prod-675x450_1de6bb90-2e3f-11eb-a060-a58ddece3834-2.jpeg"
     },
     {
         "clay_ful_id": "GEGABH54KJA6",
