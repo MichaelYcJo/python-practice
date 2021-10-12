@@ -1,7 +1,7 @@
 import React from "react";
 import axios from "axios";
 
-import axiosInstance from 'api'
+import {LoginAxiosInstance} from 'api'
 import { logOut } from 'recoil/userRecoil'
 import UserProfilePresenter from "./UserProfilePresenter";
 
@@ -14,7 +14,7 @@ export const UserProfile = () => {
     try {
         // 성공했다면 api.js의 interceptors를 통해 access토큰 재발급
         // refresh 토큰을 통한 access토큰 발급 실패시 로그아웃 처리및 로그인 페이지로
-        axiosInstance.get('/accounts/profile')
+        LoginAxiosInstance.get('/accounts/profile')
         .then(response => {
             const {data} = response;
            console.log(data)          

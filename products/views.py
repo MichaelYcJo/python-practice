@@ -1,7 +1,7 @@
 from rest_framework import pagination
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -9,6 +9,7 @@ from products.models import Product
 from products.serializers import ProductSerializer
 
 
+@permission_classes([AllowAny])
 @api_view(['GET'])
 def product_list(request):
 

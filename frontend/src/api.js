@@ -5,7 +5,8 @@ const baseURL = 'http://127.0.0.1:8000/api/v1';
 const ACCESS_TOKEN = 'access_token';
 const REFRESH_TOKEN = 'refresh_token';
 
-export const axiosInstance = axios.create({
+
+export const AxiosInstance = axios.create({
     baseURL: baseURL,
     timeout: 5000,
     headers: {
@@ -17,14 +18,26 @@ export const axiosInstance = axios.create({
     },
 });
 
-axiosInstance.interceptors.request.use(function (config) {
+export const LoginAxiosInstance = axios.create({
+    baseURL: baseURL,
+    timeout: 5000,
+    headers: {
+        Authorization: localStorage.getItem(ACCESS_TOKEN)
+            ? 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
+            : null,
+        'Content-Type': 'application/json',
+        accept: 'application/json',
+    },
+});
+
+LoginAxiosInstance.interceptors.request.use(function (config) {
     const token = localStorage.getItem(ACCESS_TOKEN);
     config.headers.Authorization = "Bearer " + token;
 
     return config;
 });
 
-axiosInstance.interceptors.response.use(
+LoginAxiosInstance.interceptors.response.use(
     (response) => {
         return response;
     },
@@ -55,4 +68,4 @@ axiosInstance.interceptors.response.use(
     },
 );
 
-export default axiosInstance;
+export default AxiosInstance;

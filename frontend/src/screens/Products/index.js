@@ -1,4 +1,4 @@
-import axiosInstance from 'api';
+import AxiosInstance from 'api';
 import React, { useEffect } from 'react'
 import { useRecoilState } from 'recoil';
 import { productState } from 'recoil/productRecoil';
@@ -12,7 +12,7 @@ export default function Products({location}) {
   useEffect(() => {
     const {search}  = location;
   
-    axiosInstance.get(
+    AxiosInstance.get(
       `/products/list${search}`, )
       .then(response => {
         setProduct(response.data.results)

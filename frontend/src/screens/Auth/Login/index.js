@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import LoginPresenter from "./LoginPresenter";
-import axiosInstance from 'api'
+import AxiosInstance from 'api'
 import { useRecoilState } from "recoil";
 import { userState } from "recoil/userRecoil";
 
@@ -37,7 +37,7 @@ export const Login = ({ location, history }) => {
         }
         const formData = { email, password }
         try {
-            const { status, data } = await axiosInstance.post(
+            const { status, data } = await AxiosInstance.post(
                 '/accounts/login', formData);
             if (status === 200) {
                 const { access, refresh } = data;

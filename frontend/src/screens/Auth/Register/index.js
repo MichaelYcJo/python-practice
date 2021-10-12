@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import RegisterPresenter from './RegisterPresenter'
-import axiosInstance from 'api'
+import AxiosInstance from 'api'
 
 export const Register = () => {
     const [email, setEmail] = useState("");
@@ -41,7 +41,7 @@ export const Register = () => {
         }
         //setLoading(true);
         try {
-            const { status, data } = await axiosInstance.post(
+            const { status, data } = await AxiosInstance.post(
                 "/accounts/register", {
                 email,
                 password,
