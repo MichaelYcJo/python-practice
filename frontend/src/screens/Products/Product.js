@@ -4,6 +4,7 @@ import {
     ShoppingCartOutlined,
   } from "@material-ui/icons";
   import styled from "styled-components";
+  import { numberWithCommas } from "utils/numberWithCommas";
 
   const Container= styled.div`
   margin-bottom: 15px;
@@ -28,8 +29,8 @@ import {
   const ImageContainer = styled.div`
     flex: 1;
     margin: 5px;
-    min-width: 340px;
-    height: 430px;
+    min-width: 325px;
+    height: 380px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -41,7 +42,7 @@ import {
   `;
   
   const Circle = styled.div`
-    width: 300px;
+    width: 260px;
     height: 300px;
     border-radius: 50%;
     background-color: white;
@@ -49,7 +50,7 @@ import {
   `;
   
   const Image = styled.img`
-    max-width: 210px;
+    width: 230px;
     height: 75%;
     z-index: 2;
   `;
@@ -142,7 +143,7 @@ const ProductPrice = styled.div`
             </ProductName>
             <ProductCategory>{product.category.name}</ProductCategory>
           </ProductDisplay>
-          <ProductPrice> {product.price}원</ProductPrice>
+          <ProductPrice> {numberWithCommas(product.price)}원</ProductPrice>
         </ProductContainer>
       </Container>
 
@@ -151,3 +152,4 @@ const ProductPrice = styled.div`
   };
   
   export default Product;
+  
