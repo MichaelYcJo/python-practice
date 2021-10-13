@@ -1,15 +1,11 @@
-
 import React from 'react'
-import Product from "./Product";
-import SideFilter from './SideFilter';
-
-import { useRecoilState } from 'recoil';
-
 import styled from "styled-components";
 
+import SideFilter from './SideFilter';
+import Product from "./Product";
 
 const Container = styled.div`
-    padding: 20px;
+    padding: 30px;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -24,7 +20,6 @@ const SectionHeader = styled.h1`
 
 
 export default function ProductPresenger({products}) {
-
     return (
       <>
     <SectionHeader>Header</SectionHeader>

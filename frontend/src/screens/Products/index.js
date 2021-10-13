@@ -3,7 +3,7 @@ import React, { useEffect } from 'react'
 import { useRecoilState } from 'recoil';
 import { productState } from 'recoil/productRecoil';
 
-import ProductPresenger from './ProductPresenter';
+import ProductPresenter from './ProductPresenter';
 
 export default function Products({location}) {
   const [products, setProduct] = useRecoilState(productState)
@@ -24,7 +24,7 @@ export default function Products({location}) {
 
   return (
     <>
-      <ProductPresenger products={products} />
+      <ProductPresenter products={products} />
     </>
   );
 };
