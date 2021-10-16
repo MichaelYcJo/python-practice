@@ -1,11 +1,11 @@
 import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import IconGroup from "../../components/header/IconGroup";
-import MobileMenu from "../../components/header/MobileMenu";
-import OffcanvasMenu from "../../components/header/OffcanvasMenu";
+import IconGroup from "components/header/IconGroup";
+import MobileMenu from "components/header/MobileMenu";
+import OffcanvasMenu from "components/header/OffcanvasMenu";
 
-const HeaderSix = ({ layout, headerPaddingClass, headerBgClass }) => {
+const LayoutHeader = ({ layout, headerPaddingClass, headerBgClass }) => {
   const [scroll, setScroll] = useState(0);
   const [headerTop, setHeaderTop] = useState(0);
   const [offcanvasActive, setOffcanvasActive] = useState(false);
@@ -55,7 +55,7 @@ const HeaderSix = ({ layout, headerPaddingClass, headerBgClass }) => {
                 <img alt="" src="assets/img/logo/logo-2.png" />
               </Link>
               <Link className="sticky-block" to={process.env.PUBLIC_URL + "/"}>
-                <img alt="" src="assets/img/logo/logo.png" />
+                <img width='10px' alt="" src="assets/img/logo/logo.png" />
               </Link>
             </div>
           </div>
@@ -76,10 +76,10 @@ const HeaderSix = ({ layout, headerPaddingClass, headerBgClass }) => {
   );
 };
 
-HeaderSix.propTypes = {
+LayoutHeader.propTypes = {
   headerBgClass: PropTypes.string,
   headerPaddingClass: PropTypes.string,
   layout: PropTypes.string
 };
 
-export default HeaderSix;
+export default LayoutHeader;

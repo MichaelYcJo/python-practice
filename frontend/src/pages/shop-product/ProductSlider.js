@@ -15,10 +15,10 @@ const ProductSlider = ({ location, product }) => {
   return (
     <Fragment>
       <MetaTags>
-        <title>Flone | Product Page</title>
+        <title>Michael-Shop | Product Page</title>
         <meta
           name="description"
-          content="Product page of flone react minimalist eCommerce template."
+          content="Product page of Michael-Shop react minimalist eCommerce template."
         />
       </MetaTags>
 

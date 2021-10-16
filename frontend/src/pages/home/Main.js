@@ -8,14 +8,14 @@ import CountDownThree from "../../wrappers/countdown/CountDownThree";
 import FeatureIconFour from "../../wrappers/feature-icon/FeatureIconFour";
 import NewsletterThree from "../../wrappers/newsletter/NewsletterThree";
 
-const HomeFashionSeven = () => {
+const Main = () => {
   return (
     <Fragment>
       <MetaTags>
-        <title>Flone | Fashion Home</title>
+        <title>Michael-Shop | Fashion Home</title>
         <meta
           name="description"
-          content="Fashion home of flone react minimalist eCommerce template."
+          content="Fashion home of Michael Shop react minimalist eCommerce template."
         />
       </MetaTags>
       <LayoutOne
@@ -59,4 +59,4 @@ const HomeFashionSeven = () => {
   );
 };
 
-export default HomeFashionSeven;
+export default Main;

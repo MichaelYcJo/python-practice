@@ -1,9 +1,9 @@
 import PropTypes from "prop-types";
 import React, { Fragment } from "react";
-import HeaderSix from "../wrappers/header/HeaderSix";
+import LayoutHeader from "../wrappers/header/LayoutHeader";
 import FooterOne from "../wrappers/footer/FooterOne";
 
-const LayoutSeven = ({ children }) => {
+const Layout = ({ children }) => {
   return (
     <Fragment>
       <HeaderSix layout="container-fluid" />
@@ -13,8 +13,8 @@ const LayoutSeven = ({ children }) => {
   );
 };
 
-export default LayoutSeven;
+export default Layout;
 
-LayoutSeven.propTypes = {
+Layout.propTypes = {
   children: PropTypes.any
 };

@@ -48,10 +48,10 @@ const ShopGridNoSidebar = ({ location, products }) => {
   return (
     <Fragment>
       <MetaTags>
-        <title>Flone | Shop Page</title>
+        <title>Michael-Shop | Shop Page</title>
         <meta
           name="description"
-          content="Shop page of flone react minimalist eCommerce template."
+          content="Shop page of Michael-Shop react minimalist eCommerce template."
         />
       </MetaTags>
 
