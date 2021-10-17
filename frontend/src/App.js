@@ -44,6 +44,7 @@ const About = lazy(() => import("./pages/other/About"));
 const Contact = lazy(() => import("./pages/other/Contact"));
 const MyAccount = lazy(() => import("./pages/other/MyAccount"));
 const Login = lazy(() => import("pages/auth/Login/index.js"));
+const Logout = lazy(() => import("pages/auth/Logout/index.js"));
 const Register = lazy(() => import("pages/auth/Register/index.js"));
 
 const Cart = lazy(() => import("./pages/other/Cart"));
@@ -173,6 +174,10 @@ const App = (props) => {
                 <Route
                   path={process.env.PUBLIC_URL + "/login"}
                   component={Login}
+                />
+                <Route
+                  path={process.env.PUBLIC_URL + "/logout"}
+                  component={Logout}
                 />
                 <Route
                   path={process.env.PUBLIC_URL + "/register"}

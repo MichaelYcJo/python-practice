@@ -1,12 +1,15 @@
 import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
-import Logo from "../../components/header/Logo";
-import NavMenu from "../../components/header/NavMenu";
-import IconGroup from "../../components/header/IconGroup";
-import MobileMenu from "../../components/header/MobileMenu";
-import HeaderTop from "../../components/header/HeaderTop";
+import Logo from "components/header/Logo";
+import NavMenu from "components/header/NavMenu";
+import Main from "components/navigation/Main";
+import Auth from "components/navigation/Auth";
+import MobileMenu from "components/header/MobileMenu";
+import HeaderTop from "components/header/HeaderTop";
+import { useRecoilValue } from "recoil";
+import { userState } from "recoil/userRecoil";
 
-const HeaderOne = ({
+const Header = ({
   layout,
   top,
   borderStyle,
@@ -14,6 +17,7 @@ const HeaderOne = ({
   headerPositionClass,
   headerBgClass
 }) => {
+  const {isLoggedIn} = useRecoilValue(userState)
   const [scroll, setScroll] = useState(0);
   const [headerTop, setHeaderTop] = useState(0);
 
@@ -68,7 +72,7 @@ const HeaderOne = ({
             </div>
             <div className="col-xl-2 col-lg-2 col-md-6 col-8">
               {/* Icon group */}
-              <IconGroup />
+              {isLoggedIn ? <Auth /> : <Main /> }
             </div>
           </div>
         </div>
@@ -79,7 +83,7 @@ const HeaderOne = ({
   );
 };
 
-HeaderOne.propTypes = {
+Header.propTypes = {
   borderStyle: PropTypes.string,
   headerPaddingClass: PropTypes.string,
   headerPositionClass: PropTypes.string,
@@ -87,4 +91,4 @@ HeaderOne.propTypes = {
   top: PropTypes.string
 };
 
-export default HeaderOne;
+export default Header;

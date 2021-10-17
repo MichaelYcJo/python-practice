@@ -2,10 +2,10 @@ import PropTypes from "prop-types";
 import React from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
-import MenuCart from "./sub-components/MenuCart";
+import MenuCart from "components/header/sub-components/MenuCart";
 import { deleteFromCart } from "../../redux/actions/cartActions";
 
-const IconGroup = ({
+const Main = ({
   currency,
   cartData,
   wishlistData,
@@ -56,11 +56,6 @@ const IconGroup = ({
             <li>
               <Link to={process.env.PUBLIC_URL + "/register"}>
                 Register
-              </Link>
-            </li>
-            <li>
-              <Link to={process.env.PUBLIC_URL + "/my-account"}>
-                my account
               </Link>
             </li>
           </ul>
@@ -116,7 +111,7 @@ const IconGroup = ({
   );
 };
 
-IconGroup.propTypes = {
+Main.propTypes = {
   cartData: PropTypes.array,
   compareData: PropTypes.array,
   currency: PropTypes.object,
@@ -142,4 +137,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(IconGroup);
+export default connect(mapStateToProps, mapDispatchToProps)(Main);
