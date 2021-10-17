@@ -1,20 +1,39 @@
 import PropTypes from "prop-types";
 import React, { Fragment } from "react";
-import LayoutHeader from "../wrappers/header/LayoutHeader";
+import Header from "../wrappers/header/Header";
 import FooterOne from "../wrappers/footer/FooterOne";
 
-const Layout = ({ children }) => {
+const Layout = ({
+  children,
+  headerContainerClass,
+  headerTop,
+  headerPaddingClass,
+  headerPositionClass
+}) => {
   return (
     <Fragment>
-      <HeaderSix layout="container-fluid" />
+      <Header
+        layout={headerContainerClass}
+        top={headerTop}
+        headerPaddingClass={headerPaddingClass}
+        headerPositionClass={headerPositionClass}
+      />
       {children}
-      <FooterOne spaceTopClass="pt-100" spaceBottomClass="pb-70" />
+      <FooterOne
+        backgroundColorClass="bg-gray"
+        spaceTopClass="pt-100"
+        spaceBottomClass="pb-70"
+      />
     </Fragment>
   );
 };
 
-export default Layout;
-
 Layout.propTypes = {
-  children: PropTypes.any
+  children: PropTypes.any,
+  headerContainerClass: PropTypes.string,
+  headerPaddingClass: PropTypes.string,
+  headerPositionClass: PropTypes.string,
+  headerTop: PropTypes.string
 };
+
+export default Layout;

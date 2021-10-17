@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import MetaTags from "react-meta-tags";
-import LayoutOne from "../../layouts/LayoutOne";
+import Layout from "../../layouts/Layout";
 import HeroSliderFifteen from "../../wrappers/hero-slider/HeroSliderFifteen";
 import TabProductNine from "../../wrappers/product/TabProductNine";
 import BannerEleven from "../../wrappers/banner/BannerEleven";
@@ -18,7 +18,7 @@ const Main = () => {
           content="Fashion home of Michael Shop react minimalist eCommerce template."
         />
       </MetaTags>
-      <LayoutOne
+      <Layout
         headerContainerClass="container-fluid"
         headerPaddingClass="header-padding-2"
         headerTop="visible"
@@ -54,7 +54,7 @@ const Main = () => {
           spaceBottomClass="pb-100"
           subscribeBtnClass="dark-red-subscribe"
         />
-      </LayoutOne>
+      </Layout>
     </Fragment>
   );
 };
