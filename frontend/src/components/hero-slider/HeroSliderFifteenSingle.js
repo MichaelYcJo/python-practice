@@ -14,9 +14,9 @@ const HeroSliderFifteenSingle = ({ data, sliderClass }) => {
         <div className="row">
           <div className="col-xl-6 col-lg-7 col-md-8 col-12 ml-auto">
             <div className="slider-content-2 slider-animated-1">
-              <h3 className="animated no-style">{data.title}</h3>
+              <h3 className="animated no-style text-light">{data.title}</h3>
               <h1
-                className="animated"
+                className="animated text-light"
                 dangerouslySetInnerHTML={{ __html: data.subtitle }}
               />
               <div className="slider-btn btn-hover">

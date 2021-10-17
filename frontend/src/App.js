@@ -6,6 +6,7 @@ import { ToastProvider } from "react-toast-notifications";
 import { multilanguage, loadLanguages } from "redux-multilanguage";
 import { connect } from "react-redux";
 import { BreadcrumbsProvider } from "react-breadcrumbs-dynamic";
+import { register } from "react-scroll/modules/mixins/scroller";
 
 // home pages
 const Main = lazy(() => import("./pages/home/Main"));
@@ -42,7 +43,8 @@ const ProductFixedImage = lazy(() =>
 const About = lazy(() => import("./pages/other/About"));
 const Contact = lazy(() => import("./pages/other/Contact"));
 const MyAccount = lazy(() => import("./pages/other/MyAccount"));
-const LoginRegister = lazy(() => import("./pages/other/LoginRegister"));
+const Login = lazy(() => import("pages/auth/Login/index.js"));
+const Register = lazy(() => import("pages/auth/Register/index.js"));
 
 const Cart = lazy(() => import("./pages/other/Cart"));
 const Wishlist = lazy(() => import("./pages/other/Wishlist"));
@@ -169,8 +171,12 @@ const App = (props) => {
                   component={MyAccount}
                 />
                 <Route
-                  path={process.env.PUBLIC_URL + "/login-register"}
-                  component={LoginRegister}
+                  path={process.env.PUBLIC_URL + "/login"}
+                  component={Login}
+                />
+                <Route
+                  path={process.env.PUBLIC_URL + "/register"}
+                  component={Register}
                 />
 
                 <Route

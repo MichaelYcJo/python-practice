@@ -8,6 +8,7 @@ import { save, load } from "redux-localstorage-simple";
 import { Provider } from "react-redux";
 import { fetchProducts } from "./redux/actions/productActions";
 import rootReducer from "./redux/reducers/rootReducer";
+import { RecoilRoot } from 'recoil'
 import products from "./data/products.json";
 import App from "./App";
 import "./assets/scss/style.scss";
@@ -25,9 +26,11 @@ const store = createStore(
 store.dispatch(fetchProducts(products));
 
 ReactDOM.render(
+  <RecoilRoot>
   <Provider store={store}>
     <App />
-  </Provider>,
+  </Provider>
+  </RecoilRoot>,
   document.getElementById("root")
 );
 
