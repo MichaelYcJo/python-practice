@@ -33,6 +33,7 @@ const LoginPresenter = ({
                           <h3 className='form-title'>Login</h3>
                           <div className="login-register-form">
                           <form onSubmit={handleSubmit}>
+                            <div>
                               <input
                               type="text"
                               name="email"
@@ -41,6 +42,8 @@ const LoginPresenter = ({
                                 setEmail(e.target.value)
                               }}
                               />
+                            </div>
+                            <div>
                               <input
                               type="password"
                               name="password"
@@ -49,13 +52,13 @@ const LoginPresenter = ({
                                 setPassword(e.target.value)
                               }}
                               />
-
                               {errorType && <ErrorComponent message={error} />}
+                            </div>
                               <div className="button-box">
                               <div className="login-toggle-btn">
                                   <input type="checkbox" />
                                   <label className="ml-10">Remember me</label>
-                                  <Link to={process.env.PUBLIC_URL + "/register"}>
+                                  <Link to={process.env.PUBLIC_URL + "/accounts/register"}>
                                   create account?
                                   </Link>
                               </div>

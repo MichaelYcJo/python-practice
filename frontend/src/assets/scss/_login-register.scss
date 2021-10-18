@@ -18,13 +18,16 @@
     }
     .login-register-form {
       form {
+        & div{
+          margin-bottom: 25px;
+        }
         input {
           background-color: transparent;
           border: 1px solid #ebebeb;
           color: #333;
           font-size: 14px;
           height: 45px;
-          margin-bottom: 30px;
+   
           padding: 0 15px;
         }
         input[type="checkbox"] {

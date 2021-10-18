@@ -168,19 +168,19 @@ const App = (props) => {
                   component={Contact}
                 />
                 <Route
-                  path={process.env.PUBLIC_URL + "/my-account"}
+                  path={process.env.PUBLIC_URL + "/accounts/my-account"}
                   component={MyAccount}
                 />
                 <Route
-                  path={process.env.PUBLIC_URL + "/login"}
+                  path={process.env.PUBLIC_URL + "/accounts/login"}
                   component={Login}
                 />
                 <Route
-                  path={process.env.PUBLIC_URL + "/logout"}
+                  path={process.env.PUBLIC_URL + "/accounts/logout"}
                   component={Logout}
                 />
                 <Route
-                  path={process.env.PUBLIC_URL + "/register"}
+                  path={process.env.PUBLIC_URL + "/accounts/register"}
                   component={Register}
                 />
 

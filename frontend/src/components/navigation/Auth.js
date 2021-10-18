@@ -51,12 +51,12 @@ const Auth = ({
         <div className="account-dropdown">
           <ul>
             <li>
-              <Link to={process.env.PUBLIC_URL + "/logout"}>
+              <Link to={process.env.PUBLIC_URL + "/accounts/logout"}>
                 LogOut
               </Link>
             </li>
             <li>
-              <Link to={process.env.PUBLIC_URL + "/my-account"}>
+              <Link to={process.env.PUBLIC_URL + "/accounts/my-account"}>
                 My Profile
               </Link>
             </li>
