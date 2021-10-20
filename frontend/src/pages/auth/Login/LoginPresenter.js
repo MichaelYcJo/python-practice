@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react'
 import MetaTags from "react-meta-tags";
 import { Link } from "react-router-dom";
+
 import Layout from "layouts/Layout";
 import ErrorComponent from 'components/error/errorComponent'
 
@@ -56,8 +57,9 @@ const LoginPresenter = ({
                             </div>
                               <div className="button-box">
                               <div className="login-toggle-btn">
+                                {/*
                                   <input type="checkbox" />
-                                  <label className="ml-10">Remember me</label>
+                                  <label className="ml-10">Remember me</label> */}
                                   <Link to={process.env.PUBLIC_URL + "/accounts/register"}>
                                   create account?
                                   </Link>
@@ -65,6 +67,10 @@ const LoginPresenter = ({
                               <button type="submit">
                                   <span>Login</span>
                               </button>
+                              <div className='social_btn'>
+                                 <img src={process.env.PUBLIC_URL + '/assets/img/button/kakao_login_btn.png'} alt="google" />
+                              </div>
+
                               </div>
                           </form>
                           </div>

@@ -51,10 +51,10 @@ const Main = ({
         <div className="account-dropdown">
           <ul>
             <li>
-              <Link to={process.env.PUBLIC_URL + "/login"}>Login</Link>
+              <Link to={process.env.PUBLIC_URL + "/accounts/login"}>Login</Link>
             </li>
             <li>
-              <Link to={process.env.PUBLIC_URL + "/register"}>
+              <Link to={process.env.PUBLIC_URL + "/accounts/register"}>
                 Register
               </Link>
             </li>
