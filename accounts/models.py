@@ -36,15 +36,25 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+class LoginType(models.TextChoices):
+        LOGIN_EMAIL = "Email",
+        LOGING_KAKAO =  "Kakao"
+
 
 class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
+    login_type = models.CharField(
+        max_length=50,
+        choices=LoginType.choices,
+        default=LoginType.LOGIN_EMAIL
+    )
     email = models.EmailField(max_length=200, unique=True)
     email_checked = models.BooleanField(default=False)
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
     phone = models.CharField(max_length=100, blank=True, null=True)
+    avatar = models.ImageField(upload_to="avatars", blank=True)
     special_code = models.CharField(max_length=10, blank=True, null=True)
     date_joined = models.DateTimeField(auto_now_add=True)
     is_staff = models.BooleanField(default=False)

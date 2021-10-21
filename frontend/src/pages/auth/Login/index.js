@@ -63,6 +63,11 @@ const handleSubmit = async (e) => {
 
 };
 
+const kakaoLogin = () => {
+    console.log('카카오로그인 확인')
+}
+
+
 
   return (
       <LoginPresenter 
@@ -75,6 +80,7 @@ const handleSubmit = async (e) => {
       errorType={errorType}
       setErrorType={setErrorType}
       handleSubmit={handleSubmit}
+      kakaoLogin={kakaoLogin}
       />
    
   );

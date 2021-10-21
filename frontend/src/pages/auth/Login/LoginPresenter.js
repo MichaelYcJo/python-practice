@@ -6,6 +6,7 @@ import Layout from "layouts/Layout";
 import ErrorComponent from 'components/error/errorComponent'
 
 const LoginPresenter = ({
+  kakaoLogin,
   setEmail,
   setPassword,
   errorType,
@@ -67,7 +68,7 @@ const LoginPresenter = ({
                               <button type="submit">
                                   <span>Login</span>
                               </button>
-                              <div className='social_btn'>
+                              <div className='social_btn' onClick={kakaoLogin}>
                                  <img src={process.env.PUBLIC_URL + '/assets/img/button/kakao_login_btn.png'} alt="google" />
                               </div>
 
