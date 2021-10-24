@@ -3,8 +3,10 @@ import React, { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { userState } from "recoil/userRecoil";
 
-import {LoginAxiosInstance} from "api";
+import AxiosInstance, {LoginAxiosInstance} from "api";
 import LoginPresenter from "pages/auth/Login/LoginPresenter";
+import axios from "axios";
+
 
 
 const Login = ({location}) => {
@@ -63,9 +65,29 @@ const handleSubmit = async (e) => {
 
 };
 
-const kakaoLogin = () => {
-    console.log('카카오로그인 확인')
+const kakaoLogin = async () => {
+    try {
+        const { status, data } = await axios.get('http://127.0.0.1:8000/api/v1/accounts/login/kakao');
+        if (status === 200) {
+            const { access, refresh } = data;
+            setUserInfo({ 'access_token': access, 'refresh_token': refresh, 'isLoggedIn': true });
+            localStorage.setItem('access_token', access);
+            localStorage.setItem('refresh_token', refresh);
+        }
+    } catch (e) {
+        console.log(e)
+        const status_code = e.response.status;
+        if (status_code === 401) {
+            setErrorType('invalid')
+            setError('유효하지않은 이메일 또는 패스워드입니다')
+        } else {
+            alert('API Connect Failed')
+        }
+    } finally {
+        //setLoading(false);
+    }
 }
+
 
 
 
