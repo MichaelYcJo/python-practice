@@ -45,7 +45,9 @@ const Contact = lazy(() => import("./pages/other/Contact"));
 const MyAccount = lazy(() => import("./pages/other/MyAccount"));
 const Login = lazy(() => import("pages/auth/Login/index.js"));
 const Logout = lazy(() => import("pages/auth/Logout/index.js"));
+const KakaoLogin = lazy(() => import("pages/auth/KakaoLogin/index.js"));
 const Register = lazy(() => import("pages/auth/Register/index.js"));
+
 
 const Cart = lazy(() => import("./pages/other/Cart"));
 const Wishlist = lazy(() => import("./pages/other/Wishlist"));
@@ -161,27 +163,32 @@ const App = (props) => {
                 {/* Other pages */}
                 <Route
                   path={process.env.PUBLIC_URL + "/about"}
-                  component={About}
+                  component={About} exact 
                 />
                 <Route
                   path={process.env.PUBLIC_URL + "/contact"}
-                  component={Contact}
+                  component={Contact} exact 
                 />
                 <Route
                   path={process.env.PUBLIC_URL + "/accounts/my-account"}
-                  component={MyAccount}
+                  component={MyAccount} exact 
                 />
                 <Route
                   path={process.env.PUBLIC_URL + "/accounts/login"}
-                  component={Login}
+                  component={Login} exact 
                 />
                 <Route
                   path={process.env.PUBLIC_URL + "/accounts/logout"}
-                  component={Logout}
+                  component={Logout} exact 
                 />
                 <Route
                   path={process.env.PUBLIC_URL + "/accounts/register"}
-                  component={Register}
+                  component={Register} exact 
+                />
+
+                <Route
+                  path={process.env.PUBLIC_URL + "/accounts/login/kakao/callback"}
+                  component={KakaoLogin}
                 />
 
                 <Route
