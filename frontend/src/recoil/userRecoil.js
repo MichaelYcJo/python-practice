@@ -25,6 +25,13 @@ export const userState = atom({
     default: getToken()
 });
 
+
+export const kakaoState = atom({
+    key: 'kakao',
+    default : ''
+});
+    
+
 /*
 export const userLoginState = selector({
     key: 'countTitleState',
