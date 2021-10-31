@@ -69,7 +69,7 @@ const LoginPresenter = ({
                                   <span>Login</span>
                               </button>
                               <div className='social_btn' onClick={kakaoLogin}>
-                                 <img src={process.env.PUBLIC_URL + '/assets/img/button/kakao_login_btn.png'} alt="google" />
+                                 <img src={process.env.PUBLIC_URL + '/assets/img/button/kakao_login_btn.png'} alt="kakao" />
                               </div>
 
                               </div>
