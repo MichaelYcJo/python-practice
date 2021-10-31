@@ -31,21 +31,6 @@ class TokenTestView(APIView):
         return Response(content)
 
 
-def kakao_login(request):
-    client_id = config("KAKAO_ID")	
-
-    if settings.DEBUG is False:
-        redirect_uri = "http://127.0.0.1:8000/api/v1/accounts/login/kakao/callback"
-        return redirect(
-            f"https://kauth.kakao.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code"
-        )
-    else:
-        redirect_uri = "http://127.0.0.1:8000/api/v1/accounts/login/kakao/callback"
-        return redirect(
-            f"https://kauth.kakao.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code"
-        )
-
-
 class KakaoException(Exception):
     pass
 

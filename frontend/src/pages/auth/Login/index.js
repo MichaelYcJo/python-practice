@@ -5,7 +5,7 @@ import { userState } from "recoil/userRecoil";
 
 import {LoginAxiosInstance} from "api";
 import LoginPresenter from "pages/auth/Login/LoginPresenter";
-import {KAKAO_AUTH_URL} from 'components/kakao/socialLogin'
+import {KAKAO_AUTH_URL} from 'utils/socialLogin'
 
 
 const Login = ({location}) => {
