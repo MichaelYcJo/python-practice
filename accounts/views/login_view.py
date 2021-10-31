@@ -53,27 +53,26 @@ class KakaoException(Exception):
 def kakao_callback(request):
     try:
         code = request.GET.get("code")
-        print('code', code)
         client_id = config("KAKAO_ID")
         if settings.DEBUG is False:
-            redirect_uri = "http://127.0.0.1:8000/api/v1/accounts/login/kakao/callback"
+            redirect_uri = "http://localhost:3000/accounts/login/kakao/callback"
         else:
-            redirect_uri = "http://127.0.0.1:8000/api/v1/accounts/login/kakao/callback"
+            redirect_uri = "http://localhost:3000/accounts/login/kakao/callback"
         token_request = requests.get(
             f"https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id={client_id}&redirect_uri={redirect_uri}&code={code}"
         )
-        print('access토큰 값', token_request.json())  # access 확인용
+
         token_json = token_request.json()
         error = token_json.get("error", None)
         if error is not None:
             raise KakaoException("Can't get authorization code.")
         access_token = token_json.get("access_token")
+        refresh_token = token_json.get("refresh_token")
         profile_request = requests.get(
             "https://kapi.kakao.com/v2/user/me",
             headers={"Authorization": f"Bearer {access_token}"},
         )
         profile_json = profile_request.json()
-        print(f"카카오용 profile_json : {profile_json}")
         kakao_account = profile_json.get("kakao_account")
         email = kakao_account.get("email", None)
         if email is None:
@@ -107,7 +106,9 @@ def kakao_callback(request):
 
         context = {
             'status': 200,
-            'data': 'success'
+            'data': 'success',
+            'access_token': access_token,
+            'refresh_token': refresh_token
         }
 
         return JsonResponse(context)

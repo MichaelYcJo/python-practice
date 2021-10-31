@@ -3,11 +3,9 @@ import React, { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { userState } from "recoil/userRecoil";
 
-import {KAKAO_AUTH_URL} from 'components/kakao/socialLogin'
-import AxiosInstance, {LoginAxiosInstance} from "api";
+import {LoginAxiosInstance} from "api";
 import LoginPresenter from "pages/auth/Login/LoginPresenter";
-import axios from "axios";
-
+import {KAKAO_AUTH_URL} from 'components/kakao/socialLogin'
 
 
 const Login = ({location}) => {
@@ -71,9 +69,6 @@ const handleSubmit = async (e) => {
 const kakaoLogin = () => {
     window.location.href = KAKAO_AUTH_URL
 }
-
-
-
 
   return (
       <LoginPresenter 
