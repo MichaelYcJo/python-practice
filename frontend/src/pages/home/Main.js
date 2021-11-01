@@ -1,8 +1,8 @@
 import React, { Fragment } from "react";
 import MetaTags from "react-meta-tags";
 import Layout from "../../layouts/Layout";
-import HeroSliderFifteen from "../../wrappers/hero-slider/HeroSliderFifteen";
-import TabProductNine from "../../wrappers/product/TabProductNine";
+import MainBanner from "wrappers/main-banner/MainBanner";
+import TabProductList from "wrappers/product/TabProductList";
 import BannerEleven from "../../wrappers/banner/BannerEleven";
 import CountDownThree from "../../wrappers/countdown/CountDownThree";
 import FeatureIconFour from "../../wrappers/feature-icon/FeatureIconFour";
@@ -24,9 +24,9 @@ const Main = () => {
         headerTop="visible"
       >
         {/* hero slider */}
-        <HeroSliderFifteen />
+        <MainBanner />
         {/* tab product */}
-        <TabProductNine
+        <TabProductList
           category="fashion"
           spaceBottomClass="pb-100"
           spaceTopClass="pt-100"
