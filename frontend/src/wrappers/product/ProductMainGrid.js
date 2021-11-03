@@ -47,7 +47,7 @@ const ProductGridTwo = ({
                 (compareItem) => compareItem.id === product.id
               )[0]
             }
-            key={product.id}
+            key={product.pk}
             titlePriceClass={titlePriceClass}
           />
         );

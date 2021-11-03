@@ -5,7 +5,7 @@ import { useToasts } from "react-toast-notifications";
 import { getDiscountPrice } from "../../helpers/product";
 import ProductModal from "./ProductModal";
 
-const ProductGridSingleTwo = ({
+const ProductMainContent = ({
   product,
   currency,
   addToCart,
@@ -41,22 +41,28 @@ const ProductGridSingleTwo = ({
           } ${colorClass ? colorClass : ""} `}
         >
           <div className="product-img">
+            
             <Link to={process.env.PUBLIC_URL + "/product/" + product.id}>
               <img
                 className="default-img"
-                src={process.env.PUBLIC_URL + product.image[0]}
+                src={ `http://127.0.0.1:8000${product.product_image1}`}
                 alt=""
               />
-              {product.image.length > 1 ? (
+              { product.product_image2 ? (
                 <img
                   className="hover-img"
-                  src={process.env.PUBLIC_URL + product.image[1]}
+                  src={  `http://127.0.0.1:8000${product.product_image2}`}
                   alt=""
                 />
               ) : (
-                ""
+                <img
+                className="hover-img"
+                src={  `http://127.0.0.1:8000${product.product_image1}`}
+                alt=""
+              />
               )}
             </Link>
+            
             {product.discount || product.new ? (
               <div className="product-img-badges">
                 {product.discount ? (
@@ -192,7 +198,7 @@ const ProductGridSingleTwo = ({
   );
 };
 
-ProductGridSingleTwo.propTypes = {
+ProductMainContent.propTypes = {
   addToCart: PropTypes.func,
   addToCompare: PropTypes.func,
   addToWishlist: PropTypes.func,
@@ -207,4 +213,4 @@ ProductGridSingleTwo.propTypes = {
   wishlistItem: PropTypes.object
 };
 
-export default ProductGridSingleTwo;
+export default ProductMainContent;
