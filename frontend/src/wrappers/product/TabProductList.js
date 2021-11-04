@@ -30,15 +30,16 @@ const TabProductList = ({
           positionClass="text-center"
         />
         <Tab.Container defaultActiveKey="all">
+          
           <Nav
             variant="pills"
             className="product-tab-list pt-30 pb-55 text-center"
           >
             <Nav.Item>
               <Nav.Link eventKey="all">
-                <h4>All</h4>
               </Nav.Link>
             </Nav.Item>
+            {/*
             <Nav.Item>
               <Nav.Link eventKey="men">
                 <h4>Men</h4>
@@ -49,10 +50,11 @@ const TabProductList = ({
                 <h4>Women</h4>
               </Nav.Link>
             </Nav.Item>
+            */}
           </Nav>
           <Tab.Content>
             <Tab.Pane eventKey="all">
-              <div className="row">``
+              <div className="row">
                 <ProductMainGrid
                   category="all"
                   limit={4}
