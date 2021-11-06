@@ -1,5 +1,9 @@
 /*----- 9. Banner style  -------*/
 
+.banner-link-image{
+  height: 270px;
+}
+
 .single-banner {
   position: relative;
 
@@ -985,7 +989,7 @@
 
       margin: 22px 0 94px;
 
-      color: #010101;
+      color: white;
       @media #{$lg-layout} {
         margin: 22px 0 34px;
       }
@@ -1013,8 +1017,8 @@
       border: 2px solid #97584a;
       border-radius: 100%;
       &:hover {
-        color: #000;
-        border: 2px solid #000;
+        color: white;
+        border: 2px solid #97584a;
       }
     }
     &.jewellery-banner {
@@ -1027,7 +1031,7 @@
         font-size: 36px;
         font-weight: 500;
 
-        color: #1c1c1c;
+        color: #ffffff;
         @media #{$lg-layout} {
           font-size: 30px;
         }
@@ -1060,7 +1064,7 @@
         }
       }
       a {
-        color: #1c1c1c;
+        color: gray;
       }
 
       &--violet {

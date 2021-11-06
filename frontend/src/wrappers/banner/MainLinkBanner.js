@@ -1,23 +1,23 @@
 import PropTypes from "prop-types";
 import React from "react";
-import bannerData from "../../data/banner/banner-eleven.json";
-import BannerElevenSingle from "../../components/banner/BannerElevenSingle.js";
+import bannerData from "../../data/banner/main-shop-link.json";
+import BannerSingle from "../../components/banner/BannerSingle.js";
 
-const BannerEleven = ({ spaceBottomClass }) => {
+const MainLinkBanner = ({ spaceBottomClass }) => {
   return (
     <div className={`banner-area ${spaceBottomClass ? spaceBottomClass : ""}`}>
       <div className="row no-gutters">
         {bannerData &&
           bannerData.map((single, key) => {
-            return <BannerElevenSingle data={single} key={key} />;
+            return <BannerSingle data={single} key={key} />;
           })}
       </div>
     </div>
   );
 };
 
-BannerEleven.propTypes = {
+MainLinkBanner.propTypes = {
   spaceBottomClass: PropTypes.string
 };
 
-export default BannerEleven;
+export default MainLinkBanner;

@@ -1,24 +1,23 @@
 import PropTypes from "prop-types";
 import React from "react";
-import featureIconData from "../../data/feature-icons/feature-icon-nine.json";
-import FeatureIconNineSingle from "../../components/feature-icon/FeatureIconNineSingle.js";
+import featureIconData from "../../data/feature-icons/feature-icon-four.json";
+import MainFeatureIconSingle from "../../components/feature-icon/MainFeatureIconSingle.js";
 
-const FeatureIconNine = ({
+const MainFeatureIcon = ({
   spaceTopClass,
   spaceBottomClass,
   containerClass,
   gutterClass,
   responsiveClass,
-  bgImg,
-  bgColorClass
+  bgImg
 }) => {
   return (
     <div
       className={`support-area hm9-section-padding ${
-        bgColorClass ? bgColorClass : ""
-      } ${spaceTopClass ? spaceTopClass : ""} ${
-        spaceBottomClass ? spaceBottomClass : ""
-      } ${responsiveClass ? responsiveClass : ""}`}
+        spaceTopClass ? spaceTopClass : ""
+      } ${spaceBottomClass ? spaceBottomClass : ""} ${
+        responsiveClass ? responsiveClass : ""
+      }`}
       style={
         bgImg
           ? { backgroundImage: `url(${process.env.PUBLIC_URL + bgImg})` }
@@ -34,7 +33,7 @@ const FeatureIconNine = ({
           {featureIconData &&
             featureIconData.map((single, key) => {
               return (
-                <FeatureIconNineSingle
+                <MainFeatureIconSingle
                   data={single}
                   spaceBottomClass="mb-10"
                   key={key}
@@ -47,14 +46,13 @@ const FeatureIconNine = ({
   );
 };
 
-FeatureIconNine.propTypes = {
+MainFeatureIcon.propTypes = {
   bgImg: PropTypes.string,
   containerClass: PropTypes.string,
   gutterClass: PropTypes.string,
   responsiveClass: PropTypes.string,
   spaceBottomClass: PropTypes.string,
-  spaceTopClass: PropTypes.string,
-  bgColorClass: PropTypes.string
+  spaceTopClass: PropTypes.string
 };
 
-export default FeatureIconNine;
+export default MainFeatureIcon;

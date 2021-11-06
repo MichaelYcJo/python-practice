@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import Countdown from "react-countdown-now";
 import Renderer from "../../components/countdown/Renderer";
 
-const CountDownThree = ({
+const MainCountDown = ({
   spaceTopClass,
   spaceBottomClass,
   dateTime,
@@ -48,11 +48,11 @@ const CountDownThree = ({
   );
 };
 
-CountDownThree.propTypes = {
+MainCountDown.propTypes = {
   countDownImage: PropTypes.string,
   dateTime: PropTypes.string,
   spaceBottomClass: PropTypes.string,
   spaceTopClass: PropTypes.string
 };
 
-export default CountDownThree;
+export default MainCountDown;

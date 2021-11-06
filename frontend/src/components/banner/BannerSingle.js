@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import React from "react";
 import { Link } from "react-router-dom";
 
-const BannerElevenSingle = ({ data, spaceBottomClass }) => {
+const BannerSingle = ({ data, spaceBottomClass }) => {
   return (
     <div className="col-lg-6 col-md-6">
       <div
@@ -11,7 +11,7 @@ const BannerElevenSingle = ({ data, spaceBottomClass }) => {
         } ${data.textAlign === "right" ? "align_right" : ""}`}
       >
         <Link to={process.env.PUBLIC_URL + data.link}>
-          <img src={process.env.PUBLIC_URL + data.image} alt="" />
+          <img className="banner-link-image" src={process.env.PUBLIC_URL + data.image} alt="" />
         </Link>
         <div className="banner-content-2 banner-content-2--style2">
           <h3>{data.title}</h3>
@@ -27,9 +27,9 @@ const BannerElevenSingle = ({ data, spaceBottomClass }) => {
   );
 };
 
-BannerElevenSingle.propTypes = {
+BannerSingle.propTypes = {
   data: PropTypes.object,
   spaceBottomClass: PropTypes.string
 };
 
-export default BannerElevenSingle;
+export default BannerSingle;

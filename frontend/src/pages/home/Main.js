@@ -3,10 +3,10 @@ import MetaTags from "react-meta-tags";
 import Layout from "../../layouts/Layout";
 import MainBanner from "wrappers/main-banner/MainBanner";
 import TabProductList from "wrappers/product/TabProductList";
-import BannerEleven from "../../wrappers/banner/BannerEleven";
-import CountDownThree from "../../wrappers/countdown/CountDownThree";
-import FeatureIconFour from "../../wrappers/feature-icon/FeatureIconFour";
-import NewsletterThree from "../../wrappers/newsletter/NewsletterThree";
+import MainLinkBanner from "wrappers/banner/MainLinkBanner";
+import MainCountDown from "wrappers/countdown/MainCountDown";
+import MainFeatureIcon from "wrappers/feature-icon/MainFeatureIcon";
+import Newsletter from "wrappers/newsletter/Newsletter";
 
 import { categoryState, productListSelector } from "recoil/productRecoil";
 import { useRecoilValue, useSetRecoilState } from "recoil";
@@ -43,16 +43,16 @@ const Main = () => {
           products = {products}
         />
         {/* banner */}
-        <BannerEleven />
+        <MainLinkBanner />
         {/* countdown */}
-        <CountDownThree
+        <MainCountDown
           spaceTopClass="pt-100"
           spaceBottomClass="pb-100"
           dateTime="November 13, 2021 12:12:00"
-          countDownImage="/assets/img/banner/deal-2.png"
+          countDownImage="/assets/img/banner/main-bag.jpeg"
         />
         {/* feature icon */}
-        <FeatureIconFour
+        <MainFeatureIcon
           bgImg="/assets/img/bg/shape.png"
           containerClass="container-fluid"
           gutterClass="padding-10-row-col"
@@ -60,7 +60,7 @@ const Main = () => {
           spaceBottomClass="pb-40"
         />
         {/* newsletter */}
-        <NewsletterThree
+        <Newsletter
           spaceTopClass="pt-100"
           spaceBottomClass="pb-100"
           subscribeBtnClass="dark-red-subscribe"
