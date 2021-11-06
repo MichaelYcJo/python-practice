@@ -12,8 +12,13 @@ from products.serializers import ProductSerializer
 @permission_classes([AllowAny])
 @api_view(['GET'])
 def product_list(request):
+    category = request.GET.get('category')
 
-    products = Product.objects.all().order_by('-created_at')
+
+    if category == 'main':
+        products = Product.objects.all().order_by('-created_at')[:4]
+    else:
+        products = Product.objects.all().order_by('-created_at')
 
     paginator = PageNumberPagination()
     paginator.page_size = 8

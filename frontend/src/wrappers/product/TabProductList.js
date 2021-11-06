@@ -1,12 +1,12 @@
 import PropTypes from "prop-types";
-import React from "react";
+import React, {useEffect} from "react";
 import { Link } from "react-router-dom";
 import Tab from "react-bootstrap/Tab";
 import Nav from "react-bootstrap/Nav";
 import SectionTitleThree from "../../components/section-title/SectionTitleThree";
 import ProductMainGrid from "./ProductMainGrid";
-import { productListSelector } from "recoil/productRecoil";
-import { useRecoilState } from "recoil";
+import {categoryState, productListSelector } from "recoil/productRecoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 
 const TabProductList = ({
   spaceTopClass,
@@ -16,7 +16,12 @@ const TabProductList = ({
   extraClass
 }) => {
 
-  const [products, setProducts] = useRecoilState(productListSelector);
+  const productCategory = useSetRecoilState(categoryState);
+  const products = useRecoilValue(productListSelector);
+
+  useEffect(() => {
+    productCategory('main')
+  }, [productCategory])
 
   return (
     <div
@@ -57,7 +62,6 @@ const TabProductList = ({
               <div className="row">
                 <ProductMainGrid
                   category="all"
-                  limit={4}
                   spaceBottomClass="mb-25"
                   products = {products} 
                 />
