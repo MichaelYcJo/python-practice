@@ -74,12 +74,12 @@ const NavMenu = ({ strings, menuWhiteClass, sidebarMenu }) => {
                 <ul>
                   <li className="mega-menu-title">
                     <Link to={process.env.PUBLIC_URL + "/shop-grid-standard"}>
-                      {strings["shop_layout"]}
+                      {strings["men"]}
                     </Link>
                   </li>
                   <li>
-                    <Link to={process.env.PUBLIC_URL + "/shop-grid-standard"}>
-                      {strings["shop_grid_standard"]}
+                    <Link to={process.env.PUBLIC_URL + "/men/cloth/list"}>
+                      {strings["cloth"]}
                     </Link>
                   </li>
                   <li>

@@ -6,23 +6,12 @@ import { ToastProvider } from "react-toast-notifications";
 import { multilanguage, loadLanguages } from "redux-multilanguage";
 import { connect } from "react-redux";
 import { BreadcrumbsProvider } from "react-breadcrumbs-dynamic";
-import { register } from "react-scroll/modules/mixins/scroller";
 
 // home pages
 const Main = lazy(() => import("./pages/home/Main"));
 
 // shop pages
 const ShopGridStandard = lazy(() => import("./pages/shop/ShopGridStandard"));
-const ShopGridFilter = lazy(() => import("./pages/shop/ShopGridFilter"));
-const ShopGridTwoColumn = lazy(() => import("./pages/shop/ShopGridTwoColumn"));
-const ShopGridNoSidebar = lazy(() => import("./pages/shop/ShopGridNoSidebar"));
-const ShopGridFullWidth = lazy(() => import("./pages/shop/ShopGridFullWidth"));
-const ShopGridRightSidebar = lazy(() =>
-  import("./pages/shop/ShopGridRightSidebar")
-);
-const ShopListStandard = lazy(() => import("./pages/shop/ShopListStandard"));
-const ShopListFullWidth = lazy(() => import("./pages/shop/ShopListFullWidth"));
-const ShopListTwoColumn = lazy(() => import("./pages/shop/ShopListTwoColumn"));
 
 // product pages
 const Product = lazy(() => import("./pages/shop-product/Product"));
@@ -94,40 +83,40 @@ const App = (props) => {
 
                 {/* Shop pages */}
                 <Route
-                  path={process.env.PUBLIC_URL + "/shop-grid-standard"}
+                  path={process.env.PUBLIC_URL + "/men/cloth/list"}
                   component={ShopGridStandard}
                 />
                 <Route
                   path={process.env.PUBLIC_URL + "/shop-grid-filter"}
-                  component={ShopGridFilter}
+                  component={ShopGridStandard}
                 />
                 <Route
                   path={process.env.PUBLIC_URL + "/shop-grid-two-column"}
-                  component={ShopGridTwoColumn}
+                  component={ShopGridStandard}
                 />
                 <Route
                   path={process.env.PUBLIC_URL + "/shop-grid-no-sidebar"}
-                  component={ShopGridNoSidebar}
+                  component={ShopGridStandard}
                 />
                 <Route
                   path={process.env.PUBLIC_URL + "/shop-grid-full-width"}
-                  component={ShopGridFullWidth}
+                  component={ShopGridStandard}
                 />
                 <Route
                   path={process.env.PUBLIC_URL + "/shop-grid-right-sidebar"}
-                  component={ShopGridRightSidebar}
+                  component={ShopGridStandard}
                 />
                 <Route
                   path={process.env.PUBLIC_URL + "/shop-list-standard"}
-                  component={ShopListStandard}
+                  component={ShopGridStandard}
                 />
                 <Route
                   path={process.env.PUBLIC_URL + "/shop-list-full-width"}
-                  component={ShopListFullWidth}
+                  component={ShopGridStandard}
                 />
                 <Route
                   path={process.env.PUBLIC_URL + "/shop-list-two-column"}
-                  component={ShopListTwoColumn}
+                  component={ShopGridStandard}
                 />
 
                 {/* Shop product pages */}
