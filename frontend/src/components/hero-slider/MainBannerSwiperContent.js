@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import React from "react";
 import { Link } from "react-router-dom";
 
-const HeroSliderFifteenSingle = ({ data, sliderClass }) => {
+const MainBannerSwiperContent = ({ data, sliderClass }) => {
   return (
     <div
       className={`single-slider-2 slider-height-2 d-flex align-items-center bg-img ${
@@ -35,9 +35,9 @@ const HeroSliderFifteenSingle = ({ data, sliderClass }) => {
   );
 };
 
-HeroSliderFifteenSingle.propTypes = {
+MainBannerSwiperContent.propTypes = {
   data: PropTypes.object,
   sliderClass: PropTypes.string
 };
 
-export default HeroSliderFifteenSingle;
+export default MainBannerSwiperContent;

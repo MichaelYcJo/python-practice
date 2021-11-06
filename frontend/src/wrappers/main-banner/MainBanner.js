@@ -1,7 +1,7 @@
 import React from "react";
 import Swiper from "react-id-swiper";
 import sliderData from "../../data/hero-sliders/hero-slider-fifteen.json";
-import HeroSliderFifteenSingle from "../../components/hero-slider/HeroSliderFifteenSingle.js";
+import MainBannerSwiperContent from "../../components/hero-slider/MainBannerSwiperContent.js";
 
 const HeroSliderFifteen = () => {
   const params = {
@@ -35,7 +35,7 @@ const HeroSliderFifteen = () => {
           {sliderData &&
             sliderData.map((single, key) => {
               return (
-                <HeroSliderFifteenSingle
+                <MainBannerSwiperContent
                   data={single}
                   key={key}
                   sliderClass="swiper-slide"
