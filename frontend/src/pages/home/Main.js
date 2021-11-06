@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, {useEffect, Fragment } from "react";
 import MetaTags from "react-meta-tags";
 import Layout from "../../layouts/Layout";
 import MainBanner from "wrappers/main-banner/MainBanner";
@@ -8,7 +8,17 @@ import CountDownThree from "../../wrappers/countdown/CountDownThree";
 import FeatureIconFour from "../../wrappers/feature-icon/FeatureIconFour";
 import NewsletterThree from "../../wrappers/newsletter/NewsletterThree";
 
+import { categoryState, productListSelector } from "recoil/productRecoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+
 const Main = () => {
+  const products = useRecoilValue(productListSelector);
+
+  const productCategory = useSetRecoilState(categoryState);
+
+  useEffect(() => {
+    productCategory('main')
+  }, [productCategory])
   return (
     <Fragment>
       <MetaTags>
@@ -30,6 +40,7 @@ const Main = () => {
           category="fashion"
           spaceBottomClass="pb-100"
           spaceTopClass="pt-100"
+          products = {products}
         />
         {/* banner */}
         <BannerEleven />

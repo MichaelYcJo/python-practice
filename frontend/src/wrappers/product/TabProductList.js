@@ -1,27 +1,22 @@
 import PropTypes from "prop-types";
-import React, {useEffect} from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import Tab from "react-bootstrap/Tab";
 import Nav from "react-bootstrap/Nav";
 import SectionTitleThree from "../../components/section-title/SectionTitleThree";
 import ProductMainGrid from "./ProductMainGrid";
-import {categoryState, productListSelector } from "recoil/productRecoil";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+
 
 const TabProductList = ({
   spaceTopClass,
   spaceBottomClass,
   category,
+  products,
   containerClass,
   extraClass
 }) => {
 
-  const productCategory = useSetRecoilState(categoryState);
-  const products = useRecoilValue(productListSelector);
 
-  useEffect(() => {
-    productCategory('main')
-  }, [productCategory])
 
   return (
     <div
