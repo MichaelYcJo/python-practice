@@ -12,6 +12,7 @@ const Main = lazy(() => import("./pages/home/Main"));
 
 // shop pages
 const ShopGridStandard = lazy(() => import("./pages/shop/ShopGridStandard"));
+const MenClothList = lazy(() => import("./pages/shop/MenClothList"));
 
 // product pages
 const Product = lazy(() => import("./pages/shop-product/Product"));
@@ -83,8 +84,8 @@ const App = (props) => {
 
                 {/* Shop pages */}
                 <Route
-                  path={process.env.PUBLIC_URL + "/men/cloth/list"}
-                  component={ShopGridStandard}
+                  path={process.env.PUBLIC_URL + "/men/clothes/list"}
+                  component={MenClothList}
                 />
                 <Route
                   path={process.env.PUBLIC_URL + "/shop-grid-filter"}

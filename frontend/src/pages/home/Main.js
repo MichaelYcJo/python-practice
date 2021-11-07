@@ -13,12 +13,12 @@ import { useRecoilValue, useSetRecoilState } from "recoil";
 
 const Main = () => {
   const products = useRecoilValue(productListSelector);
-
   const productCategory = useSetRecoilState(categoryState);
 
   useEffect(() => {
     productCategory('main')
   }, [productCategory])
+
   return (
     <Fragment>
       <MetaTags>

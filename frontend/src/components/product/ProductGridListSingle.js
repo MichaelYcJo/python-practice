@@ -38,20 +38,24 @@ const ProductGridListSingle = ({
           className={`product-wrap ${spaceBottomClass ? spaceBottomClass : ""}`}
         >
           <div className="product-img">
-            <Link to={process.env.PUBLIC_URL + "/product/" + product.id}>
+            <Link to={process.env.PUBLIC_URL + "/product/" + product.pk}>
               <img
                 className="default-img"
-                src={process.env.PUBLIC_URL + product.image[0]}
+                src={ `http://127.0.0.1:8000${product.product_image1}`}
                 alt=""
               />
-              {product.image.length > 1 ? (
+              { product.product_image2 ? (
                 <img
                   className="hover-img"
-                  src={process.env.PUBLIC_URL + product.image[1]}
+                  src={  `http://127.0.0.1:8000${product.product_image2}`}
                   alt=""
                 />
               ) : (
-                ""
+                <img
+                className="hover-img"
+                src={  `http://127.0.0.1:8000${product.product_image1}`}
+                alt=""
+              />
               )}
             </Link>
             {product.discount || product.new ? (
@@ -96,7 +100,7 @@ const ProductGridListSingle = ({
                   <Link to={`${process.env.PUBLIC_URL}/product/${product.id}`}>
                     Select Option
                   </Link>
-                ) : product.stock && product.stock > 0 ? (
+                ) : product.count_in_stock && product.count_in_stock > 0 ? (
                   <button
                     onClick={() => addToCart(product, addToast)}
                     className={
@@ -160,22 +164,26 @@ const ProductGridListSingle = ({
             <div className="col-xl-4 col-md-5 col-sm-6">
               <div className="product-list-image-wrap">
                 <div className="product-img">
-                  <Link to={process.env.PUBLIC_URL + "/product/" + product.id}>
+                <Link to={process.env.PUBLIC_URL + "/product/" + product.id}>
+                  <img
+                    className="default-img"
+                    src={ `http://127.0.0.1:8000${product.product_image1}`}
+                    alt=""
+                  />
+                  { product.product_image2 ? (
                     <img
-                      className="default-img img-fluid"
-                      src={process.env.PUBLIC_URL + product.image[0]}
+                      className="hover-img"
+                      src={  `http://127.0.0.1:8000${product.product_image2}`}
                       alt=""
                     />
-                    {product.image.length > 1 ? (
-                      <img
-                        className="hover-img img-fluid"
-                        src={process.env.PUBLIC_URL + product.image[1]}
-                        alt=""
-                      />
-                    ) : (
-                      ""
-                    )}
-                  </Link>
+                  ) : (
+                    <img
+                    className="hover-img"
+                    src={  `http://127.0.0.1:8000${product.product_image1}`}
+                    alt=""
+                  />
+                  )}
+            </Link>
                   {product.discount || product.new ? (
                     <div className="product-img-badges">
                       {product.discount ? (
@@ -244,7 +252,7 @@ const ProductGridListSingle = ({
                       >
                         Select Option
                       </Link>
-                    ) : product.stock && product.stock > 0 ? (
+                    ) : product.count_in_stock && product.count_in_stock > 0 ? (
                       <button
                         onClick={() => addToCart(product, addToast)}
                         className={

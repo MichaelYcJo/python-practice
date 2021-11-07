@@ -41,17 +41,21 @@ const ProductGridSingle = ({
             <Link to={process.env.PUBLIC_URL + "/product/" + product.id}>
               <img
                 className="default-img"
-                src={process.env.PUBLIC_URL + product.image[0]}
+                src={ `http://127.0.0.1:8000${product.product_image1}`}
                 alt=""
               />
-              {product.image.length > 1 ? (
+               { product.product_image2 ? (
                 <img
                   className="hover-img"
-                  src={process.env.PUBLIC_URL + product.image[1]}
+                  src={  `http://127.0.0.1:8000${product.product_image2}`}
                   alt=""
                 />
               ) : (
-                ""
+                <img
+                className="hover-img"
+                src={  `http://127.0.0.1:8000${product.product_image1}`}
+                alt=""
+              />
               )}
             </Link>
             {product.discount || product.new ? (
@@ -93,7 +97,7 @@ const ProductGridSingle = ({
                     Buy now{" "}
                   </a>
                 ) : product.variation && product.variation.length >= 1 ? (
-                  <Link to={`${process.env.PUBLIC_URL}/product/${product.id}`}>
+                  <Link to={`${process.env.PUBLIC_URL}/product/${product.pk}`}>
                     Select Option
                   </Link>
                 ) : product.stock && product.stock > 0 ? (

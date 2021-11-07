@@ -78,7 +78,7 @@ const NavMenu = ({ strings, menuWhiteClass, sidebarMenu }) => {
                     </Link>
                   </li>
                   <li>
-                    <Link to={process.env.PUBLIC_URL + "/men/cloth/list"}>
+                    <Link to={process.env.PUBLIC_URL + "/men/clothes/list"}>
                       {strings["cloth"]}
                     </Link>
                   </li>

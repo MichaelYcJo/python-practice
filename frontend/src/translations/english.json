@@ -1,8 +1,10 @@
 {
   "home": "Home",
-  "home_group_one": "Home Group One",
-  "main": "Main",
+  "home_group_one": "Home",
+  "main": "Home",
   "shop": "Shop",
+  "men" : "Men",
+  "cloth" : "Cloth",
   "shop_layout": "Shop Layout",
   "shop_grid_standard": "Shop Grid Standard",
   "shop_grid_filter": "Shop Grid Filter",

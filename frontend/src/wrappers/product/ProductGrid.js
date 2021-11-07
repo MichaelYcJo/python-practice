@@ -24,6 +24,7 @@ const ProductGrid = ({
       {products.map(product => {
         return (
           <ProductGridSingle
+            key={product.pk}
             sliderClassName={sliderClassName}
             spaceBottomClass={spaceBottomClass}
             product={product}

@@ -1,4 +1,4 @@
-import { atom, selector } from 'recoil';
+import { atom} from 'recoil';
 
 export const getToken = () => {
     const access_token = localStorage.getItem('access_token') ? localStorage.getItem('access_token') : null;
