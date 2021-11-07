@@ -15,7 +15,7 @@ const cartReducer = (state = initState, action) => {
   if (action.type === ADD_TO_CART) {
     // for non variant products
     if (product.variation === undefined) {
-      const cartItem = cartItems.filter(item => item.id === product.id)[0];
+      const cartItem = cartItems.filter(item => item.pk === product.pk)[0];
       if (cartItem === undefined) {
         return [
           ...cartItems,
@@ -41,7 +41,7 @@ const cartReducer = (state = initState, action) => {
     } else {
       const cartItem = cartItems.filter(
         item =>
-          item.id === product.id &&
+          item.id === product.pk &&
           product.selectedProductColor &&
           product.selectedProductColor === item.selectedProductColor &&
           product.selectedProductSize &&
@@ -54,7 +54,7 @@ const cartReducer = (state = initState, action) => {
           ...cartItems,
           {
             ...product,
-            quantity: product.quantity ? product.quantity : 1,
+            quantity: product.count_in_stock ? product.count_in_stock : 1,
             cartItemId: uuid()
           }
         ];
@@ -67,7 +67,7 @@ const cartReducer = (state = initState, action) => {
           ...cartItems,
           {
             ...product,
-            quantity: product.quantity ? product.quantity : 1,
+            quantity: product.count_in_stock ? product.count_in_stock : 1,
             cartItemId: uuid()
           }
         ];
@@ -76,8 +76,8 @@ const cartReducer = (state = initState, action) => {
           item.cartItemId === cartItem.cartItemId
             ? {
                 ...item,
-                quantity: product.quantity
-                  ? item.quantity + product.quantity
+                quantity: product.count_in_stock
+                  ? item.quantity + product.count_in_stock
                   : item.quantity + 1,
                 selectedProductColor: product.selectedProductColor,
                 selectedProductSize: product.selectedProductSize
@@ -89,7 +89,7 @@ const cartReducer = (state = initState, action) => {
   }
 
   if (action.type === DECREASE_QUANTITY) {
-    if (product.quantity === 1) {
+    if (product.count_in_stock === 1) {
       const remainingItems = (cartItems, product) =>
         cartItems.filter(
           cartItem => cartItem.cartItemId !== product.cartItemId
