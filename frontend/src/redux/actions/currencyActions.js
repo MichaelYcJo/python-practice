@@ -5,7 +5,7 @@ export const setCurrency = (currencyName) => {
   return (dispatch) => {
     axios
       .get(
-        `http://api.exchangeratesapi.io/v1/latest?access_key=523380ab42abd25f9ebdc193dd3b19e7&symbols=USD,GBP,EUR`
+        `http://api.exchangeratesapi.io/v1/latest?access_key=523380ab42abd25f9ebdc193dd3b19e7&symbols=USD,GBP,EUR,KRW`
       )
       .then((response) => {
         const rates = response.data.rates;
