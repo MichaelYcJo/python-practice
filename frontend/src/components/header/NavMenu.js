@@ -15,49 +15,6 @@ const NavMenu = ({ strings, menuWhiteClass, sidebarMenu }) => {
       <nav>
         <ul>
           <li>
-            <Link to={process.env.PUBLIC_URL + "/"}>
-              {strings["home"]}
-              {sidebarMenu ? (
-                <span>
-                  <i className="fa fa-angle-right"></i>
-                </span>
-              ) : (
-                <i className="fa fa-angle-down" />
-              )}
-            </Link>
-            <ul className="mega-menu mega-menu-padding">
-              <li>
-                <ul>
-                  <li className="mega-menu-title">
-                    <Link to={process.env.PUBLIC_URL + "/"}>
-                      {strings["home_group_one"]}
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to={process.env.PUBLIC_URL + "/"}>
-                      {strings["main"]}
-                    </Link>
-                  </li>
-                </ul>
-              </li>
-              <li>
-                <ul>
-                  <li className="mega-menu-img">
-                    <Link to={process.env.PUBLIC_URL + "/shop-grid-standard"}>
-                      <img
-                        src={
-                          process.env.PUBLIC_URL +
-                          "/assets/img/banner/banner-12.png"
-                        }
-                        alt=""
-                      />
-                    </Link>
-                  </li>
-                </ul>
-              </li>
-            </ul>
-          </li>
-          <li>
             <Link to={process.env.PUBLIC_URL + "/shop-grid-standard"}>
               {" "}
               {strings["shop"]}
