@@ -6,6 +6,7 @@ import { ToastProvider } from "react-toast-notifications";
 import { multilanguage, loadLanguages } from "redux-multilanguage";
 import { connect } from "react-redux";
 import { BreadcrumbsProvider } from "react-breadcrumbs-dynamic";
+import WomenClothList from "pages/shop/WomenClothList";
 
 // home pages
 const Main = lazy(() => import("./pages/home/Main"));
@@ -78,6 +79,13 @@ const App = (props) => {
                   path={process.env.PUBLIC_URL + "/men/clothes/list"}
                   component={MenClothList}
                 />
+
+                <Route
+                  path={process.env.PUBLIC_URL + "/women/clothes/list"}
+                  component={WomenClothList}
+                />
+
+                
                 <Route
                   path={process.env.PUBLIC_URL + "/shop-grid-filter"}
                   component={ShopGridStandard}

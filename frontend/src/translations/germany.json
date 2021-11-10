@@ -1,5 +1,11 @@
 {
-  "home": "Zuhause",
+
+  "home": "Accueil",
+  "main": "Home",
+  "shop": "Geschäft",
+  "men" : "Männer",
+  "women": "Frauen",
+  "cloth" : "Stoff",
   "home_group_one": "Heimatgruppe Eins",
   "home_group_two": "Heimatgruppe zwei",
   "home_group_three": "Home Gruppe Drei",
@@ -41,7 +47,6 @@
   "home_black_friday": "Home Black Friday",
   "home_black_friday_two": "Home Black Friday Two",
   "home_valentines_day": "Home Valentines Day",
-  "shop": "Geschäft",
   "shop_layout": "Ladengestaltung",
   "shop_grid_standard": "Shop Grid Standard",
   "shop_grid_filter": "Shop Grid Filter",
