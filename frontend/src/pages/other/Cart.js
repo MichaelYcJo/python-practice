@@ -15,6 +15,7 @@ import {
 } from "../../redux/actions/cartActions";
 import LayoutOne from "../../layouts/LayoutOne";
 import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
+import { REACT_BACKEND_URL } from "utils/url";
 
 const Cart = ({
   location,
@@ -92,15 +93,12 @@ const Cart = ({
                                     to={
                                       process.env.PUBLIC_URL +
                                       "/product/" +
-                                      cartItem.id
+                                      cartItem.pk
                                     }
                                   >
                                     <img
                                       className="img-fluid"
-                                      src={
-                                        process.env.PUBLIC_URL +
-                                        cartItem.image[0]
-                                      }
+                                      src={ REACT_BACKEND_URL + cartItem.product_image1}
                                       alt=""
                                     />
                                   </Link>
@@ -111,7 +109,7 @@ const Cart = ({
                                     to={
                                       process.env.PUBLIC_URL +
                                       "/product/" +
-                                      cartItem.id
+                                      cartItem.pk
                                     }
                                   >
                                     {cartItem.name}
