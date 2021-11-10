@@ -11,6 +11,7 @@ import { getDiscountPrice } from "../../helpers/product";
 import LayoutOne from "../../layouts/LayoutOne";
 import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
 import Rating from "../../components/product/sub-components/ProductRating";
+import { REACT_BACKEND_URL } from "utils/url";
 
 const Compare = ({
   location,
@@ -52,7 +53,7 @@ const Compare = ({
                             <th className="title-column">Product Info</th>
                             {compareItems.map((compareItem, key) => {
                               const cartItem = cartItems.filter(
-                                item => item.id === compareItem.id
+                                item => item.pk === compareItem.pk
                               )[0];
                               return (
                                 <td className="product-image-title" key={key}>
@@ -68,16 +69,16 @@ const Compare = ({
                                   <Link
                                     to={
                                       process.env.PUBLIC_URL +
-                                      "/product/" +
-                                      compareItem.id
+                                      compareItem.url_path +
+                                      compareItem.pk
                                     }
                                     className="image"
                                   >
                                     <img
                                       className="img-fluid"
                                       src={
-                                        process.env.PUBLIC_URL +
-                                        compareItem.image[0]
+                                        REACT_BACKEND_URL +
+                                        compareItem.product_image1
                                       }
                                       alt=""
                                     />
@@ -86,8 +87,8 @@ const Compare = ({
                                     <Link
                                       to={
                                         process.env.PUBLIC_URL +
-                                        "/product/" +
-                                        compareItem.id
+                                        compareItem.url_path +
+                                        compareItem.pk
                                       }
                                     >
                                       {compareItem.name}
@@ -106,12 +107,12 @@ const Compare = ({
                                     ) : compareItem.variation &&
                                       compareItem.variation.length >= 1 ? (
                                       <Link
-                                        to={`${process.env.PUBLIC_URL}/product/${compareItem.id}`}
+                                        to={`${process.env.PUBLIC_URL}${compareItem.url_path}${compareItem.pk}`}
                                       >
                                         Select Option
                                       </Link>
-                                    ) : compareItem.stock &&
-                                      compareItem.stock > 0 ? (
+                                    ) : compareItem.count_in_stock &&
+                                      compareItem.count_in_stock > 0 ? (
                                       <button
                                         onClick={() =>
                                           addToCart(compareItem, addToast)
@@ -190,8 +191,8 @@ const Compare = ({
                               return (
                                 <td className="product-desc" key={key}>
                                   <p>
-                                    {compareItem.shortDescription
-                                      ? compareItem.shortDescription
+                                    {compareItem.description
+                                      ? compareItem.description
                                       : "N/A"}
                                   </p>
                                 </td>

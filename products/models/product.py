@@ -32,6 +32,7 @@ class Product(models.Model):
         default=ProductStatus.PLACED,
     )
     is_new = models.BooleanField(default=True)
+    url_path = models.CharField(max_length=255, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

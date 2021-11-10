@@ -90,7 +90,7 @@ const ProductMainContent = ({
                 </a>
               ) : product.variation && product.variation.length >= 1 ? (
                 <Link
-                  to={`${process.env.PUBLIC_URL}/product/${product.pk}`}
+                  to={`${process.env.PUBLIC_URL}${product.url_path}${product.pk}`}
                   title="Select options"
                 >
                   <i className="fa fa-cog"></i>

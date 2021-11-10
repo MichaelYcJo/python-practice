@@ -34,11 +34,17 @@ class ProductSerializer(serializers.ModelSerializer):
                     'product_image2',
                     'brand',
                     'description',
+                    'weight',
+                    'dimensions',
+                    'materials',
+                    'other_info',
                     'price',
                     'count_in_stock',
                     'recommendation_rank',
                     'product_status',
-                    'seller'
+                    'seller',
+                    'is_new',
+                    'url_path'
                     )
 
 

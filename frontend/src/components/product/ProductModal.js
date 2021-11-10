@@ -5,6 +5,7 @@ import { getProductCartQuantity } from "../../helpers/product";
 import { Modal } from "react-bootstrap";
 import Rating from "./sub-components/ProductRating";
 import { connect } from "react-redux";
+import { REACT_BACKEND_URL } from "utils/url";
 
 function ProductModal(props) {
   const { product } = props;
@@ -22,7 +23,7 @@ function ProductModal(props) {
     product.variation ? product.variation[0].size[0].name : ""
   );
   const [productStock, setProductStock] = useState(
-    product.variation ? product.variation[0].size[0].stock : product.stock
+    product.count_in_stock ? product.count_in_stock : 0
   );
   const [quantityCount, setQuantityCount] = useState(1);
 
@@ -101,24 +102,23 @@ function ProductModal(props) {
             <div className="col-md-5 col-sm-12 col-xs-12">
               <div className="product-large-image-wrapper">
                 <Swiper {...gallerySwiperParams}>
-                  {product.image &&
-                    product.image.map((single, key) => {
-                      return (
-                        <div key={key}>
+                  {product.product_image1 &&
+                        <div key={product.pk}>
                           <div className="single-image">
                             <img
-                              src={process.env.PUBLIC_URL + single}
+                              src={REACT_BACKEND_URL + product.product_image1}
                               className="img-fluid"
                               alt=""
                             />
                           </div>
                         </div>
-                      );
-                    })}
+                      }
+                    
                 </Swiper>
               </div>
               <div className="product-small-image-wrapper mt-15">
                 <Swiper {...thumbnailSwiperParams}>
+                  {/* ToDo: 스와이프 이미지 추가 핸들링 */}
                   {product.image &&
                     product.image.map((single, key) => {
                       return (
@@ -163,7 +163,7 @@ function ProductModal(props) {
                   ""
                 )}
                 <div className="pro-details-list">
-                  <p>{product.shortDescription}</p>
+                  <p>{product.description}</p>
                 </div>
 
                 {product.variation ? (
@@ -224,7 +224,7 @@ function ProductModal(props) {
                                           setSelectedProductSize(
                                             singleSize.name
                                           );
-                                          setProductStock(singleSize.stock);
+                                          setProductStock(singleSize.count_in_stock);
                                           setQuantityCount(1);
                                         }}
                                       />

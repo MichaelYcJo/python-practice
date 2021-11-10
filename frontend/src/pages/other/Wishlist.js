@@ -14,6 +14,7 @@ import {
 import { addToCart } from "../../redux/actions/cartActions";
 import LayoutOne from "../../layouts/LayoutOne";
 import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
+import { REACT_BACKEND_URL } from "utils/url";
 
 const Wishlist = ({
   location,
@@ -76,7 +77,7 @@ const Wishlist = ({
                               discountedPrice * currency.currencyRate
                             ).toFixed(2);
                             const cartItem = cartItems.filter(
-                              item => item.id === wishlistItem.id
+                              item => item.pk === wishlistItem.pk
                             )[0];
                             return (
                               <tr key={key}>
@@ -84,15 +85,15 @@ const Wishlist = ({
                                   <Link
                                     to={
                                       process.env.PUBLIC_URL +
-                                      "/product/" +
-                                      wishlistItem.id
+                                      wishlistItem.url_path +
+                                      wishlistItem.pk
                                     }
                                   >
                                     <img
                                       className="img-fluid"
                                       src={
-                                        process.env.PUBLIC_URL +
-                                        wishlistItem.image[0]
+                                        REACT_BACKEND_URL +
+                                        wishlistItem.product_image1
                                       }
                                       alt=""
                                     />
@@ -103,8 +104,8 @@ const Wishlist = ({
                                   <Link
                                     to={
                                       process.env.PUBLIC_URL +
-                                      "/product/" +
-                                      wishlistItem.id
+                                      wishlistItem.url_path +
+                                      wishlistItem.pk
                                     }
                                   >
                                     {wishlistItem.name}
@@ -144,12 +145,12 @@ const Wishlist = ({
                                   ) : wishlistItem.variation &&
                                     wishlistItem.variation.length >= 1 ? (
                                     <Link
-                                      to={`${process.env.PUBLIC_URL}/product/${wishlistItem.id}`}
+                                      to={`${process.env.PUBLIC_URL}${wishlistItem.url_path}${wishlistItem.id}`}
                                     >
                                       Select option
                                     </Link>
-                                  ) : wishlistItem.stock &&
-                                    wishlistItem.stock > 0 ? (
+                                  ) : wishlistItem.count_in_stock &&
+                                    wishlistItem.count_in_stock > 0 ? (
                                     <button
                                       onClick={() =>
                                         addToCart(wishlistItem, addToast)
@@ -205,7 +206,7 @@ const Wishlist = ({
                     <div className="cart-shiping-update-wrapper">
                       <div className="cart-shiping-update">
                         <Link
-                          to={process.env.PUBLIC_URL + "/shop-grid-standard"}
+                          to={process.env.PUBLIC_URL + "/men/clothes/list"}
                         >
                           Continue Shopping
                         </Link>
@@ -228,7 +229,7 @@ const Wishlist = ({
                     </div>
                     <div className="item-empty-area__text">
                       No items found in wishlist <br />{" "}
-                      <Link to={process.env.PUBLIC_URL + "/shop-grid-standard"}>
+                      <Link to={process.env.PUBLIC_URL + "/men/clothes/list"}>
                         Add Items
                       </Link>
                     </div>
