@@ -41,7 +41,7 @@ const cartReducer = (state = initState, action) => {
     } else {
       const cartItem = cartItems.filter(
         item =>
-          item.id === product.pk &&
+          item.pk === product.pk &&
           product.selectedProductColor &&
           product.selectedProductColor === item.selectedProductColor &&
           product.selectedProductSize &&

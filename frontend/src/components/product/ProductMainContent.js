@@ -142,7 +142,7 @@ const ProductMainContent = ({
               }`}
             >
               <h3>
-                <Link to={process.env.PUBLIC_URL + "/product/" + product.pk}>
+                <Link to={process.env.PUBLIC_URL + product.url_path + product.pk}>
                   {product.name}
                 </Link>
               </h3>

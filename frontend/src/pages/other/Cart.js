@@ -92,7 +92,7 @@ const Cart = ({
                                   <Link
                                     to={
                                       process.env.PUBLIC_URL +
-                                      "/product/" +
+                                      cartItem.url_path +
                                       cartItem.pk
                                     }
                                   >
@@ -108,7 +108,7 @@ const Cart = ({
                                   <Link
                                     to={
                                       process.env.PUBLIC_URL +
-                                      "/product/" +
+                                      cartItem.url_path +
                                       cartItem.pk
                                     }
                                   >

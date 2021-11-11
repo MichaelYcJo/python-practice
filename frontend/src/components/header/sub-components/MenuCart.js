@@ -32,7 +32,7 @@ const MenuCart = ({ cartData, currency, deleteFromCart }) => {
               return (
                 <li className="single-shopping-cart" key={key}>
                   <div className="shopping-cart-img">
-                    <Link to={process.env.PUBLIC_URL + "/product/" + single.id}>
+                    <Link to={process.env.PUBLIC_URL + single.url_path + single.pk}>
                       <img
                         alt=""
                         src={ REACT_BACKEND_URL + single.product_image1}
@@ -43,7 +43,7 @@ const MenuCart = ({ cartData, currency, deleteFromCart }) => {
                   <div className="shopping-cart-title">
                     <h4>
                       <Link
-                        to={process.env.PUBLIC_URL + "/product/" + single.id}
+                        to={process.env.PUBLIC_URL + single.url_path + single.pk}
                       >
                         {" "}
                         {single.name}{" "}
