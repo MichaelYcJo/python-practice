@@ -3,7 +3,7 @@ import React, { Fragment, useState } from "react";
 import { Link } from "react-router-dom";
 import { useToasts } from "react-toast-notifications";
 import { REACT_BACKEND_URL } from "utils/url";
-import { getDiscountPrice } from "../../helpers/product";
+import { getDiscountPrice } from "../../utils/product";
 import ProductModal from "./ProductModal";
 
 const ProductMainContent = ({

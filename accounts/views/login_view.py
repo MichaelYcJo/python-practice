@@ -86,10 +86,10 @@ def kakao_callback(request):
                 photo_request = requests.get(profile_image)
                 # ContentFile()로 인하여 파일에 담기고  이 파일은 avater에 저장됨
                 user.avatar.save(
-                    f"{nickname}-avatar", ContentFile(photo_request.content)
+                    f"{nickname}-avatar.png", ContentFile(photo_request.content)
                 )
         access_token = jwt.encode({"id" : user.id}, settings.SECRET_KEY, algorithm="HS256")
-
+        #decode = jwt.decode(access_token, settings.SECRET_KEY, algorithms="HS256")
         context = {
             'status': 200,
             'data': 'success',

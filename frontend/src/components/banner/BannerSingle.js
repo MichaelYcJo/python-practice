@@ -3,6 +3,11 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const BannerSingle = ({ data, spaceBottomClass }) => {
+  const HandleClick = (e) => {
+    e.preventDefault();
+    alert('comming soon')
+  }
+
   return (
     <div className="col-lg-6 col-md-6">
       <div
@@ -18,9 +23,15 @@ const BannerSingle = ({ data, spaceBottomClass }) => {
           <h4>
             {data.subtitle} <span>{data.price}</span>
           </h4>
-          <Link to={process.env.PUBLIC_URL + data.link}>
-            <i className="fa fa-long-arrow-right" />
-          </Link>
+          {data.link === '/men/clothes/list' ?
+            <Link to={process.env.PUBLIC_URL + data.link}>
+              <i className="fa fa-long-arrow-right" />
+            </Link>
+        :  
+            <Link to={process.env.PUBLIC_URL + data.link} onClick={HandleClick}>
+              <i className="fa fa-long-arrow-right" />
+            </Link>
+        }
         </div>
       </div>
     </div>

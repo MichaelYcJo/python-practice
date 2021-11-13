@@ -1,7 +1,7 @@
 import React from "react";
 import Swiper from "react-id-swiper";
-import sliderData from "../../data/hero-sliders/hero-slider-fifteen.json";
-import MainBannerSwiperContent from "../../components/hero-slider/MainBannerSwiperContent.js";
+import sliderData from "data/banner/slider-data.json";
+import MainBannerSwiperContent from "components/banner/MainBannerSwiperContent.js";
 
 const HeroSliderFifteen = () => {
   const params = {

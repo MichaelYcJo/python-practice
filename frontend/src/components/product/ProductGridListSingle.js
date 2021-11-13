@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import React, { Fragment, useState } from "react";
 import { Link } from "react-router-dom";
 import { useToasts } from "react-toast-notifications";
-import { getDiscountPrice } from "../../helpers/product";
+import { getDiscountPrice } from "../../utils/product";
 import Rating from "./sub-components/ProductRating";
 import ProductModal from "./ProductModal";
 import { REACT_BACKEND_URL } from "utils/url";

@@ -86,12 +86,14 @@ const TabProductList = ({
           </Tab.Content>
         </Tab.Container>
         <div className="view-more round-btn text-center mt-20 toggle-btn6 col-12">
+          { /* Todo : Add Link
           <Link
             className="loadMore6"
-            to={process.env.PUBLIC_URL + "/shop-grid-standard"}
+            to={process.env.PUBLIC_URL + "/"}
           >
             Discover More
           </Link>
+          */}
         </div>
       </div>
     </div>

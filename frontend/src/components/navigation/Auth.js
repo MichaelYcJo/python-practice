@@ -55,11 +55,13 @@ const Auth = ({
                 LogOut
               </Link>
             </li>
+            {/* Todo: MyProfile 
             <li>
               <Link to={process.env.PUBLIC_URL + "/accounts/my-account"}>
                 My Profile
               </Link>
             </li>
+            */}
           </ul>
         </div>
       </div>

@@ -51,6 +51,8 @@ const LanguageCurrencyChanger = ({
           </ul>
         </div>
       </div>
+
+      {/* Todo: Add currency dropdown 
       <div className="same-language-currency use-style">
         <span>
           {currency.currencyName} <i className="fa fa-angle-down" />
@@ -80,10 +82,13 @@ const LanguageCurrencyChanger = ({
           </ul>
         </div>
       </div>
+      */}
       <div className="same-language-currency">
         <p>Contact Us</p>
       </div>
     </div>
+    
+    
   );
 };
 

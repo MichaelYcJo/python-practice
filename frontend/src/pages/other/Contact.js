@@ -28,7 +28,7 @@ const Contact = ({ location }) => {
         <div className="contact-area pt-100 pb-100">
           <div className="container">
             <div className="contact-map mb-10">
-              <LocationMap latitude="47.444" longitude="-122.176" />
+              <LocationMap latitude="37.2" longitude="127.05" />
             </div>
             <div className="custom-row-2">
               <div className="col-lg-4 col-md-5">
@@ -38,8 +38,8 @@ const Contact = ({ location }) => {
                       <i className="fa fa-phone" />
                     </div>
                     <div className="contact-info-dec">
-                      <p>+012 345 678 102</p>
-                      <p>+012 345 678 102</p>
+                      <p>+010 5281 3782 </p>
+                      <p>+010 5281 3782</p>
                     </div>
                   </div>
                   <div className="single-contact-info">
@@ -48,13 +48,13 @@ const Contact = ({ location }) => {
                     </div>
                     <div className="contact-info-dec">
                       <p>
-                        <a href="mailto:yourname@email.com">
-                          yourname@email.com
+                        <a href="mailto:michael.yc.ch@gmail.com">
+                          michael.yc.cho@gmail.com
                         </a>
                       </p>
                       <p>
-                        <a href="https://yourwebsitename.com">
-                          yourwebsitename.com
+                        <a href="https://github.com/michael-cho77">
+                          GitHub Link
                         </a>
                       </p>
                     </div>
@@ -65,7 +65,7 @@ const Contact = ({ location }) => {
                     </div>
                     <div className="contact-info-dec">
                       <p>Address goes here, </p>
-                      <p>street, Crossroad 123.</p>
+                      <p>Korea</p>
                     </div>
                   </div>
                   <div className="contact-social text-center">
@@ -103,18 +103,20 @@ const Contact = ({ location }) => {
               <div className="col-lg-8 col-md-7">
                 <div className="contact-form">
                   <div className="contact-title mb-30">
+                    {/* Todo: 이메일 송부 */ }
                     <h2>Get In Touch</h2>
                   </div>
                   <form className="contact-form-style">
                     <div className="row">
                       <div className="col-lg-6">
-                        <input name="name" placeholder="Name*" type="text" />
+                        <input name="name" placeholder="Name*" type="text" readOnly />
                       </div>
                       <div className="col-lg-6">
-                        <input name="email" placeholder="Email*" type="email" />
+                        <input name="email" placeholder="Email*" type="email" readOnly />
                       </div>
                       <div className="col-lg-12">
                         <input
+                        readOnly
                           name="subject"
                           placeholder="Subject*"
                           type="text"
@@ -122,6 +124,7 @@ const Contact = ({ location }) => {
                       </div>
                       <div className="col-lg-12">
                         <textarea
+                        readOnly
                           name="message"
                           placeholder="Your Message*"
                           defaultValue={""}

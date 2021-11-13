@@ -6,7 +6,7 @@ import {
   getIndividualColors,
   getProductsIndividualSizes,
   setActiveSort
-} from "../../helpers/product";
+} from "../../utils/product";
 
 const ShopTopFilter = ({ products, getSortParams }) => {
   const uniqueCategories = getIndividualCategories(products);

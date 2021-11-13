@@ -4,6 +4,12 @@ import { Link } from "react-router-dom";
 import { multilanguage } from "redux-multilanguage";
 
 const NavMenu = ({ strings, menuWhiteClass, sidebarMenu }) => {
+
+  const clickHandling = (e) => {
+    e.preventDefault();
+    alert('comming soon')
+  }
+
   return (
     <div
       className={` ${
@@ -49,7 +55,7 @@ const NavMenu = ({ strings, menuWhiteClass, sidebarMenu }) => {
                     </Link>
                   </li>
                   <li>
-                    <Link to={process.env.PUBLIC_URL + "/women/clothes/list"}>
+                    <Link to={process.env.PUBLIC_URL + "/women/clothes/list"} onClick={clickHandling}>
                       {strings["cloth"]}
                     </Link>
                   </li>
@@ -105,6 +111,7 @@ const NavMenu = ({ strings, menuWhiteClass, sidebarMenu }) => {
                   {strings["compare"]}
                 </Link>
               </li>
+              {/* Todo: 차후 개발 예정 
               <li>
                 <Link to={process.env.PUBLIC_URL + "/my-account"}>
                   {strings["my_account"]}
@@ -120,6 +127,7 @@ const NavMenu = ({ strings, menuWhiteClass, sidebarMenu }) => {
                   {strings["contact_us"]}
                 </Link>
               </li>
+              */}
             </ul>
           </li>
           <li>

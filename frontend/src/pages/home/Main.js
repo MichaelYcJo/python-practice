@@ -48,7 +48,7 @@ const Main = () => {
         <MainCountDown
           spaceTopClass="pt-100"
           spaceBottomClass="pb-100"
-          dateTime="November 13, 2021 12:12:00"
+          dateTime="November 13, 2023 12:12:00"
           countDownImage="/assets/img/banner/main-bag.jpeg"
         />
         {/* feature icon */}
@@ -59,12 +59,13 @@ const Main = () => {
           spaceTopClass="pt-50"
           spaceBottomClass="pb-40"
         />
-        {/* newsletter */}
+        {/* Todo: newsletter 
         <Newsletter
           spaceTopClass="pt-100"
           spaceBottomClass="pb-100"
           subscribeBtnClass="dark-red-subscribe"
         />
+        */}
       </Layout>
     </Fragment>
   );
