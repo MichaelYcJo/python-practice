@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import React from "react";
 import { Link } from "react-router-dom";
+import { REACT_BACKEND_URL } from "utils/url";
 
 const BannerSingle = ({ data, spaceBottomClass }) => {
   const HandleClick = (e) => {
@@ -16,7 +17,7 @@ const BannerSingle = ({ data, spaceBottomClass }) => {
         } ${data.textAlign === "right" ? "align_right" : ""}`}
       >
         <Link to={process.env.PUBLIC_URL + data.link}>
-          <img className="banner-link-image" src={process.env.PUBLIC_URL + data.image} alt="" />
+          <img className="banner-link-image" src={REACT_BACKEND_URL + data.image} alt="" />
         </Link>
         <div className="banner-content-2 banner-content-2--style2">
           <h3>{data.title}</h3>

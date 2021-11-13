@@ -3,6 +3,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import Countdown from "react-countdown-now";
 import Renderer from "../../components/countdown/Renderer";
+import { REACT_BACKEND_URL } from "utils/url";
 
 const MainCountDown = ({
   spaceTopClass,
@@ -33,9 +34,9 @@ const MainCountDown = ({
           </div>
           <div className="col-md-4 col-lg-6 order-2 order-lg-1">
             <div className="funfact-image">
-              <Link to={process.env.PUBLIC_URL + "/shop-grid-standard"}>
+              <Link to={process.env.PUBLIC_URL + "/"}>
                 <img
-                  src={process.env.PUBLIC_URL + countDownImage}
+                  src={REACT_BACKEND_URL + countDownImage}
                   alt=""
                   className="img-fluid"
                 />

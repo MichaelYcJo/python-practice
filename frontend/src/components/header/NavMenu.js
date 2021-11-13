@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import React from "react";
 import { Link } from "react-router-dom";
 import { multilanguage } from "redux-multilanguage";
+import { REACT_BACKEND_URL } from "utils/url";
 
 const NavMenu = ({ strings, menuWhiteClass, sidebarMenu }) => {
 
@@ -67,8 +68,8 @@ const NavMenu = ({ strings, menuWhiteClass, sidebarMenu }) => {
                     <Link to={process.env.PUBLIC_URL + "#"}>
                       <img
                         src={
-                          process.env.PUBLIC_URL +
-                          "/assets/img/banner/banner-12.png"
+                          REACT_BACKEND_URL +
+                          "/media/img/banner/banner-12.png"
                         }
                         alt=""
                       />

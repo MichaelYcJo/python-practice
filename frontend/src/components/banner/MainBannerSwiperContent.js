@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import React from "react";
 import { Link } from "react-router-dom";
+import { REACT_BACKEND_URL } from "utils/url";
 
 const MainBannerSwiperContent = ({ data, sliderClass }) => {
   return (
@@ -8,7 +9,7 @@ const MainBannerSwiperContent = ({ data, sliderClass }) => {
       className={`single-slider-2 slider-height-2 d-flex align-items-center bg-img ${
         sliderClass ? sliderClass : ""
       }`}
-      style={{ backgroundImage: `url(${process.env.PUBLIC_URL + data.image})` }}
+      style={{ backgroundImage: `url(${REACT_BACKEND_URL + data.image})` }}
     >
       <div className="container">
         <div className="row">

@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import React, { useEffect, Suspense, lazy } from "react";
 import ScrollToTop from "./utils/scroll-top";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { HashRouter as Router, Switch, Route } from "react-router-dom";
 import { ToastProvider } from "react-toast-notifications";
 import { multilanguage, loadLanguages } from "redux-multilanguage";
 import { connect } from "react-redux";

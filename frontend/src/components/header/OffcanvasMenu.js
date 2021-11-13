@@ -3,6 +3,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import HeaderSocial from "./sub-components/HeaderSocial";
 import NavMenu from "./NavMenu";
+import { REACT_BACKEND_URL } from "utils/url";
 
 const OffcanvasMenu = ({ activeState, getActiveState }) => {
   return (
@@ -19,7 +20,7 @@ const OffcanvasMenu = ({ activeState, getActiveState }) => {
         <Link to={process.env.PUBLIC_URL + "/"}>
           <img
             alt=""
-            src={process.env.PUBLIC_URL + "/assets/img/logo/logo.png"}
+            src={REACT_BACKEND_URL + "/media/img/logo/logo.png"}
           />
         </Link>
       </div>

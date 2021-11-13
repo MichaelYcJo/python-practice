@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
+import { REACT_BACKEND_URL } from "utils/url";
 
 const BrandLogoOneSingle = ({ data, sliderClassName, spaceBottomClass }) => {
   return (
@@ -8,7 +9,7 @@ const BrandLogoOneSingle = ({ data, sliderClassName, spaceBottomClass }) => {
         spaceBottomClass ? spaceBottomClass : ""
       }`}
     >
-      <img src={process.env.PUBLIC_URL + data.image} alt="" />
+      <img src={REACT_BACKEND_URL + data.image} alt="" />
     </div>
   );
 };

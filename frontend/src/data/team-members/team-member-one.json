@@ -1,7 +1,7 @@
 [
   {
     "id": "1",
-    "image": "/assets/img/team/team-1.jpg",
+    "image": "/media/img/team/team-1.jpg",
     "fbLink": "//www.facebook.com",
     "twitterLink": "//www.twitter.com",
     "instagramLink": "//www.instagram.com",
@@ -10,7 +10,7 @@
   },
   {
     "id": "2",
-    "image": "/assets/img/team/team-3.jpg",
+    "image": "/media/img/team/team-3.jpg",
     "fbLink": "//www.facebook.com",
     "twitterLink": "//www.twitter.com",
     "instagramLink": "//www.instagram.com",
@@ -19,7 +19,7 @@
   },
   {
     "id": "3",
-    "image": "/assets/img/team/team-2.jpg",
+    "image": "/media/img/team/team-2.jpg",
     "fbLink": "//www.facebook.com",
     "twitterLink": "//www.twitter.com",
     "instagramLink": "//www.instagram.com",
@@ -28,7 +28,7 @@
   },
   {
     "id": "4",
-    "image": "/assets/img/team/team-4.jpg",
+    "image": "/media/img/team/team-4.jpg",
     "fbLink": "//www.facebook.com",
     "twitterLink": "//www.twitter.com",
     "instagramLink": "//www.instagram.com",

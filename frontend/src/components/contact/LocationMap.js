@@ -1,6 +1,7 @@
 import React from "react";
 import { Map, GoogleApiWrapper, Marker } from "google-maps-react";
 import { PropTypes } from "prop-types";
+import { REACT_BACKEND_URL } from "utils/url";
 
 const FooterMap = props => {
   const mapStyles = {
@@ -18,7 +19,7 @@ const FooterMap = props => {
       <Marker
         position={{ lat: props.latitude, lng: props.longitude }}
         icon={{
-          url: `${process.env.PUBLIC_URL + "/assets/img/icon-img/2.png"}`
+          url: `${REACT_BACKEND_URL + "/media/img/icon-img/2.png"}`
         }}
         animation={props.google.maps.Animation.BOUNCE}
       />

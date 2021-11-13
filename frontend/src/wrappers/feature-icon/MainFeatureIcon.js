@@ -1,7 +1,8 @@
 import PropTypes from "prop-types";
 import React from "react";
-import featureIconData from "../../data/feature-icons/feature-icon-four.json";
+import featureIconData from "../../data/feature-icons/feature-icon.json";
 import MainFeatureIconSingle from "../../components/feature-icon/MainFeatureIconSingle.js";
+import { REACT_BACKEND_URL } from "utils/url";
 
 const MainFeatureIcon = ({
   spaceTopClass,
@@ -20,7 +21,7 @@ const MainFeatureIcon = ({
       }`}
       style={
         bgImg
-          ? { backgroundImage: `url(${process.env.PUBLIC_URL + bgImg})` }
+          ? { backgroundImage: `url(${REACT_BACKEND_URL + bgImg})` }
           : {}
       }
     >
