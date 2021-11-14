@@ -1,12 +1,13 @@
 import axios from 'axios';
 import { atom, selector } from 'recoil';
+import { REACT_BACKEND_URL } from 'utils/url';
 
 export const GetProduct = async () => {
     //const setProduct = useSetRecoilState(productState);
     try {
         const {
             data: { results }
-        } = await axios.get(`http://127.0.0.1:8000/api/v1/products/list`);
+        } = await axios.get(`${REACT_BACKEND_URL}/api/v1/products/list`);
         //setProduct({product: results});
         
         return results;
