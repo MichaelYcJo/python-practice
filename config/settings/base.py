@@ -39,7 +39,7 @@ DJANGO_APPS = [
 PROJECT_APPS = [
     'accounts',
     'products',
-
+    'order',
 ]
 
 THIRD_PARTY_APPS = [

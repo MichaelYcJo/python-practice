@@ -1,7 +1,8 @@
 import axios from "axios";
+import { REACT_BACKEND_URL } from "utils/url";
 
 
-const baseURL = 'http://127.0.0.1:8000/api/v1';
+const baseURL = `${REACT_BACKEND_URL}/api/v1`;
 const ACCESS_TOKEN = 'access_token';
 const REFRESH_TOKEN = 'refresh_token';
 
