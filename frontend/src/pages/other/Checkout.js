@@ -138,7 +138,6 @@ const Checkout = ({ location, cartItems, currency }) => {
                             name="message"
                             defaultValue={""}
                             onChange={event => setAddInfo(event.target.value)}
-
                           />
                         </div>
                       </div>

@@ -49,7 +49,7 @@ const Main = () => {
           spaceTopClass="pt-100"
           spaceBottomClass="pb-100"
           dateTime="November 13, 2023 12:12:00"
-          countDownImage="/media/main/main-bag.jpeg"
+          countDownImage="/media/img/banner/main-bag.jpeg"
         />
         {/* feature icon */}
         <MainFeatureIcon

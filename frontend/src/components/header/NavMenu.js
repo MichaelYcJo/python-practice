@@ -66,11 +66,13 @@ const NavMenu = ({ strings, menuWhiteClass, sidebarMenu }) => {
                 <ul>
                   <li className="mega-menu-img">
                     <Link to={process.env.PUBLIC_URL + "#"}>
+                      {/* Todo Nav 우측 이미지 추가*/}
                       <img
                         src={
                           REACT_BACKEND_URL +
-                          "/media/img/banner/banner-12.png"
+                          "/media/products/product-2.jpg"
                         }
+                        style={{ width: "100%" }}
                         alt=""
                       />
                     </Link>

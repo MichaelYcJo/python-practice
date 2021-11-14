@@ -21,7 +21,8 @@ const Main = ({
     const offcanvasMobileMenu = document.querySelector(
       "#offcanvas-mobile-menu"
     );
-    offcanvasMobileMenu.classList.add("active");
+    // Todo : 모바일 nav바 완료시 active로 바꿀것
+    offcanvasMobileMenu.classList.add("deactive"); 
   };
 
   return (

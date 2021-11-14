@@ -129,7 +129,7 @@ const Contact = ({ location }) => {
                           placeholder="Your Message*"
                           defaultValue={""}
                         />
-                        <button className="submit" type="submit">
+                        <button className="submit" type="submit" disabled>
                           SEND
                         </button>
                       </div>
