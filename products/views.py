@@ -33,3 +33,11 @@ def product_detail(request, pk):
     product = Product.objects.get(pk=pk)
     serializer = ProductSerializer(product, many=False)
     return Response(serializer.data)
+
+
+@api_view(['GET'])
+def product_search_api(request):
+    query = request.GET.get('query')
+    products = Product.objects.filter(name__icontains=query)
+    serializer = ProductSerializer(products, many=True)
+    return Response(serializer.data)
