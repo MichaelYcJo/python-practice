@@ -40,7 +40,7 @@ def kakao_callback(request):
         code = request.GET.get("code")
         client_id = config("KAKAO_ID")
         if settings.DEBUG is False:
-            redirect_uri = "http://localhost:3000/accounts/login/kakao/callback"
+            redirect_uri = "http://158.247.224.15/accounts/login/kakao/callback"
         else:
             redirect_uri = "http://localhost:3000/accounts/login/kakao/callback"
         token_request = requests.get(
