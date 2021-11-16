@@ -32,6 +32,7 @@ const Register = lazy(() => import("pages/auth/Register/index.js"));
 
 
 const Cart = lazy(() => import("./pages/other/Cart"));
+const Order = lazy(() => import("./pages/order"));
 const Wishlist = lazy(() => import("./pages/other/Wishlist"));
 const Compare = lazy(() => import("./pages/other/Compare"));
 const Checkout = lazy(() => import("./pages/other/Checkout"));
@@ -177,6 +178,10 @@ const App = (props) => {
                 <Route
                   path={process.env.PUBLIC_URL + "/cart"}
                   component={Cart}
+                />
+                <Route
+                  path={process.env.PUBLIC_URL + "/order"}
+                  component={Order}
                 />
                 <Route
                   path={process.env.PUBLIC_URL + "/wishlist"}
