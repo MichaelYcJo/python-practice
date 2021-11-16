@@ -20,6 +20,10 @@ const Product = lazy(() =>
   import("./pages/shop-product/ProductDetail")
 );
 
+const ProductSearch = lazy(() =>
+  import("./pages/shop-product/ProductSearch")
+);
+
 
 // other pages
 const About = lazy(() => import("./pages/other/About"));
@@ -142,6 +146,10 @@ const App = (props) => {
                   component={Product}
                 />
 
+                <Route 
+                  path={process.env.PUBLIC_URL + "/products/search" }
+                  component = {ProductSearch}
+                />
           
 
                 {/* Other pages */}

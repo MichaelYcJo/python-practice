@@ -12,15 +12,17 @@
 - [x] List Product
 - [x] Chack out with Import
 - [x] Create Order after Chackout
-- [] OrderPage
+- [x] OrderPage
+- [x] Search All Product
 
 
 <br>
 
 ### Todo List
 
+- [] Search Each Category Product
 - [] Filter Product
-- [] Search Product
+- [] Pagination
 - [] Permission
 - [] See Profile
 - [] Edit Profile

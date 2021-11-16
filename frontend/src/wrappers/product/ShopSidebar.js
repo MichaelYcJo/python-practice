@@ -6,7 +6,7 @@ import {
   getIndividualColors,
   getProductsIndividualSizes
 } from "../../utils/product";
-import ShopSearch from "../../components/product/ShopSearch";
+import SidebarSearch from "../../components/search/SidebarSearch";
 import ShopCategories from "../../components/product/ShopCategories";
 import ShopColor from "../../components/product/ShopColor";
 import ShopSize from "../../components/product/ShopSize";
@@ -21,14 +21,16 @@ const ShopSidebar = ({ products, getSortParams, sideSpaceClass }) => {
   return (
     <div className={`sidebar-style ${sideSpaceClass ? sideSpaceClass : ""}`}>
       {/* shop search */}
-      <ShopSearch />
+      <SidebarSearch />
 
      
       {/* filter by categories */}
+      {/* Todo: Sidebar Catogory Filter
       <ShopCategories
         categories={uniqueCategories}
         getSortParams={getSortParams}
       />
+      */}
 
       {/* Todo filter by color 
       <ShopColor colors={uniqueColors} getSortParams={getSortParams} />

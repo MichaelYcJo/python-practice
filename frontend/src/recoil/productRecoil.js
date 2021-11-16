@@ -47,13 +47,26 @@ export const productListSelector = selector({
             return [];
         }
     },
-    /*
-    set: ({ set }, newValue) => { 
-        console.log(newValue, 'newValue');
-        set(productState, newValue);
-    }
-    */
- 
 });
 
-        
+
+export const productQueryState = atom({
+    key: 'productQuery',
+    default: "",
+  });
+
+export const productSearchSelector = selector({
+    key: 'productSearch',
+    get: async ({ get }) => {
+        try {
+            const search = get(productQueryState);
+            const {
+                data
+            } = await axios.get(`${REACT_BACKEND_URL}/api/v1/products/search?query=${search}`);
+            return data;
+        } catch (e) {
+            console.warn(e);
+            return [];
+        }
+    },
+});
