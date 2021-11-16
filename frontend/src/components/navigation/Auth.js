@@ -4,8 +4,10 @@ import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import MenuCart from "../header/sub-components/MenuCart";
 import { deleteFromCart } from "../../redux/actions/cartActions";
+import { multilanguage } from "redux-multilanguage";
 
 const Auth = ({
+  strings,
   currency,
   cartData,
   wishlistData,
@@ -62,6 +64,21 @@ const Auth = ({
               </Link>
             </li>
             */}
+            <li>
+                <Link to={process.env.PUBLIC_URL + "/cart"}>
+                  {strings["cart"]}
+                </Link>
+              </li>
+              <li>
+                <Link to={process.env.PUBLIC_URL + "/checkout"}>
+                  {strings["checkout"]}
+                </Link>
+              </li>
+              <li>
+                <Link to={process.env.PUBLIC_URL + "/order"}>
+                  {strings["order"]}
+                </Link>
+              </li>
           </ul>
         </div>
       </div>
@@ -141,4 +158,5 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Auth);
+
+export default multilanguage(connect(mapStateToProps, mapDispatchToProps)(Auth));

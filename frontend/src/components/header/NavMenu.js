@@ -95,21 +95,6 @@ const NavMenu = ({ strings, menuWhiteClass, sidebarMenu }) => {
             </Link>
             <ul className="submenu">
               <li>
-                <Link to={process.env.PUBLIC_URL + "/cart"}>
-                  {strings["cart"]}
-                </Link>
-              </li>
-              <li>
-                <Link to={process.env.PUBLIC_URL + "/checkout"}>
-                  {strings["checkout"]}
-                </Link>
-              </li>
-              <li>
-                <Link to={process.env.PUBLIC_URL + "/order"}>
-                  {strings["order"]}
-                </Link>
-              </li>
-              <li>
                 <Link to={process.env.PUBLIC_URL + "/wishlist"}>
                   {strings["wishlist"]}
                 </Link>
