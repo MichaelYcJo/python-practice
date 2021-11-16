@@ -3,6 +3,21 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from order.models import Order, OrderItem
+from order.serializers import OrderSerializer
+
+
+@api_view(['GET'])
+def order_list_api(request):
+    
+    user = request.user
+    
+    if user.is_anonymous:
+        data = {'message' : '로그인이 필요합니다'}
+        return Response(data, status=status.HTTP_401_UNAUTHORIZED)
+    else: 
+        orders = Order.objects.filter(user=user)
+        order_serializer = OrderSerializer(orders, many=True)
+        return Response(order_serializer.data)
 
 
 @api_view(['POST'])
@@ -61,3 +76,21 @@ def checkout_complate_api(request):
         data = {'success': '성공'}
         return Response(data, status=status.HTTP_200_OK)
 
+
+
+@api_view(['PUT'])
+def delivery_confirm_api(request):
+    user = request.user
+    try:
+        request_data = request.data
+        order_id = request_data['order_id']
+        order = Order.objects.get(pk=order_id)
+        order.is_delivered = True
+        order.save()
+        orders = Order.objects.filter(user=user)
+        order_serializer = OrderSerializer(orders, many=True)
+        return Response(order_serializer.data)
+    except:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+    

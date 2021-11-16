@@ -37,14 +37,14 @@ class Order(models.Model):
 
 
     def __str__(self):
-        return f'{self.user}의 구매내역'
+        return f'{self.user}의 구매내역 - {self.pk}'
     
     class Meta:
         ordering = ['-created_at']
 
 
 class OrderItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, null=True)
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
     qty = models.IntegerField(null=True, blank=True, default=0)
     price = models.FloatField(default=0)
