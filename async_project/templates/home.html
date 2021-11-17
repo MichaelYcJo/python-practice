@@ -1,0 +1,20 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Async Django</title>
+</head>
+
+<body>
+    <h1>Async Django</h1>
+    
+    <form action = "{% url 'asyncapp:home' %}" method="POST">
+        {% csrf_token %}
+        <label for="">Provude your email </label>
+        <input type ="email" name="email" placeholder="email" required>
+        <button> Subscribe Now </button>   
+    </form>
+</body>
+</html>
