@@ -1,0 +1,22 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Article Create</title>
+</head>
+
+<body>
+    <h1>Article Create</h1>
+    
+    <form action = "{% url 'asyncapp:articlecreate' %}" method="POST">
+        {% csrf_token %}
+        <label for="">Title of the Article </label>
+        <input type ="text" name="title" required>
+        <lavel for="">Description of the Article </label>
+        <textarea name="description" id="" col="30" rows="5"></textarea>
+        <button> Save Article </button>   
+    </form>
+</body>
+</html>

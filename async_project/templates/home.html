@@ -16,5 +16,12 @@
         <input type ="email" name="email" placeholder="email" required>
         <button> Subscribe Now </button>   
     </form>
+
+    <hr>
+    <h4> Article List</h4>
+    {% for article in article_list %}
+        <h5>{{article.title}} ({{article.created_at}})</h5>
+        <p>{{article.content}}</p>
+    {% endfor %}
 </body>
 </html>

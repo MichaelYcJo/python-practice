@@ -32,6 +32,20 @@ async def homeview(request):
         return redirect("/")
 
 
-def articlecreateview(request):
+async def articlecreateview(request):
     if request.method == "GET":
-        pass
+        context = {
+            "article_list": await sync_to_async(list)(Article.objects.all)()
+        }
+        return render(request, "articlecreate.html")
+    else:
+        title = request.POST.get("title")
+        description = request.POST.get("description")
+        await sync_to_async(Article.objects.create)(title=title, description=description)
+        subject = "New Article uploaded"
+        message = f"New Article with the title '{title}'"
+        subscribers = await sync_to_async(list)(Subscriber.objects.all())
+        email_list = [subscriber.email for subscriber in subscribers]
+
+        asyncio.create_task(async_send_mail(subject, message, email_list))
+        return redirect('asyncapp:home')
