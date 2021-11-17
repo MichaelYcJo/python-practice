@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 import Layout from "layouts/Layout";
 import ErrorComponent from 'components/error/errorComponent'
+import { REACT_BACKEND_URL } from 'utils/url';
 
 const LoginPresenter = ({
   kakaoLogin,
@@ -37,22 +38,22 @@ const LoginPresenter = ({
                           <form onSubmit={handleSubmit}>
                             <div>
                               <input
-                              type="text"
-                              name="email"
-                              placeholder="Email"
-                              onChange= {(e) => {
-                                setEmail(e.target.value)
-                              }}
+                                type="text"
+                                name="email"
+                                placeholder="Email"
+                                onChange= {(e) => {
+                                  setEmail(e.target.value)
+                                }}
                               />
                             </div>
                             <div>
                               <input
-                              type="password"
-                              name="password"
-                              placeholder="Password"
-                              onChange= {(e) => {
-                                setPassword(e.target.value)
-                              }}
+                                type="password"
+                                name="password"
+                                placeholder="Password"
+                                onChange= {(e) => {
+                                  setPassword(e.target.value)
+                                }}
                               />
                               {errorType && <ErrorComponent message={error} />}
                             </div>
@@ -69,7 +70,7 @@ const LoginPresenter = ({
                                   <span>Login</span>
                               </button>
                               <div className='social_btn' onClick={kakaoLogin}>
-                                 <img src={process.env.PUBLIC_URL + '/assets/img/button/kakao_login_btn.png'} alt="kakao" />
+                                 <img src={REACT_BACKEND_URL + '/media/img/button/kakao_login_btn.png'} alt="kakao" />
                               </div>
 
                               </div>

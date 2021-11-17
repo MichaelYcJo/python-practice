@@ -50,7 +50,7 @@ const handleSubmit = async (e) => {
         if (status === 201) {
             alert("Account created. Sign in, please.");
             //location Login
-            window.location.href = "/accounts/login"
+            window.location.href = "/#/accounts/login"
 
             //navigate("SignIn", { email, password });
         } else if (status === 202) {
