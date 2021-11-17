@@ -6,6 +6,15 @@ from asgiref.sync import sync_to_async
 import asyncio
 
 
+# helper functino
+async def async_send_mail(subject, message, email_list):
+    print('현재 발송중')
+    a_send_mail = sync_to_async(send_mail, thread_sensitive=False)
+    await a_send_mail(subject, message, settings.EMAIL_HOST_USER, email_list, fail_silently=False)
+    # uvicorn asyncproject.asgi.application -- reload
+    print("메일발송 성공")
+
+
 async def homeview(request):
     if request.method == "GET":
         context = {}
@@ -18,6 +27,11 @@ async def homeview(request):
 
         a_send_mail = sync_to_async(send_mail)
         asyncio.create_task(
-            a_send_mail(sub, msg, settings.EMAIL_HOST_USER, [email], fail_silently=False)
+           async_send_mail(sub, msg, [email])
         )
         return redirect("/")
+
+
+def articlecreateview(request):
+    if request.method == "GET":
+        pass
