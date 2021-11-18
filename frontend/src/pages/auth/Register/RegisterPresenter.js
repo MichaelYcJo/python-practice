@@ -3,6 +3,7 @@ import MetaTags from "react-meta-tags";
 
 import Layout from "layouts/Layout";
 import ErrorComponent from 'components/error/errorComponent'
+import CSRFToken from 'utils/csrfToken';
 
 
 const RegisterPresenter = ({
@@ -38,6 +39,7 @@ const RegisterPresenter = ({
                           <h3 className='form-title'>Register</h3>
                           <div className="login-register-form">
                           <form onSubmit={handleSubmit}>
+                            <CSRFToken />
                               <div>
                                 <input
                                   type="email"

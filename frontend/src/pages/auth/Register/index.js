@@ -3,6 +3,8 @@ import PropTypes from "prop-types";
 
 import AxiosInstance from 'api'
 import RegisterPresenter from "pages/auth/Register/RegisterPresenter";
+import { REACT_BACKEND_URL } from "utils/url";
+import axios from "axios";
 
 const Regitser = () => {
   const [email, setEmail] = useState("");
@@ -36,17 +38,21 @@ const handleSubmit = async (e) => {
         return;
     }
     //setLoading(true);
-    try {
-        const { status, data } = await AxiosInstance.post(
-            "/accounts/register", {
-            email,
-            password,
-            confirm_password : confirmPassword,
-            first_name: firstName,
-            last_name: lastName,
-            phone: phoneNumber,
+    const formData = {
+        email,
+        password,
+        confirm_password : confirmPassword,
+        first_name: firstName,
+        last_name: lastName,
+        phone: phoneNumber
+    }
 
-        });
+    try {
+
+        const {
+            status, data
+        } = await axios.post(`${REACT_BACKEND_URL}/api/v1/accounts/register`, formData);
+
         if (status === 201) {
             alert("Account created. Sign in, please.");
             //location Login
