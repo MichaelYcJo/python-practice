@@ -1,5 +1,5 @@
 from .base import *
-
+from decouple import config
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -13,8 +13,12 @@ ALLOWED_HOSTS = ['*']
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": 'michael_shop',
+        "USER": 'michael',
+        "PASSWORD":  config('DB_PASSWORD'),
+        "HOST": '158.247.224.15',
+        "PORT": 5432,
     }
 }
