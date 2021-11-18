@@ -2,7 +2,7 @@ FROM python:3.10.0-buster
 
 WORKDIR /home/
 
-RUN echo "1.02"
+RUN echo "1.03"
 
 RUN git clone https://github.com/michael-cho77/michael-shop.git
 

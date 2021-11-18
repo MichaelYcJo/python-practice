@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
-DEBUG = config('DEBUG', False)
+DEBUG = config('DJANGO_DEBUG', False)
 
 # Application definition
 DJANGO_APPS = [

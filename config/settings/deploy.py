@@ -16,6 +16,8 @@ def read_secret(secret_name):
 # SECURITY WARNING: don't run with debug turned on in production!
 SECRET_KEY = read_secret('DJANGO_SECRET_KEY')
 
+DJANGO_KAKAO_ID = read_secret('DJANGO_KAKAO_ID')
+
 ALLOWED_HOSTS = ['*']
 
 

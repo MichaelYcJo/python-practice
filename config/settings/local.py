@@ -5,9 +5,10 @@ from decouple import config
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = config('DJANGO_SECRET_KEY')
 
 ALLOWED_HOSTS = ['*']
+
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
