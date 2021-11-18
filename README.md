@@ -8,7 +8,6 @@
 
 - [x] Register
 - [x] Login
-- [x] Social Login
 - [x] List Product
 - [x] Chack out with Import
 - [x] Create Order after Chackout
@@ -31,6 +30,8 @@
 - [] Compare Change to Recoil
 - [] Cart Change to Recoil
 - [] Wishlist Change to Recoil
+- [] Social Login
+- [] Make Swagger
 - [] Apply Mobile
 
 ## How to Start:

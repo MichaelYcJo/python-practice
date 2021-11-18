@@ -69,10 +69,12 @@ const LoginPresenter = ({
                               <button type="submit">
                                   <span>Login</span>
                               </button>
+
+                              {/* Todo: 카카오로그인
                               <div className='social_btn' onClick={kakaoLogin}>
                                  <img src={REACT_BACKEND_URL + '/media/img/button/kakao_login_btn.png'} alt="kakao" />
                               </div>
-
+                              */}
                               </div>
                           </form>
                           </div>
