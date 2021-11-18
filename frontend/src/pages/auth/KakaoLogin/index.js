@@ -2,18 +2,18 @@ import axios from 'axios';
 import React, { useEffect } from 'react'
 import { useSetRecoilState } from "recoil";
 import { kakaoState } from 'recoil/userRecoil';
+import { REACT_BACKEND_URL } from 'utils/url';
 import LoginPresenter from '../Login/LoginPresenter';
 
 
 const KakaoLogin = (props)  =>{
-
     const code = new URL(window.location.href).searchParams.get("code");
     const setkakaoCode = useSetRecoilState(kakaoState)
 
     const fetchData = async ({history}) => {
         await axios({
             method: "GET",
-            url:`http://127.0.0.1:8000/api/v1/accounts/login/kakao/callback?code=${code}`,
+            url:`${REACT_BACKEND_URL}/api/v1/accounts/login/kakao/callback?code=${code}`,
 
         })
         .then((res) => {
