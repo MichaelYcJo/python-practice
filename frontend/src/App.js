@@ -44,6 +44,8 @@ const Checkout = lazy(() => import("./pages/other/Checkout"));
 const NotFound = lazy(() => import("./pages/other/NotFound"));
 
 const App = (props) => {
+  /* React 경고창 제거 */
+  console.warn = () => {};
   useEffect(() => {
     props.dispatch(
       loadLanguages({

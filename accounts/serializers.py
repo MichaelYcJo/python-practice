@@ -61,8 +61,8 @@ class LoginTokenSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
-        r = redis.StrictRedis(host="localhost", port=6379, charset="utf-8", decode_responses=True)
-        r.set(f'{user.id}-refresh', str(token))
+        #r = redis.StrictRedis(host="localhost", port=6379, charset="utf-8", decode_responses=True)
+        #r.set(f'{user.id}-refresh', str(token))
 
         # Add custom claims
         token['email'] = user.email

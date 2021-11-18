@@ -58,11 +58,14 @@ const Auth = ({
                   {strings["cart"]}
                 </Link>
               </li>
+
+              {/*
               <li>
                 <Link to={process.env.PUBLIC_URL + "/checkout"}>
                   {strings["checkout"]}
                 </Link>
               </li>
+              */}
               <li>
                 <Link to={process.env.PUBLIC_URL + "/order"}>
                   {strings["order"]}
