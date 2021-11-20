@@ -29,7 +29,7 @@ const ProductDescriptionTab = ({ product, spaceBottomClass, productFullDesc }) =
                 <div className="product-anotherinfo-wrapper">
                   <ul>
                     <li>
-                      <span>Weight</span> {product.weight}
+                      <span>Weight</span> {product.weight} g
                     </li>
                     <li>
                       <span>Dimensions</span> {product.dimensions}
@@ -38,8 +38,16 @@ const ProductDescriptionTab = ({ product, spaceBottomClass, productFullDesc }) =
                       <span>Materials</span> {product.materials}
                     </li>
                     <li>
-                      <span>Other Info</span> {product.other_info}
+                      <span>Other Info</span>
+                        {product.other_info.split("\n").map((line, index) => { //this.props.data.content: 내용
+                              return (
+                                <div key={`other-info-${index}`}>
+                                  <span> - {line}</span>
+                                </div>
+                              );
+                            })}
                     </li>
+                     
                   </ul>
                 </div>
               </Tab.Pane>
