@@ -38,10 +38,10 @@ export const productListSelector = selector({
         try {
             const category = get(categoryState);
             const {
-                data: { results }
+                data
             } = await axios.get(`${REACT_BACKEND_URL}/api/v1/products/list?category=${category}`);
 
-            return results;
+            return data;
         } catch (e) {
             console.warn(e);
             return [];

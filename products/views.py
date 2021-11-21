@@ -15,17 +15,15 @@ def product_list(request):
     category = request.GET.get('category')
 
 
+
     if category == 'main':
         products = Product.objects.all().order_by('-created_at')[:4]
     else:
         products = Product.objects.all().order_by('-created_at')
 
-    paginator = PageNumberPagination()
-    paginator.page_size = 6
+    serializer = ProductSerializer(products, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
-    results = paginator.paginate_queryset(products, request)
-    serializer = ProductSerializer(results, many=True)
-    return paginator.get_paginated_response(serializer.data)
 
 
 @api_view(['GET'])
