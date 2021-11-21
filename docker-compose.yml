@@ -11,7 +11,7 @@ services:
     ports:
       - 80:80
   django_container_gunicorn:
-    image: michael_shop_image:1.0.4
+    image: michael_shop_image:1.0.5
     networks:
       - network
     volumes:
