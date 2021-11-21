@@ -84,7 +84,6 @@ const MenClothList = ({location}) => {
 
                                 {/* shop product pagination */}
                                 <div className="pro-pagination-style text-center mt-30">
-                                    {/* ToDO: Pagination 복구 */}
                                     <Paginator
                                         totalRecords={sortedProducts.length}
                                         pageLimit={pageLimit}

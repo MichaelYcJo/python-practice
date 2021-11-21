@@ -25,11 +25,6 @@ const ProdutSearch = ({location}) => {
     const [sortedProducts, setSortedProducts] = useState([]);
     const searchProducts = useRecoilValue(productSearchSelector);
 
-
-    
-
-    console.log(searchProducts, '하하하');
-
     const pageLimit = 6;
     const {pathname} = location;
 

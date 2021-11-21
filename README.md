@@ -13,6 +13,8 @@
 - [x] Create Order after Chackout
 - [x] OrderPage
 - [x] Search All Product
+- [x] Product List Pagination
+- [x] Filter Product
 
 
 <br>
@@ -20,8 +22,7 @@
 ### Todo List
 
 - [] Search Each Category Product
-- [] Filter Product
-- [] Pagination
+- [] Search Product Pagination
 - [] Permission
 - [] See Profile
 - [] Edit Profile

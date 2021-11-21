@@ -25,12 +25,12 @@ const ShopSidebar = ({ products, getSortParams, sideSpaceClass }) => {
 
      
       {/* filter by categories */}
-      {/* Todo: Sidebar Catogory Filter
+
       <ShopCategories
         categories={uniqueCategories}
         getSortParams={getSortParams}
       />
-      */}
+
 
       {/* Todo filter by color 
       <ShopColor colors={uniqueColors} getSortParams={getSortParams} />

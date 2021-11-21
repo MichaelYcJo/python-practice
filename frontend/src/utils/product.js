@@ -62,7 +62,7 @@ export const getSortedProducts = (products, sortType, sortValue) => {
   if (products && sortType && sortValue) {
     if (sortType === "category") {
       return products.filter(
-        product => product.category.filter(single => single === sortValue)[0]
+       product => product.category.name === sortValue
       );
     }
     if (sortType === "tag") {
