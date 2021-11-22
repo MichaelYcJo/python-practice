@@ -1,27 +1,28 @@
-import PropTypes from "prop-types";
+
 import React, { Fragment, useState } from "react";
 import { Link } from "react-router-dom";
 import MetaTags from "react-meta-tags";
-import { connect } from "react-redux";
+
 import { BreadcrumbsItem } from "react-breadcrumbs-dynamic";
 import { getDiscountPrice } from "../../utils/product";
 import LayoutOne from "../../layouts/LayoutOne";
 import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
 import Iamport from "components/payment/Iamport";
 
-const Checkout = ({ location, cartItems, currency }) => {
+const CheckOutPresenter = ({ pathname, 
+                            cartItems, 
+                            currency,
+                            email, setEmail,
+                            phone, setPhone,
+                            userName, setUserName,
+                            streetName, setStreetName,
+                            apartment, setApartment,
+                            postCode, setPostCode,
+                            city, setCity,
+                            country, setCountry,
+                            addInfo, setAddInfo
+                          }) => {
 
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [userName, setUserName] = useState("");
-  const [streetName, setStreetName] = useState("");
-  const [apartment, setApartment] = useState("");
-  const [postCode, setPostCode] = useState("");
-  const [city, setCity] = useState("");
-  const [country, setCountry] = useState("");
-  const [addInfo, setAddInfo] = useState("");
-
-  const { pathname } = location;
   let cartTotalPrice = 0;
 
   return (
@@ -256,17 +257,6 @@ const Checkout = ({ location, cartItems, currency }) => {
   );
 };
 
-Checkout.propTypes = {
-  cartItems: PropTypes.array,
-  currency: PropTypes.object,
-  location: PropTypes.object
-};
 
-const mapStateToProps = state => {
-  return {
-    cartItems: state.cartData,
-    currency: state.currencyData
-  };
-};
 
-export default connect(mapStateToProps)(Checkout);
+export default CheckOutPresenter;

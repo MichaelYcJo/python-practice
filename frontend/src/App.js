@@ -39,12 +39,12 @@ const Cart = lazy(() => import("./pages/other/Cart"));
 const Order = lazy(() => import("./pages/order"));
 const Wishlist = lazy(() => import("./pages/other/Wishlist"));
 const Compare = lazy(() => import("./pages/other/Compare"));
-const Checkout = lazy(() => import("./pages/other/Checkout"));
+const Checkout = lazy(() => import("./pages/CheckOut"));
 
 const NotFound = lazy(() => import("./pages/other/NotFound"));
 
 const App = (props) => {
-  /* React 경고창 제거 */
+  /* console 경고창 제거 */
   console.warn = () => {};
   useEffect(() => {
     props.dispatch(
