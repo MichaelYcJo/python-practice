@@ -15,6 +15,7 @@
 - [x] Search All Product
 - [x] Product List Pagination
 - [x] Filter Product
+- [x] Apply Mobile
 
 
 <br>
@@ -33,7 +34,6 @@
 - [] Wishlist Change to Recoil
 - [] Social Login
 - [] Make Swagger
-- [] Apply Mobile
 
 ## How to Start:
 

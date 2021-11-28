@@ -23,7 +23,7 @@ const Main = ({
       "#offcanvas-mobile-menu"
     );
     // Todo : 모바일 nav바 완료시 active로 바꿀것
-    offcanvasMobileMenu.classList.add("deactive"); 
+    offcanvasMobileMenu.classList.add("active"); 
   };
 
   return (
