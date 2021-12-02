@@ -5,6 +5,7 @@ from decouple import config
 
 
 async def img_downloader(session, img):
+    # ?가 있다면 ? 단위로 자른값중 0번째로 자름
     img_name = img.split("/")[-1].split("?")[0]
     
     try:
