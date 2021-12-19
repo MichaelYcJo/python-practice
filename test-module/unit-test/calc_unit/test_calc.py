@@ -25,6 +25,9 @@ class TestCalc(unittest.TestCase):
         self.assertEqual(calc.divide(-1, -1), 1)
         self.assertEqual(calc.divide(5, 2), 2.5)
 
+        # self.assertRaises(ValueError, calc.divide, 10, 0)
+        
+        #Context Manager를 활용한 방식 
         with self.assertRaises(ValueError):
             calc.divide(10, 0)
 
