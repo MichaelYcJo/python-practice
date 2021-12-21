@@ -14,11 +14,13 @@ class TestEmployee(unittest.TestCase):
         print('teardownClass')
 
     def setUp(self):
+        """테스트 시작되기 전 실행"""
         print('setUp')
         self.emp_1 = Employee('Corey', 'Schafer', 50000)
         self.emp_2 = Employee('Sue', 'Smith', 60000)
 
     def tearDown(self):
+        """테스트 종료 후 실행 """
         print('tearDown\n')
 
     def test_email(self):
