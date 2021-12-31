@@ -1,9 +1,11 @@
 npx create-react-app blogapi .
 cd blogapi
 npm start
-npm install react-router-dom
+npm install react-router-dom@5.2.0
 npm install @material-ui/core
 pip install django-cors-headers
+
+npm install axios
 
 Info:
 Strict Mode

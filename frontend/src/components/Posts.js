@@ -62,11 +62,7 @@ const Posts = (props) => {
 											{post.title.substr(0, 50)}...
 										</Typography>
 										<div className={classes.postText}>
-											<Typography
-												component="p"
-												color="textPrimary"
-											></Typography>
-											<Typography variant="p" color="textSecondary">
+											<Typography color="textSecondary">
 												{post.excerpt.substr(0, 60)}...
 											</Typography>
 										</div>
