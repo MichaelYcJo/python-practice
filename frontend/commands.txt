@@ -7,7 +7,7 @@ pip install django-cors-headers
 
 npm install axios
 npm install @material-ui/icons
-npm i --save material-ui-search-ba
+npm i --save material-ui-search-bar
 
 Info:
 Strict Mode
