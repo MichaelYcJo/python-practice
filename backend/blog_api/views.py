@@ -3,6 +3,7 @@ from rest_framework import generics
 from rest_framework.views import APIView
 from blog.models import Post
 from .serializers import PostSerializer
+from rest_framework import viewsets, filters, generics, permissions
 from rest_framework.permissions import SAFE_METHODS, AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly, BasePermission, IsAdminUser, DjangoModelPermissions
 from rest_framework import viewsets
 from rest_framework import filters
@@ -73,6 +74,29 @@ class PostSearch(generics.ListAPIView):
     # Define Custom Queryset
     # def get_queryset(self):
     #     return Post.objects.all()
+    
+    
+# Post Admin
+
+class CreatePost(generics.CreateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+
+class AdminPostDetail(generics.RetrieveAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+
+class EditPost(generics.UpdateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = PostSerializer
+    queryset = Post.objects.all()
+
+class DeletePost(generics.RetrieveDestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = PostSerializer
+    queryset = Post.objects.all()
 
 
 # class PostList(viewsets.ViewSet):
