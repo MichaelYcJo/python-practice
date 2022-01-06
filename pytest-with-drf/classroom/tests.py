@@ -17,7 +17,8 @@ class TestStudentModel(TestCase):
         
         student_result = Student.objects.last()  # getting the last student
 
-        self.assertEqual(student_result.first_name, "John")
+        #self.assertEqual(student_result.first_name, "John")
+        assert student_result.first_name == "John"
 
     def test_str_return(self):
         
@@ -27,7 +28,8 @@ class TestStudentModel(TestCase):
         
         student_result = Student.objects.last()  # getting the last student
         
-        self.assertEqual(str(student_result), "John")
+        #self.assertEqual(str(student_result), "John")
+        assert str(student_result) == "John"
 
     def test_grade_fail(self):
         
@@ -35,7 +37,8 @@ class TestStudentModel(TestCase):
 
         student_result = Student.objects.last()  # getting the last student
         
-        self.assertEqual(student_result.get_grade(), "Fail")
+        #self.assertEqual(student_result.get_grade(), "Fail")
+        assert student_result.get_grade() == "Fail"
 
     def test_grade_pass(self):
 
@@ -43,7 +46,8 @@ class TestStudentModel(TestCase):
 
         student_result = Student.objects.last()  # getting the last student
 
-        self.assertEqual(student_result.get_grade(), "Pass")
+        #self.assertEqual(student_result.get_grade(), "Pass")
+        assert student_result.get_grade() == "Pass"
 
     def test_grade_excellent(self):
 
@@ -53,7 +57,8 @@ class TestStudentModel(TestCase):
 
         student_result = Student.objects.last()  # getting the last student
 
-        self.assertEqual(student_result.get_grade(), "Excellent")
+        #self.assertEqual(student_result.get_grade(), "Excellent")
+        assert student_result.get_grade() == "Excellent"
 
 
     def test_add_a_plus_b(self):
@@ -61,4 +66,5 @@ class TestStudentModel(TestCase):
         b = 2
         c = a + b
 
-        self.assertEqual(c, 3)
+        #self.assertEqual(c, 3)
+        assert c == 3
