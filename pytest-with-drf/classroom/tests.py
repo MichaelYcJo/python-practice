@@ -1,7 +1,11 @@
 from django.test import TestCase
-from classroom.models import Student
+from classroom.models import Student, Classroom
 
 from mixer.backend.django import mixer
+import pytest
+
+
+pytestmark = pytest.mark.django_db
 
 
 class TestStudentModel(TestCase):
@@ -59,6 +63,18 @@ class TestStudentModel(TestCase):
 
         #self.assertEqual(student_result.get_grade(), "Excellent")
         assert student_result.get_grade() == "Excellent"
+    
+    
+    def test_grade_error(self):
+
+        student1 = Student.objects.create(
+            first_name="John", last_name="Doe", admission_number=1234, average_score=101
+        )
+
+        student_result = Student.objects.last()  # getting the last student
+
+        #self.assertEqual(student_result.get_grade(), "Excellent")
+        assert student_result.get_grade() == "Error"
 
 
     def test_add_a_plus_b(self):
@@ -68,3 +84,12 @@ class TestStudentModel(TestCase):
 
         #self.assertEqual(c, 3)
         assert c == 3
+        
+
+class TestClassroomModel:
+    def test_classroom_create(self):
+        classroom = mixer.blend(Classroom, name="Math")
+        
+        classroom_result = Classroom.objects.last()  # getting the last classroom
+        
+        assert str(classroom_result) == "Math"
