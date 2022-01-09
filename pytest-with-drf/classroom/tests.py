@@ -1,6 +1,7 @@
-from django.test import TestCase
+from hypothesis.extra.django import TestCase
 from classroom.models import Student, Classroom
 
+from hypothesis import given, strategies as st
 from mixer.backend.django import mixer
 import pytest
 
@@ -34,30 +35,49 @@ class TestStudentModel(TestCase):
         
         #self.assertEqual(str(student_result), "John")
         assert str(student_result) == "John"
-
-    def test_grade_fail(self):
         
-        student1 = mixer.blend(Student, average_score=10)
+
+    @given(st.characters())
+    def test_slugify(self, name):
+
+        print(name, "name")
+
+        student1 = mixer.blend(Student, first_name=name)
+        student1.save()
 
         student_result = Student.objects.last()  # getting the last student
-        
-        #self.assertEqual(student_result.get_grade(), "Fail")
+
+        assert len(str(student_result.username)) == len(name)
+
+
+    @given(st.floats(min_value=0, max_value=40))
+    def test_grade_fail(self, fail_score):
+
+        print(fail_score, "this is failscore")
+
+        student1 = mixer.blend(Student, average_score=fail_score)
+
+        student_result = Student.objects.last()  # getting the last student
+
         assert student_result.get_grade() == "Fail"
 
-    def test_grade_pass(self):
 
-        student1 = mixer.blend(Student, average_score=60)
+    @given(st.floats(min_value=40, max_value=70))
+    def test_grade_pass(self, pass_grade):
+
+        student1 = mixer.blend(Student, average_score=pass_grade)
 
         student_result = Student.objects.last()  # getting the last student
 
         #self.assertEqual(student_result.get_grade(), "Pass")
         assert student_result.get_grade() == "Pass"
 
-    def test_grade_excellent(self):
 
-        student1 = Student.objects.create(
-            first_name="John", last_name="Doe", admission_number=1234, average_score=90
-        )
+
+    @given(st.floats(min_value=70, max_value=100))
+    def test_grade_excellent(self, excellent_grade):
+
+        student1 = mixer.blend(Student, average_score=excellent_grade)
 
         student_result = Student.objects.last()  # getting the last student
 
@@ -65,16 +85,16 @@ class TestStudentModel(TestCase):
         assert student_result.get_grade() == "Excellent"
     
     
-    def test_grade_error(self):
+    @given(st.floats(min_value=100))
+    def test_grade_error(self, error_grade):
 
-        student1 = Student.objects.create(
-            first_name="John", last_name="Doe", admission_number=1234, average_score=101
-        )
+        student1 = mixer.blend(Student, average_score=error_grade)
 
         student_result = Student.objects.last()  # getting the last student
 
         #self.assertEqual(student_result.get_grade(), "Excellent")
         assert student_result.get_grade() == "Error"
+
 
 
     def test_add_a_plus_b(self):
