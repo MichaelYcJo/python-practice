@@ -112,3 +112,22 @@ class TestStudentAPIViews(TestCase):
         assert response.status_code == 204
 
         assert Student.objects.count() == 0      
+        
+
+class TestClassroomAPIViews(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+
+        print(self.client, "self.client")
+
+    def test_classroom_qs_works(self):
+        classroom = mixer.blend(Classroom, student_capacity=20)
+        classroom2 = mixer.blend(Classroom, student_capacity=27)
+
+        url = reverse("class_qs_api", kwargs={"student_capacity": 15})
+
+        response = self.client.get(url)
+
+        assert response.status_code == 202
+        assert response.data["classroom_data"] != []
+        assert response.data["number_of_classes"] == 2

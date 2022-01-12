@@ -45,8 +45,6 @@ class ClassroomNumberAPIView(APIView):
     model = Classroom
     queryset = Student.objects.all()
 
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = [authentication.TokenAuthentication]
 
     def get(self, *args, **kwargs):
 
