@@ -16,7 +16,7 @@ class TestStudentAPIViews(TestCase):
         self.client = APIClient()
 
         print(self.client, "self.client")
-    
+        
 
     def test_student_list_works(self):
         # create a student
@@ -119,6 +119,19 @@ class TestClassroomAPIViews(TestCase):
         self.client = APIClient()
 
         print(self.client, "self.client")
+        
+        
+        from rest_framework.authtoken.models import Token
+        from django.contrib.auth import get_user_model
+        
+        User = get_user_model()
+        
+        self.our_user = User.objects.create(username="testuser", password="abcde")
+        
+        token = Token.objects.create(user=self.our_user)
+        print(self.token.key, "token")
+        
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token.key)
 
     def test_classroom_qs_works(self):
         classroom = mixer.blend(Classroom, student_capacity=20)
