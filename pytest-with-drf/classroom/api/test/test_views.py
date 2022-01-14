@@ -120,7 +120,6 @@ class TestClassroomAPIViews(TestCase):
 
         print(self.client, "self.client")
         
-        
         from rest_framework.authtoken.models import Token
         from django.contrib.auth import get_user_model
         
@@ -128,7 +127,7 @@ class TestClassroomAPIViews(TestCase):
         
         self.our_user = User.objects.create(username="testuser", password="abcde")
         
-        token = Token.objects.create(user=self.our_user)
+        self.token = Token.objects.create(user=self.our_user)
         print(self.token.key, "token")
         
         self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token.key)
