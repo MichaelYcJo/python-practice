@@ -1,8 +1,12 @@
 import sqlite3
 
+
+# 여러 서비스가 한개의 DB를 공유하는 구조이다.
+
 class MetaSingleton(type):
     _instances = {}
     
+    #__call__은 인스턴스가 호출되었을때 실행된다. 
     def __call__(cls, *args, **kwargs):
         if cls not in cls._instances:
             cls._instances[cls] = super(MetaSingleton, cls).__call__(*args, **kwargs)
