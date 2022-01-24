@@ -37,12 +37,12 @@ class USPizzaFactory(Pizzafactory):
 
 class VegaPizza(metaclass=ABCMeta):
     @abstractclassmethod
-    def prepare(self):
+    def prepare(self, VegPizza):
         pass
 
 class NonVegPizza(metaclass=ABCMeta):
     @abstractclassmethod
-    def serve(self):
+    def serve(self, VegPizza):
         pass
 
 class DeluxVeggiePizza(VegaPizza):
@@ -50,7 +50,7 @@ class DeluxVeggiePizza(VegaPizza):
         print("Prepare ", type(self).__name__)
 
 class ChickenPizza(NonVegPizza):
-    def serve(self):
+    def serve(self, VegPizza):
         print("Serve ", type(self).__name__)
     
 
