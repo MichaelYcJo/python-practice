@@ -5,6 +5,7 @@
 '''
 
 from abc import ABC, ABCMeta, abstractclassmethod
+from abstract_product import DeluxVeggiePizza, ChickenPizza, MexicanVegPizza, HamPizza
 
 class Pizzafactory(metaclass=ABCMeta):
     
@@ -35,46 +36,6 @@ class USPizzaFactory(Pizzafactory):
         return HamPizza()
     
 
-class VegaPizza(metaclass=ABCMeta):
-    @abstractclassmethod
-    def prepare(self, VegPizza):
-        pass
 
-class NonVegPizza(metaclass=ABCMeta):
-    @abstractclassmethod
-    def serve(self, VegPizza):
-        pass
-
-class DeluxVeggiePizza(VegaPizza):
-    def prepare(self):
-        print("Prepare ", type(self).__name__)
-
-class ChickenPizza(NonVegPizza):
-    def serve(self, VegPizza):
-        print("Serve ", type(self).__name__)
-    
-
-class MexicanVegPizza(VegaPizza):
-    def prepare(self):
-        print("Prepare ", type(self).__name__)
-
-class HamPizza(NonVegPizza):
-    def serve(self, VegPizza):
-        print(type(self).__name__, "is served with Ham on", 
-        type(VegPizza).__name__)
         
 
-class PizzaStore:
-    def __init__(self):
-        pass
-    
-    def makePizzas(self):
-        for factory in [IndianPizzaFactory(), USPizzaFactory()]:
-            self.factory = factory
-            self.NonVegPizza = self.factory.createNonVegPizza()
-            self.VegPizza = self.factory.createVegPizza()
-            self.VegPizza.prepare()
-            self.NonVegPizza.serve(self.VegPizza)
-            
-pizza = PizzaStore()
-pizza.makePizzas()
