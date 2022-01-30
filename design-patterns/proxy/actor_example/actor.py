@@ -1,4 +1,4 @@
-# Proxy 클래스
+# Proxy 클래스 : 클래스의 접근을 제어하는 클래스이다. 
 
 class Actor(object):
     def __init__(self):
@@ -28,5 +28,6 @@ class Agent(object):
 
 
 if __name__ == '__main__':
+    # r = Real Subject : RealSubject 는 Subject의 실 구현체다. 
     r = Agent()
     r.work()
