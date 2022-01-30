@@ -4,7 +4,7 @@ class You:
  
     def __init__(self):
         print("You: Lets buy some shoes")
-        self.devitCard = DebitCard()
+        self.debitCard = DebitCard()
         self.isPurchased = None
     
     def make_payment(self):
@@ -16,6 +16,3 @@ class You:
         else:
             print("You::I should earn more: (")
         
-
-you = You()
-you.make_payment()
