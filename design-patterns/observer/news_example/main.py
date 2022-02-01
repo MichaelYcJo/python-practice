@@ -1,4 +1,4 @@
-from observer.news_example.concrete_observer import EmailSubscriber, SMSSubscriber
+from concrete_observer import EmailSubscriber, SMSSubscriber
 from subject import NewsPublisher
 from concrete_observer import SMSSubscriber, EmailSubscriber, AnyOtherSubscriber
 
