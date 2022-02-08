@@ -1,11 +1,15 @@
+from enum import Enum
+
 from fastapi import FastAPI
 
 app = FastAPI()
 
-@app.get("/users/me")
-def get_current_user():
-    return {"user_id": 123}
+class UserLevel(str, Enum):
+    a = "a"
+    b = "b"
+    c = "c"
 
-@app.get("/users/{user_id}")
-def get_user(user_id: int):
-    return {"user_id": user_id}
+
+@app.get("/users")
+def get_users(grade: UserLevel):
+    return {"grade": grade}
