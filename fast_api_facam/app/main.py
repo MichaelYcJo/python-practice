@@ -1,7 +1,8 @@
 from typing import List
 
 
-from fastapi import Depends, FastAPI, Form, File, UploadFile, HTTPException
+from fastapi import Depends, FastAPI, Form, File, UploadFile, HTTPException, Request
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 
@@ -84,3 +85,22 @@ async def save_file(file: IO):
 async def store_file(file: UploadFile = File(...)):
     path = await save_file(file.file)
     return {"filepath": path}
+
+
+class SomeError(Exception):
+    def __init__(self, name: str, code: int):
+        self.name = name
+        self.code = code
+
+    def __str__(self):
+        return f"<{self.name}> is occured. code: <{self.code}>"
+
+@app.exception_handler(SomeError)
+async def some_error_handler(request: Request, exc: SomeError):
+    return JSONResponse(
+        content={"message": f"error is {exc.name}"}, status_code=exc.code
+    )
+
+@app.get("/error")
+async def get_error():
+    raise SomeError("500 error!", 500)
