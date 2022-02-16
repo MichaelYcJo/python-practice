@@ -95,12 +95,34 @@ class SomeError(Exception):
     def __str__(self):
         return f"<{self.name}> is occured. code: <{self.code}>"
 
+
 @app.exception_handler(SomeError)
 async def some_error_handler(request: Request, exc: SomeError):
     return JSONResponse(
         content={"message": f"error is {exc.name}"}, status_code=exc.code
     )
 
+
 @app.get("/error")
 async def get_error():
     raise SomeError("500 error!", 500)
+
+
+from typing import Any, Optional, Dict
+from fastapi import HTTPException
+
+class SomeFastAPIError(HTTPException):
+    def __init__(
+        self,
+        status_code: int,
+        detail: Any = None,
+        headers: Optional[Dict[str, Any]] = None,
+    ) -> None:
+        super().__init__(
+            status_code=status_code, detail=detail, headers=headers
+        )
+
+# 위와달리 exception handler 없이 처리할 수 있는것을 볼 수 있다.
+@app.get("/error")
+async def get_http_error():
+    raise SomeFastAPIError(500, "http errors")
