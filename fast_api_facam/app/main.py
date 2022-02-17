@@ -126,3 +126,26 @@ class SomeFastAPIError(HTTPException):
 @app.get("/error")
 async def get_http_error():
     raise SomeFastAPIError(500, "http errors")
+
+from typing import Any, Optional, Dict
+from fastapi import Depends
+
+items = ({"name": "Foo"}, {"name": "Bar"}, {"name": "Baz"})
+
+
+async def func_params(
+    q: Optional[str] = None, offset: int = 0, limit: int = 100
+) -> Dict[str, Any]:
+    return {"q": q, "offset": offset, "limit": limit}
+
+
+@app.get("/items/func")
+async def get_items_with_func(params: dict = Depends(func_params)):
+    response = {}
+    if params["q"]:
+        response.update({"q": params["q"]})
+
+    result = items[params["offset"]: params["offset"] + params["limit"]]
+    response.update({"items": result})
+
+    return response
