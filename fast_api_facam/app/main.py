@@ -199,3 +199,13 @@ async def get_items_with_pydantic(params: PydanticParams = Depends()):
     response.update({"items": result})
 
     return response
+
+from fastapi import Depends
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
+
+security = HTTPBasic()
+
+
+@app.get("/users/me")
+def get_current_user(credentials: HTTPBasicCredentials = Depends(security)):
+    return {"username": credentials.username, "password": credentials.password}
