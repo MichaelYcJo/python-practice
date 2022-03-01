@@ -1,4 +1,5 @@
-from typing import List, Optional
+from ast import alias
+from typing import Dict, List, Optional
 from fastapi import APIRouter, Body, Path, Query
 from pydantic import BaseModel
 
@@ -7,11 +8,17 @@ router = APIRouter(
     tags=['blog']
 )
 
+class Image(BaseModel):
+    url: str
+    alias: str
+
 class BlogModel(BaseModel):
     title : str
     content: str
     nb_comments: int
     published: Optional[bool]
+    tags: List[str] = []
+    metadata: Dict[str, str] = {"key1": "value1"}
 
 @router.post('/new')
 def create_blog(blog: BlogModel, id: int, version: int = 1):
