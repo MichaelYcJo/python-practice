@@ -19,6 +19,7 @@ class BlogModel(BaseModel):
     published: Optional[bool]
     tags: List[str] = []
     metadata: Dict[str, str] = {"key1": "value1"}
+    image: Optional[Image] = None
 
 @router.post('/new')
 def create_blog(blog: BlogModel, id: int, version: int = 1):
