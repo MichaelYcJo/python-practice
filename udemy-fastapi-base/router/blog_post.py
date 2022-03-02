@@ -52,3 +52,6 @@ def create_comment(blog: BlogModel, id: int,
         'versions':v,
         'comment_id': comment_id,
         }
+
+def required_functionality():
+    return {'message': 'This is a required functionality'}
