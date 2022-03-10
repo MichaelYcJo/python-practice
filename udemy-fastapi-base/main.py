@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse, PlainTextResponse
 from exceptions import StoryException
-from router import article, blog_get, blog_post, user
+from router import article, blog_get, blog_post, user, product
 from db import models
 from db.database import engine
 
@@ -10,6 +10,7 @@ app.include_router(article.router)
 app.include_router(user.router)
 app.include_router(blog_get.router)
 app.include_router(blog_post.router)
+app.include_router(product.router)
 
 @app.get('/hello')
 def index():
