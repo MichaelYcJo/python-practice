@@ -1,3 +1,4 @@
+from typing import Optional, List
 from fastapi import APIRouter, Header, Cookie, Form
 from fastapi.responses import Response, HTMLResponse, PlainTextResponse
 
@@ -14,6 +15,15 @@ def get_all_products():
   # return products
   data = " ".join(products)
   return Response(content=data, media_type="text/plain")
+
+
+@router.get('/withheader')
+def get_products(
+  response: Response,
+  custom_header: Optional[List[str]] = Header(None)
+):
+  response.headers['X-Custom-Header'] = ", ".join(custom_header)
+  return products
 
 
 @router.get('/{id}', responses={
