@@ -1,6 +1,8 @@
+aiofile==3.7.4
 anyio==3.5.0
 asgiref==3.5.0
 bcrypt==3.2.0
+caio==0.9.5
 cffi==1.15.0
 click==8.0.4
 colorama==0.4.4
