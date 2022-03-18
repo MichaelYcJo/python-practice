@@ -16,6 +16,8 @@ greenlet==1.1.2
 h11==0.13.0
 idna==3.3
 iniconfig==1.1.1
+Jinja2==3.0.3
+MarkupSafe==2.1.1
 packaging==21.3
 passlib==1.7.4
 pluggy==1.0.0
