@@ -1,4 +1,4 @@
-from os import name
+import time
 from fastapi.exceptions import HTTPException
 from fastapi.responses import PlainTextResponse
 from exceptions import StoryException
@@ -39,6 +39,15 @@ def story_exception_handler(request: Request, exc: StoryException):
 #   return PlainTextResponse(str(exc), status_code=400)
 
 models.Base.metadata.create_all(engine)
+
+@app.middleware("http")
+async def add_middleware(request: Request, call_next):
+  start_time = time.time()
+  response = await call_next(request)
+  duration = time.time() - start_time
+  response.headers['duration'] = str(duration)
+  return response
+
 
 origins = [
   'http://localhost:3000'
