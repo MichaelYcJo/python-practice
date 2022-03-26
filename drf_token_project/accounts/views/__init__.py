@@ -1,0 +1,1 @@
+from accounts.views.sign_up_view import sign_up 
