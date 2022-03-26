@@ -33,18 +33,22 @@ PROJECT_APPS = [
 
 THIRD_PARTY_APPS = [
     'rest_framework',
-    'rest_framework.authtoken',
-
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
 
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
-    ]
-}
+REST_AUTH_TOKEN_MODEL = "accounts.models.Token"
+REST_AUTH_TOKEN_CREATOR = "accounts.utils.custom_create_token"
 
+import datetime
+TOKEN_TTL = datetime.timedelta(days=1)
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "config.authentication.ExpiringTokenAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ),
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
