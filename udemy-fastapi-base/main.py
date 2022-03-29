@@ -4,7 +4,7 @@ from fastapi.responses import PlainTextResponse
 from exceptions import StoryException
 from fastapi import FastAPI, WebSocket
 from fastapi.responses import HTMLResponse
-from router import blog_get, blog_post, user, article, product, file
+from router import blog_get, blog_post, user, article, product, file, dependencies
 from auth import authentication
 from templates import templates
 from client import html 
@@ -16,6 +16,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
+app.include_router(dependencies.router)
 app.include_router(templates.router)
 app.include_router(authentication.router)
 app.include_router(file.router)
