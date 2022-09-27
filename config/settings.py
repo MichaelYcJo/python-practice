@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 import os
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
-
+from google.oauth2 import service_account
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -31,6 +31,8 @@ ALLOWED_HOSTS = [
     ".elasticbeanstalk.com",
     "localhost",
     "127.0.0.1",
+    "airbnb-clone-avmbbmlm7q-df.a.run.app",
+    os.environ.get('CURRENT_HOST', 'localhost'),
 ]
 
 
@@ -95,26 +97,40 @@ WSGI_APPLICATION = "config.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-if DEBUG:
+# if DEBUG:
 
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
-        }
+#     DATABASES = {
+#         "default": {
+#             "ENGINE": "django.db.backends.sqlite3",
+#             "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
+#         }
+#     }
+# else:
+    #AWS
+    # DATABASES = {
+    #     "default": {
+    #         "ENGINE": "django.db.backends.postgresql",
+    #         "HOST": os.environ.get("RDS_HOST"),
+    #         "NAME": os.environ.get("RDS_NAME"),
+    #         "USER": os.environ.get("RDS_USER"),
+    #         "PASSWORD": os.environ.get("RDS_PASSWORD"),
+    #         "PORT": "5432",
+    #     }
+    # }
+DATABASES = {
+'default': {
+    'ENGINE': 'django.db.backends.postgresql',
+    'HOST': os.environ['DB_HOST'],
+    'PORT': os.environ['DB_PORT'],
+    'NAME': os.environ['DB_NAME'],
+    'USER': os.environ['DB_USER'],
+    'PASSWORD': os.environ['DB_PASSWORD']
     }
-else:
+}
 
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "HOST": os.environ.get("RDS_HOST"),
-            "NAME": os.environ.get("RDS_NAME"),
-            "USER": os.environ.get("RDS_USER"),
-            "PASSWORD": os.environ.get("RDS_PASSWORD"),
-            "PORT": "5432",
-        }
-    }
+
+
+
 
 
 # Password validation
@@ -179,17 +195,17 @@ LOCALE_PATHS = (os.path.join(BASE_DIR, "locale"),)
 
 if not DEBUG:
     # Sentry
-    DEFAULT_FILE_STORAGE = "config.custom_storages.UploadStorage"
-    STATICFILES_STORAGE = "config.custom_storages.StaticStorage"
-    AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
-    AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
-    AWS_STORAGE_BUCKET_NAME = "airbnb-clone2020"
-    AWS_AUTO_CREATE_BUCKET = True
-    AWS_BUCKET_ACL = "public-read"
+    # DEFAULT_FILE_STORAGE = "config.custom_storages.UploadStorage"
+    # STATICFILES_STORAGE = "config.custom_storages.StaticStorage"
+    # AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
+    # AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
+    # AWS_STORAGE_BUCKET_NAME = "airbnb-clone2020"
+    # AWS_AUTO_CREATE_BUCKET = True
+    # AWS_BUCKET_ACL = "public-read"
 
-    AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
-    AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
-    STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/static/"
+    # AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
+    # AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
+    # STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/static/"
     # send_default_pill -> 유저가 어떻게 에러를 접헀는지 알려줌
 
     sentry_sdk.init(
@@ -197,3 +213,26 @@ if not DEBUG:
         integrations=[DjangoIntegration()],
         send_default_pii=True,
     )
+
+GOOGLE_APPLICATION_CREDENTIALS = os.path.join(BASE_DIR, 'service-account.json')
+DEFAULT_FILE_STORAGE = 'config.storage_backends.GoogleCloudMediaStorage'
+STATICFILES_STORAGE = 'config.storage_backends.GoogleCloudStaticStorage'
+GS_PROJECT_ID = 'airbnbclone-296113'
+GS_MEDIA_BUCKET_NAME = 'airbnb2020-bucket-media'
+GS_STATIC_BUCKET_NAME = 'airbnb2020-bucket-static'
+GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+    GOOGLE_APPLICATION_CREDENTIALS
+)
+
+# Static files (CSS, JavaScript, Images)
+STATIC_URL = 'https://storage.googleapis.com/{}/'.format(GS_STATIC_BUCKET_NAME)
+# collect static directory (located OUTSIDE the base directory)
+# TODO: configure the name and path to your static bucket directory (where collectstatic will copy to)
+STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'static')
+STATICFILES_DIRS = [
+    # TODO: configure the name and path to your development static directory
+    os.path.join(BASE_DIR, 'static'),  # static directory (in the top level directory) for local testing
+]
+
+MEDIA_URL = 'https://storage.googleapis.com/{}/'.format(GS_MEDIA_BUCKET_NAME)
+
