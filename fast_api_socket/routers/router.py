@@ -3,7 +3,6 @@ import logging
 from socket import AF_INET, SOCK_STREAM, socket
 
 from typing import Optional
-from urllib import parse
 
 from fastapi import APIRouter
 from pydantic import BaseModel
@@ -20,21 +19,25 @@ class RequestText(BaseModel):
 
 
 
-@router.post("/76050-report")
+@router.post("/report")
 async def tcp_client_socket(
     request_text: RequestText, server_type: Optional[str] = None
 ) -> str:
 
-    print('하이')
+    print('서버타입', server_type)
 
-    if server_type == 'stage':
-        # 포트및 ip 스테이징모드로
-        print('스테이징')
+    if server_type == 'stg':
+        HOST = "127.0.0.1"
+        PORT = 10001
+    elif server_type == 'prod':
+        HOST = "127.0.0.1"
+        PORT = 10002
     else:
         HOST = "127.0.0.1"
         PORT = 10000
-        BUF_SIZE = 1024
-        ADDR = (HOST, PORT)
+
+    BUF_SIZE = 1024
+    ADDR = (HOST, PORT)
 
     print('확인확인', request_text)
 
