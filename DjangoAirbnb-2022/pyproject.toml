@@ -2,11 +2,11 @@
 name = "airbnb-clone-backend"
 version = "0.1.0"
 description = ""
-authors = ["니꼬 <nico@nomadcoders.co>"]
+authors = ["michael"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.11"
 Django = "^4.1"
 Pillow = "^9.2.0"
 djangorestframework = "^3.13.1"
