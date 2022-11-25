@@ -11,4 +11,4 @@ class RoomSerializer(ModelSerializer):
     class Meta:
         model = Room
         fields = "__all__"
-        depth = 1
+        depth = 1 # ID값을 기반으로 해당하는 Object 데이터를 가져온다
