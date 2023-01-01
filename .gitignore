@@ -239,3 +239,5 @@ yarn-debug.log*
 yarn-error.log*
 
 staticfiles
+
+.idea
