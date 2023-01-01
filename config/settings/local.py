@@ -1,6 +1,7 @@
 from .base import *
 from decouple import config
 
+TEST = config("TEST", default="False") == "True"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -13,13 +14,24 @@ ALLOWED_HOSTS = ['*']
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": 'michael_shop',
-        "USER": 'michael',
-        "PASSWORD":  config('POSTGRES_PASSWORD'),
-        "HOST": '158.247.224.15',
-        "PORT": 5432,
+if TEST:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": "db.sqlite3",
+            "TEST": {
+                "NAME": "db.sqlite3",
+            },
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            "NAME": config("ENV_DATABASE_NAME"),
+            "USER": config("ENV_DATABASE_USER"),
+            "PASSWORD": config("ENV_DATABASE_PASSWORD"),
+            "HOST": config("ENV_DATABASE_HOST"),
+            "PORT": config("ENV_DATABASE_PORT"),
+        }
+    }
