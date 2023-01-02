@@ -35,38 +35,30 @@ class ProductListAPI(views.APIView):
                 "email": serializers.CharField(),
             },
         )
+        parent_category = serializers.IntegerField(source="_parent_category")
         category = inline_serializer(
             fields={
                 "id": serializers.IntegerField(),
                 "name": serializers.CharField(),
                 "depth": serializers.IntegerField(),
-                # TODO parent_category
-                "parent_category": inline_serializer(
-                    fields={
-                        "id": serializers.IntegerField(),
-                        "name": serializers.CharField(),
-                    },
-                ),
             },
         )
 
-        name = serializers.CharField(label="Product Name")
-        product_image1 = serializers.ImageField(label="Product Image1")
-        product_image2 = serializers.ImageField(label="Product Image2")
-        brand = serializers.CharField(label="Product Brand")
-        description = serializers.CharField(label="Product Description")
-        weight = serializers.CharField(label="Product Weight")
-        dimensions = serializers.CharField(label="Product Dimensions")
-        materials = serializers.CharField(label="Product Materials")
-        other_info = serializers.CharField(label="Product Other Info")
-        price = serializers.IntegerField(label="Product Price")
-        count_in_stock = serializers.IntegerField(label="Product Count In Stock")
-        recommendation_rank = serializers.IntegerField(
-            label="Product Recommendation Rank"
-        )
-        product_status = serializers.CharField(label="Product Status")
-        is_new = serializers.BooleanField(label="Product Is New")
-        url_path = serializers.CharField(label="Product URL Path")
+        name = serializers.CharField(label="상품명")
+        product_image1 = serializers.ImageField(label="상품 이미지1")
+        product_image2 = serializers.ImageField(label="상품 이미지2")
+        brand = serializers.CharField(label="브랜드")
+        description = serializers.CharField(label="상품 설명")
+        weight = serializers.CharField(label="무게")
+        dimensions = serializers.CharField(label="크기")
+        materials = serializers.CharField(label="재질")
+        other_info = serializers.CharField(label="기타 정보")
+        price = serializers.IntegerField(label="가격")
+        count_in_stock = serializers.IntegerField(label="재고 수량")
+        recommendation_rank = serializers.IntegerField(label="추천 순위")
+        product_status = serializers.CharField(label="상품 상태")
+        is_new = serializers.BooleanField(label="신상품 여부")
+        url_path = serializers.CharField(label="상품 URL")
 
         class Meta:
             ref_name = "product_list_output"
