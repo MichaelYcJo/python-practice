@@ -79,8 +79,8 @@ class ProductListAPI(views.APIView):
 
 
 @api_view(["GET"])
-def product_detail(request, pk):
-    product = Product.objects.get(pk=pk)
+def product_detail(request, product_id):
+    product = Product.objects.get(id=product_id)
     serializer = ProductSerializer(product, many=False)
     return Response(serializer.data)
 
