@@ -6,7 +6,6 @@ import { createStore, applyMiddleware } from "redux";
 import thunk from "redux-thunk";
 import { save, load } from "redux-localstorage-simple";
 import { Provider } from "react-redux";
-import { fetchProducts } from "./redux/actions/productActions";
 import rootReducer from "./redux/reducers/rootReducer";
 import { RecoilRoot } from 'recoil'
 import products from "./data/products.json";
@@ -23,7 +22,7 @@ const store = createStore(
 );
 
 // fetch products from json file
-store.dispatch(fetchProducts(products));
+
 
 ReactDOM.render(
   <RecoilRoot>
