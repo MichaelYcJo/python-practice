@@ -24,7 +24,8 @@ const ProductDetail = ({ location }) => {
         );
       }
   }
-    const product = getProduct(products, productID)[0];
+
+  const product = getProduct(products, productID)[0];
 
   return (
     <Fragment>
