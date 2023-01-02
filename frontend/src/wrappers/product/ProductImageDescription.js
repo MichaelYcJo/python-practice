@@ -19,10 +19,10 @@ const ProductImageDescription = ({
   compareItems
 }) => {
   const wishlistItem = wishlistItems.filter(
-    wishlistItem => wishlistItem.pk === product.pk
+    wishlistItem => wishlistItem.pk === product.id
   )[0];
   const compareItem = compareItems.filter(
-    compareItem => compareItem.pk === product.pk
+    compareItem => compareItem.pk === product.id
   )[0];
   const { addToast } = useToasts();
 

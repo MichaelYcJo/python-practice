@@ -43,7 +43,7 @@ const ProductMainContent = ({
         >
           <div className="product-img">
 
-            <Link to={process.env.PUBLIC_URL + "/men/clothes/" + product.pk}>
+            <Link to={process.env.PUBLIC_URL + "/men/clothes/" + product.id}>
               <img
                 className="default-img"
                 src={ REACT_BACKEND_URL + product.product_image1}
@@ -90,7 +90,7 @@ const ProductMainContent = ({
                 </a>
               ) : product.variation && product.variation.length >= 1 ? (
                 <Link
-                  to={`${process.env.PUBLIC_URL}${product.url_path}${product.pk}`}
+                  to={`${process.env.PUBLIC_URL}${product.url_path}${product.id}`}
                   title="Select options"
                 >
                   <i className="fa fa-cog"></i>
@@ -142,7 +142,7 @@ const ProductMainContent = ({
               }`}
             >
               <h3>
-                <Link to={process.env.PUBLIC_URL + product.url_path + product.pk}>
+                <Link to={process.env.PUBLIC_URL + product.url_path + product.id}>
                   {product.name}
                 </Link>
               </h3>

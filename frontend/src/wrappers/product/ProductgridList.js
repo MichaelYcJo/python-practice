@@ -23,7 +23,7 @@ const ProductGrid = ({
       {products.map(product => {
         return (
           <ProductGridListSingle
-            key={product.pk}
+            key={product.id}
             sliderClassName={sliderClassName}
             spaceBottomClass={spaceBottomClass}
             product={product}
@@ -32,16 +32,16 @@ const ProductGrid = ({
             addToWishlist={addToWishlist}
             addToCompare={addToCompare}
             cartItem={
-              cartItems.filter(cartItem => cartItem.pk === product.pk)[0]
+              cartItems.filter(cartItem => cartItem.pk === product.id)[0]
             }
             wishlistItem={
               wishlistItems.filter(
-                wishlistItem => wishlistItem.pk === product.pk
+                wishlistItem => wishlistItem.pk === product.id
               )[0]
             }
             compareItem={
               compareItems.filter(
-                compareItem => compareItem.pk === product.pk
+                compareItem => compareItem.pk === product.id
               )[0]
             }
           />

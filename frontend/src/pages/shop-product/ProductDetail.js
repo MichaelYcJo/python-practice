@@ -20,7 +20,7 @@ const ProductDetail = ({ location }) => {
   const getProduct = (products, productID ) => {
     if (products && productID) {
         return products.filter(
-          product => product.pk === productID
+          product => product.id === productID
         );
       }
   }

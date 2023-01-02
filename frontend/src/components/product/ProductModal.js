@@ -103,7 +103,7 @@ function ProductModal(props) {
               <div className="product-large-image-wrapper">
                 <Swiper {...gallerySwiperParams}>
                   {product.product_image1 &&
-                        <div key={product.pk}>
+                        <div key={product.id}>
                           <div className="single-image">
                             <img
                               src={REACT_BACKEND_URL + product.product_image1}

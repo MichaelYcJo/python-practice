@@ -12,7 +12,7 @@ const wishlistReducer = (state = initState, action) => {
 
   if (action.type === ADD_TO_WISHLIST) {
     const wishlistItem = wishlistItems.filter(
-      item => item.pk === product.pk
+      item => item.pk === product.id
     )[0];
     if (wishlistItem === undefined) {
       return [...wishlistItems, product];
@@ -23,7 +23,7 @@ const wishlistReducer = (state = initState, action) => {
 
   if (action.type === DELETE_FROM_WISHLIST) {
     const remainingItems = (wishlistItems, product) =>
-      wishlistItems.filter(wishlistItem => wishlistItem.pk !== product.pk);
+      wishlistItems.filter(wishlistItem => wishlistItem.pk !== product.id);
     return remainingItems(wishlistItems, product);
   }
 

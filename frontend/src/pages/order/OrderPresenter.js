@@ -66,7 +66,7 @@ const OrderPresenter = ({
                                                 to={
                                                   process.env.PUBLIC_URL +
                                                   product.product.url_path +
-                                                  product.product.pk
+                                                  product.product.id
                                                 }
                                               >
                                           {product.product.name}
