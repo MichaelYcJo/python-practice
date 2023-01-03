@@ -1,7 +1,12 @@
 from rest_framework.views import APIView
 from rest_framework.status import HTTP_204_NO_CONTENT
 from rest_framework.response import Response
-from rest_framework.exceptions import NotFound, NotAuthenticated, ParseError
+from rest_framework.exceptions import (
+    NotFound,
+    NotAuthenticated,
+    ParseError,
+    PermissionDenied,
+)
 from django.db import transaction
 from categories.models import Category
 from rooms.models import Amenity, Room
@@ -56,12 +61,16 @@ class AmenityDetail(APIView):
         amenity = self.get_object(pk)
         amenity.delete()
         return Response(status=HTTP_204_NO_CONTENT)
-    
+
 
 class Rooms(APIView):
     def get(self, request):
         all_rooms = Room.objects.all()
-        serializer = RoomListSerializer(all_rooms, many=True)
+        serializer = RoomListSerializer(
+            all_rooms,
+            many=True,
+            context={"request": request},
+        )
         return Response(serializer.data)
 
     def post(self, request):
@@ -77,7 +86,6 @@ class Rooms(APIView):
                         raise ParseError("The category kind should be 'rooms'")
                 except Category.DoesNotExist:
                     raise ParseError("Category not found")
-
                 try:
                     with transaction.atomic():
                         room = serializer.save(
@@ -92,7 +100,6 @@ class Rooms(APIView):
                         return Response(serializer.data)
                 except Exception:
                     raise ParseError("Amenity not found")
-
             else:
                 return Response(serializer.errors)
         else:
@@ -108,5 +115,25 @@ class RoomDetail(APIView):
 
     def get(self, request, pk):
         room = self.get_object(pk)
-        serializer = RoomDetailSerializer(room)
+        serializer = RoomDetailSerializer(
+            room,
+            context={"request": request},
+        )
         return Response(serializer.data)
+
+    def put(self, request, pk):
+        room = self.get_object(pk)
+        if not request.user.is_authenticated:
+            raise NotAuthenticated
+        if room.owner != request.user:
+            raise PermissionDenied
+        # your magic
+
+    def delete(self, request, pk):
+        room = self.get_object(pk)
+        if not request.user.is_authenticated:
+            raise NotAuthenticated
+        if room.owner != request.user:
+            raise PermissionDenied
+        room.delete()
+        return Response(status=HTTP_204_NO_CONTENT)
