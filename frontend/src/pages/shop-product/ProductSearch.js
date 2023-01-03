@@ -13,7 +13,7 @@ import ShopProducts from '../../wrappers/product/ShopProducts';
 import { productSearchSelector } from "recoil/productRecoil";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 
-const ProdutSearch = ({location}) => {
+const ProductSearch = ({location}) => {
     const [layout, setLayout] = useState('grid three-column');
     const [sortType, setSortType] = useState('');
     const [sortValue, setSortValue] = useState('');
@@ -104,10 +104,10 @@ const ProdutSearch = ({location}) => {
     )
 }
 
-ProdutSearch.propTypes = {
+ProductSearch.propTypes = {
   location: PropTypes.object,
   products: PropTypes.array
 }
 
 
-export default ProdutSearch;
+export default ProductSearch;
