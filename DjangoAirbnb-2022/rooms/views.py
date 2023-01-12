@@ -1,7 +1,6 @@
-from django.db import transaction
 from django.conf import settings
-
 from rest_framework.views import APIView
+from django.db import transaction
 from rest_framework.status import HTTP_204_NO_CONTENT
 from rest_framework.response import Response
 from rest_framework.exceptions import (
@@ -10,10 +9,9 @@ from rest_framework.exceptions import (
     ParseError,
     PermissionDenied,
 )
-
+from .models import Amenity, Room
 from categories.models import Category
-from rooms.models import Amenity, Room
-from rooms.serializers import AmenitySerializer, RoomListSerializer, RoomDetailSerializer
+from .serializers import AmenitySerializer, RoomListSerializer, RoomDetailSerializer
 from reviews.serializers import ReviewSerializer
 from medias.serializers import PhotoSerializer
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
@@ -145,6 +143,9 @@ class RoomDetail(APIView):
 
 
 class RoomReviews(APIView):
+
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
     def get_object(self, pk):
         try:
             return Room.objects.get(pk=pk)
@@ -166,6 +167,16 @@ class RoomReviews(APIView):
             many=True,
         )
         return Response(serializer.data)
+
+    def post(self, request, pk):
+        serializer = ReviewSerializer(data=request.data)
+        if serializer.is_valid():
+            review = serializer.save(
+                user=request.user,
+                room=self.get_object(pk),
+            )
+            serializer = ReviewSerializer(review)
+            return Response(serializer.data)
 
 
 class RoomPhotos(APIView):
