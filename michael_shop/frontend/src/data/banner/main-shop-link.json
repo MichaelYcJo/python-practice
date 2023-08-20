@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "image": "/media/img/banner/man-shop-link.jpg",
+    "title": "Men Fashion Shop",
+    "subtitle": "Choose Your Products Here",
+    "link": "/men/clothes/list",
+    "textAlign": "right"
+  },
+  {
+    "id": 2,
+    "image": "/media/img/banner/women-shop-link.jpeg",
+    "title": "Women Fashion Shop",
+    "subtitle": "Choose Your Products Here",
+    "link": "/women/clothes/list",
+    "textAlign": "left"
+  }
+]
