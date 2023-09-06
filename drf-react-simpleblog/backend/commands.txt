@@ -1,9 +1,0 @@
-py manage.py makemigrations --dry-run --verbosity 3
-//https://runebook.dev/ko/docs/django/ref/django-admin
-
-py manage.py runserver
-py manage.py createsuperuser 
-pip install coverage
-coverage run --omit='*/venv/*' manage.py test
-coverage html
-pip install djangorestframework
