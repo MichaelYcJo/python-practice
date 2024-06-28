@@ -1,8 +1,10 @@
+from bson import ObjectId
 from djongo import models
 from django.utils import timezone
 
 
 class Author(models.Model):
+    _id = models.ObjectIdField(default=ObjectId, primary_key=True, editable=False)
     name = models.CharField(max_length=100)
     bio = models.TextField()
 
