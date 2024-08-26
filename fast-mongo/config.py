@@ -14,4 +14,4 @@ DATABASE_URL = os.environ.get("DATABASE_URL")
 client = MongoClient(DATABASE_URL)
 
 db = client.todo_db
-collection = db("todo_data")
+collection = db["todo_data"]
