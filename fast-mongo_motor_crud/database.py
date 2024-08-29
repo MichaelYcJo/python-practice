@@ -5,7 +5,6 @@ from config import DATABASE_URL
 
 class MongoDB:
     def __init__(self, uri: str):
-        print("흠", uri)
         self.client = AsyncIOMotorClient(uri)
         self.db = self.client["practice_db"]
 
