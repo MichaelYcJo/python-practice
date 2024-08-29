@@ -3,6 +3,11 @@ from database import mongo_instance
 from schemas import BlogPostEmbedding, BlogPostReferencing, CommentReferencing
 from mock_data import generate_mock_data_embedding, generate_mock_data_referencing
 
+# solution:  https://stackoverflow.com/questions/76727389/why-doesnt-fastapi-return-my-mongodb-objects
+from fastapi.encoders import ENCODERS_BY_TYPE
+
+ENCODERS_BY_TYPE[ObjectId] = str
+
 
 # Embedding 패턴 CRUD
 async def create_post_embedding(post: BlogPostEmbedding):
