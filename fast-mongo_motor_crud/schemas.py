@@ -16,6 +16,7 @@ class BlogPostEmbedding(BaseModel):
 class BlogPostReferencing(BaseModel):
     title: str
     content: str
+    comment_ids: Optional[List[str]] = Field(default=[])
 
 
 class CommentReferencing(BaseModel):
