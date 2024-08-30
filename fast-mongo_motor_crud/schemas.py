@@ -3,6 +3,7 @@ from typing import List, Optional
 
 
 class Comment(BaseModel):
+    post_id: str
     author: str
     content: str
 

@@ -1,7 +1,10 @@
 from bson import ObjectId
 from database import mongo_instance
 from schemas import BlogPostEmbedding, BlogPostReferencing, CommentReferencing
-from mock_data import generate_mock_post_referencing, generate_mock_comments_referencing
+from mock_data import (
+    generate_mock_comments_embedding,
+    generate_mock_comments_referencing,
+)
 
 # solution:  https://stackoverflow.com/questions/76727389/why-doesnt-fastapi-return-my-mongodb-objects
 from fastapi.encoders import ENCODERS_BY_TYPE
@@ -11,7 +14,7 @@ ENCODERS_BY_TYPE[ObjectId] = str
 
 # Embedding 패턴 CRUD
 async def create_post_embedding(post: BlogPostEmbedding):
-    collection = mongo_instance.get_collection("blog_posts_embedding")
+    post_collection = mongo_instance.get_collection("blog_posts_embedding")
 
     # generate_mock_data_embedding 함수는 따로 변경할 필요 없음
     post = BlogPostEmbedding(
@@ -20,7 +23,21 @@ async def create_post_embedding(post: BlogPostEmbedding):
         comments=[],  # 기본적으로 댓글이 없는 상태로 생성
     )
 
-    result = await collection.insert_one(post.model_dump())
+    result = await post_collection.insert_one(post.model_dump())
+    post_id = str(result.inserted_id)
+
+    comments = generate_mock_comments_embedding(post_id=post_id)
+    comments_list = []
+    comment_collection = mongo_instance.get_collection("comments_embedding")
+    for comment in comments:
+        await comment_collection.insert_one(comment.model_dump())
+        comments_list.append(comment.model_dump())
+
+    await post_collection.update_one(
+        {"_id": ObjectId(post_id)}, {"$set": {"comments": comments_list}}
+    )
+
+    result = await post_collection.insert_one(post.model_dump())
     return str(result.inserted_id)
 
 

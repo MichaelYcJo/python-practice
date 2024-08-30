@@ -6,11 +6,16 @@ def generate_mock_data_embedding() -> BlogPostEmbedding:
     return BlogPostEmbedding(
         title="Sample Post with Embedding",
         content="This is a sample post using embedding pattern.",
-        comments=[
-            Comment(author="Alice", content="Nice post!"),
-            Comment(author="Bob", content="Very informative."),
-        ],
+        comments=[],
     )
+
+
+def generate_mock_comments_embedding(post_id: str) -> list[Comment]:
+    """Embedding 패턴을 위한 목 댓글 데이터를 생성합니다."""
+    return [
+        Comment(post_id=post_id, author="Alice", content="Nice post!"),
+        Comment(post_id=post_id, author="Bob", content="Very informative."),
+    ]
 
 
 def generate_mock_post_referencing() -> BlogPostReferencing:
