@@ -15,8 +15,8 @@ async def test_shop_insert_one() -> None:
     ]
 
     # When
-    shop = await ShopCollection.insert_one(name=name, category_codes=category_codes, delivery_areas=delivery_areas)
-    cursor = ShopCollection._collection.find({})
+    shop = await ShopCollection.insert_one(name, category_codes, delivery_areas)
+    cursor = await ShopCollection._collection.find({})
     results = await cursor.to_list(None)
 
     # Then
