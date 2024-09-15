@@ -2,8 +2,10 @@ from app.entities.category.category_codes import CategoryCode
 from app.entities.collections.geo_json import GeoJsonPolygon
 from app.entities.collections.shop.shop_collection import ShopCollection
 from app.entities.collections.shop.shop_document import ShopDeliveryAreaSubDocument
+import pytest
 
 
+@pytest.mark.asyncio
 async def test_shop_insert_one() -> None:
     # Given
     name = "치킨집"
@@ -16,8 +18,7 @@ async def test_shop_insert_one() -> None:
 
     # When
     shop = await ShopCollection.insert_one(name, category_codes, delivery_areas)
-    cursor = await ShopCollection._collection.find({})
-    results = await cursor.to_list(None)
+    results = await ShopCollection._collection.find({}).to_list(None)
 
     # Then
     assert len(results) == 1
