@@ -12,3 +12,6 @@ class GeoJsonPolygon:
 class GeoJsonPoint:
     coordinates: Sequence[float]
     type: Literal["Point"] = "Point"
+
+
+# point = dataclasses.asdict(GeoJsonPoint(coordinates=[127.027667, 37.498563]))
