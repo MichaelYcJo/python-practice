@@ -16,6 +16,16 @@ class ShopCollection:
     _collection = AsyncIOMotorCollection(db, "shops")
 
     @classmethod
+    async def get_distinct_category_codes_by_point_intersects(cls, point: GeoJsonPoint) -> list[CategoryCode]:
+        return [
+            CategoryCode(category_code)
+            for category_code in await cls._collection.distinct(
+                "category_codes",
+                {"delivery_areas.poly": {"$geoIntersects": {"$geometry": asdict(point)}}},
+            )
+        ]
+
+    @classmethod
     async def point_intersects(cls, point: GeoJsonPoint) -> list[ShopDocument]:
         return [
             cls._parse(result)

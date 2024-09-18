@@ -94,3 +94,59 @@ async def test_shop_point_intersects_when_it_has_multiple_delivery_area() -> Non
     # Then
     assert len(result) == 1
     assert result[0].name == "치킨집"
+
+
+async def test_shop_get_distinct_category_codes_by_point_intersects() -> None:
+    # Given
+    await asyncio.gather(
+        ShopCollection.insert_one(
+            "치킨집",
+            [CategoryCode.CHICKEN],
+            [
+                ShopDeliveryAreaSubDocument(
+                    poly=GeoJsonPolygon(coordinates=[[[0, 0], [0, 10], [10, 10], [10, 0], [0, 0]]]),
+                ),
+                ShopDeliveryAreaSubDocument(
+                    poly=GeoJsonPolygon(coordinates=[[[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]]]),
+                ),
+            ],
+        ),
+        ShopCollection.insert_one(
+            "치킨집2",
+            [CategoryCode.CHICKEN],
+            [
+                ShopDeliveryAreaSubDocument(
+                    poly=GeoJsonPolygon(coordinates=[[[0, 0], [0, 9], [9, 9], [9, 0], [0, 0]]]),
+                ),
+                ShopDeliveryAreaSubDocument(
+                    poly=GeoJsonPolygon(coordinates=[[[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]]]),
+                ),
+            ],
+        ),
+        ShopCollection.insert_one(
+            "피자집",
+            [CategoryCode.PIZZA],
+            [
+                ShopDeliveryAreaSubDocument(
+                    poly=GeoJsonPolygon(coordinates=[[[0, 0], [0, 2], [2, 2], [2, 0], [0, 0]]]),
+                ),
+            ],
+        ),
+        ShopCollection.insert_one(
+            "버거집",
+            [CategoryCode.BURGER],
+            [
+                ShopDeliveryAreaSubDocument(
+                    poly=GeoJsonPolygon(coordinates=[[[0, 0], [0, 9], [9, 9], [9, 0], [0, 0]]]),
+                ),
+            ],
+        ),
+    )
+
+    # When
+    result_codes = await ShopCollection.get_distinct_category_codes_by_point_intersects(
+        GeoJsonPoint(coordinates=[5, 5])
+    )
+
+    # Then
+    assert all(code in result_codes for code in [CategoryCode.CHICKEN, CategoryCode.BURGER])
