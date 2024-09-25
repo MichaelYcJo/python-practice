@@ -1,8 +1,10 @@
 from fastapi import FastAPI, HTTPException
+from exceptions.error_list import PostExceptions
 from schemas import BlogPostEmbedding, BlogPostReferencing, CommentReferencing
 import services
 
 app = FastAPI()
+app.add_exception_handler(HTTPException, services.global_exception_handler)
 
 
 @app.post("/posts/embedding")
@@ -15,7 +17,7 @@ async def create_post_embedding(post: BlogPostEmbedding):
 async def get_post_embedding(post_id: str):
     post = await services.get_post_embedding(post_id)
     if post is None:
-        raise HTTPException(status_code=404, detail="Post not found")
+        raise PostExceptions.NotFoundPost()
     return post
 
 
