@@ -1,6 +1,7 @@
 from dataclasses import asdict
 from typing import Any
 
+import pymongo
 from motor.motor_asyncio import AsyncIOMotorCollection
 
 from app.entities.category.category_codes import CategoryCode
@@ -10,7 +11,6 @@ from app.entities.collections.shop.shop_document import (
     ShopDocument,
 )
 from app.utils.mongo import db
-import pymongo
 
 
 class ShopCollection:

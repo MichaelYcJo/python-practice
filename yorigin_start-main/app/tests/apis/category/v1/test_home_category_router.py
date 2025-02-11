@@ -45,7 +45,8 @@ async def test_api_get_categories_distinct() -> None:
     )
 
     # When
-    # 직접 작성!
+    async with AsyncClient(app=app, base_url="http://test") as client:
+        response = await client.get("/v1/home_categories/distinct?longitude=127.005&latitude=37.611")
 
     # Then
     assert response.status_code == status.HTTP_200_OK

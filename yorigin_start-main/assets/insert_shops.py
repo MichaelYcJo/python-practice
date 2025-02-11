@@ -3,10 +3,9 @@ import json
 import os
 from pathlib import Path
 
+from dotenv import load_dotenv
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection
 from pymongo.errors import BulkWriteError
-
-from dotenv import load_dotenv
 
 # .env 파일 로드
 env_path = Path(__file__).parent.parent / ".env"
