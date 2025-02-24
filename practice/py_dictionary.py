@@ -1,29 +1,42 @@
-from PyDictionary import PyDictionary
+import nltk
+from nltk.corpus import wordnet
+
+# WordNet 데이터 다운로드 (최초 1회 실행 필요)
+nltk.download("wordnet")
+nltk.download("omw-1.4")
 
 
 def get_word_meaning(word):
     """영어 단어의 뜻, 동의어, 반의어를 가져오는 함수"""
-    dictionary = PyDictionary()
+    synsets = wordnet.synsets(word)
 
-    # 단어 뜻 가져오기
-    meaning = dictionary.meaning(word)
-    if not meaning:
+    if not synsets:
         print("❌ 단어의 의미를 찾을 수 없습니다.")
         return
 
+    # 뜻(Definition) 출력
     print(f"\n📖 '{word}'의 뜻:")
-    for pos, definitions in meaning.items():
-        print(f"🔹 {pos}: {', '.join(definitions[:2])}")  # 최대 2개 출력
+    for syn in synsets[:2]:  # 최대 2개 뜻 출력
+        print(f"🔹 {syn.definition()}")
 
-    # 동의어 가져오기
-    synonyms = dictionary.synonym(word)
+    # 동의어(Synonyms) 출력
+    synonyms = set()
+    for syn in synsets:
+        for lemma in syn.lemmas():
+            synonyms.add(lemma.name())
+
     if synonyms:
-        print(f"\n🔄 동의어: {', '.join(synonyms[:5])}")
+        print(f"\n🔄 동의어: {', '.join(list(synonyms)[:5])}")
 
-    # 반의어 가져오기
-    antonyms = dictionary.antonym(word)
+    # 반의어(Antonyms) 출력
+    antonyms = set()
+    for syn in synsets:
+        for lemma in syn.lemmas():
+            if lemma.antonyms():
+                antonyms.add(lemma.antonyms()[0].name())
+
     if antonyms:
-        print(f"\n🔀 반의어: {', '.join(antonyms[:5])}")
+        print(f"\n🔀 반의어: {', '.join(list(antonyms)[:5])}")
 
 
 # 사용 예시
