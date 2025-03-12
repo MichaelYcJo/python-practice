@@ -4,6 +4,8 @@ import requests
 import yt_dlp
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse, urljoin
+from tqdm import tqdm
+import threading
 
 SAVE_PATH = "downloaded_videos"
 
@@ -21,6 +23,7 @@ def get_video_urls_from_page(url):
     # <video> 태그 내 src 속성 찾기
     video_tags = soup.find_all("video")
     source_tags = soup.find_all("source")
+    m3u8_tags = soup.find_all("a", href=True)
 
     video_urls = []
 
@@ -34,8 +37,29 @@ def get_video_urls_from_page(url):
         if src:
             video_urls.append(urljoin(url, src))
 
+    for tag in m3u8_tags:
+        href = tag["href"]
+        if ".m3u8" in href:
+            video_urls.append(urljoin(url, href))
+
     # 중복 제거 후 반환
     return list(set(video_urls))
+
+
+def get_video_title(url):
+    """웹페이지에서 비디오 제목 가져오기"""
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.text, "html.parser")
+        title_tag = soup.find("title")
+        if title_tag:
+            title = title_tag.text.strip()
+            title = re.sub(
+                r'[\\/*?:"<>|]', "", title
+            )  # 파일명에서 사용 불가능한 문자 제거
+            return title
+    return "video"
 
 
 def download_video(video_url):
@@ -43,14 +67,22 @@ def download_video(video_url):
     if not os.path.exists(SAVE_PATH):
         os.makedirs(SAVE_PATH)
 
-    file_name = os.path.join(SAVE_PATH, os.path.basename(urlparse(video_url).path))
+    file_name = get_video_title(video_url)
+    file_extension = os.path.splitext(urlparse(video_url).path)[-1]
+    file_path = os.path.join(SAVE_PATH, f"{file_name}{file_extension}")
 
     response = requests.get(video_url, stream=True)
+    total_size = int(response.headers.get("content-length", 0))
+
     if response.status_code == 200:
-        with open(file_name, "wb") as file:
+        with open(file_path, "wb") as file, tqdm(
+            total=total_size, unit="B", unit_scale=True, desc=file_name
+        ) as progress_bar:
             for chunk in response.iter_content(1024):
                 file.write(chunk)
-        print(f"✅ 동영상 다운로드 완료! 📂 저장 위치: {file_name}")
+                progress_bar.update(len(chunk))
+
+        print(f"\n✅ 동영상 다운로드 완료! 📂 저장 위치: {file_path}")
     else:
         print("❌ 동영상을 다운로드할 수 없습니다.")
 
@@ -72,6 +104,12 @@ def download_streaming_video(video_url):
             print(f"✅ 스트리밍 동영상 다운로드 완료!")
         except Exception as e:
             print(f"❌ 다운로드 실패: {e}")
+
+
+def threaded_download(video_url):
+    """멀티스레드 다운로드 실행"""
+    thread = threading.Thread(target=download_video, args=(video_url,))
+    thread.start()
 
 
 def main():
@@ -100,7 +138,7 @@ def main():
         if choice == 0:
             return
         selected_video_url = video_urls[choice - 1]
-        download_video(selected_video_url)
+        threaded_download(selected_video_url)  # 멀티스레드 다운로드 실행
     except (ValueError, IndexError):
         print("⚠️ 올바른 번호를 입력하세요!")
 
