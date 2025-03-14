@@ -4,26 +4,11 @@ import requests
 import yt_dlp
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse, urljoin
-from tqdm import tqdm
 import threading
 import subprocess
 
-SAVE_PATH = "downloaded_videos"
+SAVE_PATH = "downloaded_media"
 PROXY = None  # 필요하면 여기에 프록시 설정 ("http://proxyserver:port")
-
-
-def convert_to_mp4(input_file):
-    """WebM을 MP4로 변환 (FFmpeg 사용)"""
-    output_file = input_file.replace(".webm", ".mp4")
-    try:
-        subprocess.run(
-            ["ffmpeg", "-i", input_file, "-c:v", "copy", "-c:a", "aac", output_file],
-            check=True,
-        )
-        os.remove(input_file)  # 변환 후 원본 WebM 삭제
-        print(f"✅ WebM → MP4 변환 완료: {output_file}")
-    except Exception as e:
-        print(f"⚠️ 변환 실패: {e}")
 
 
 def get_video_urls_from_page(url):
@@ -63,33 +48,38 @@ def get_video_urls_from_page(url):
     return list(set(video_urls))  # 중복 제거
 
 
-def download_streaming_video(video_url):
-    """스트리밍 동영상 다운로드 (yt-dlp 사용, MP4 강제 설정)"""
+def download_media(video_url, media_type="video"):
+    """MP4 비디오 또는 MP3 오디오 다운로드"""
     if not os.path.exists(SAVE_PATH):
         os.makedirs(SAVE_PATH)
 
     ydl_opts = {
         "outtmpl": os.path.join(SAVE_PATH, "%(title)s.%(ext)s"),
-        "format": "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]",
-        "merge_output_format": "mp4",
+        "format": (
+            "bestaudio/best"
+            if media_type == "audio"
+            else "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]"
+        ),
+        "merge_output_format": "mp3" if media_type == "audio" else "mp4",
     }
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         try:
             ydl.download([video_url])
-            print(f"✅ MP4 동영상 다운로드 완료! 📂 저장 위치: {SAVE_PATH}")
+            media_type_text = "MP3 오디오" if media_type == "audio" else "MP4 비디오"
+            print(f"✅ {media_type_text} 다운로드 완료! 📂 저장 위치: {SAVE_PATH}")
         except Exception as e:
             print(f"❌ 다운로드 실패: {e}")
 
 
-def threaded_download(video_url):
+def threaded_download(video_url, media_type):
     """멀티스레드 다운로드 실행"""
-    thread = threading.Thread(target=download_streaming_video, args=(video_url,))
+    thread = threading.Thread(target=download_media, args=(video_url, media_type))
     thread.start()
 
 
 def main():
-    """사용자 입력을 받아 웹사이트에서 동영상 다운로드"""
+    """사용자 입력을 받아 동영상 또는 오디오 다운로드"""
     website_url = input("🌐 동영상이 포함된 웹페이지 URL을 입력하세요: ").strip()
 
     # 유튜브, 트위치, 넷플릭스 등 자동 감지
@@ -97,8 +87,20 @@ def main():
         x in website_url
         for x in ["youtube.com", "youtu.be", "twitch.tv", "netflix.com"]
     ):
-        print("🎞️ 스트리밍 사이트 감지됨! yt-dlp를 사용하여 다운로드합니다.")
-        threaded_download(website_url)
+        print("\n🎞️ 다운로드 옵션을 선택하세요:")
+        print("1. 🎥 MP4 비디오 다운로드")
+        print("2. 🎵 MP3 오디오 다운로드")
+
+        choice = input("👉 선택 (1 또는 2): ").strip()
+        if choice == "1":
+            media_type = "video"
+        elif choice == "2":
+            media_type = "audio"
+        else:
+            print("⚠️ 올바른 옵션을 선택하세요!")
+            return
+
+        threaded_download(website_url, media_type)
         return
 
     video_urls = get_video_urls_from_page(website_url)
@@ -110,7 +112,7 @@ def main():
             == "y"
         )
         if use_yt_dlp:
-            threaded_download(website_url)
+            threaded_download(website_url, "video")
         return
 
     print("\n🎥 찾은 동영상 목록:")
@@ -123,13 +125,13 @@ def main():
 
     if choices == "all":
         for video_url in video_urls:
-            threaded_download(video_url)  # 모든 동영상 다운로드
+            threaded_download(video_url, "video")  # 모든 동영상 다운로드
     else:
         try:
             selected_indices = [int(x) - 1 for x in choices.split(",")]
             for index in selected_indices:
                 if 0 <= index < len(video_urls):
-                    threaded_download(video_urls[index])
+                    threaded_download(video_urls[index], "video")
         except ValueError:
             print("⚠️ 올바른 번호를 입력하세요!")
 
