@@ -1,40 +1,67 @@
-import pytesseract
-from PIL import Image
 import os
+import pytesseract
+from PIL import Image, ImageFilter, ImageOps
+import argparse
 
-# Tesseract 경로 설정 (Windows 사용자만)
-# pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+
+def preprocess_image(image):
+    """이미지 전처리: 그레이스케일 + 이진화 + 샤프닝"""
+    image = image.convert("L")  # 그레이스케일
+    image = image.filter(ImageFilter.SHARPEN)
+    image = ImageOps.autocontrast(image)
+    return image
 
 
 def extract_text_from_image(image_path, lang="eng"):
-    """이미지에서 텍스트 추출"""
+    """이미지에서 텍스트 추출 (전처리 포함)"""
     if not os.path.exists(image_path):
-        print("❌ 이미지 파일이 존재하지 않습니다.")
-        return ""
+        return f"❌ 파일 없음: {image_path}", ""
 
     try:
-        image = Image.open(image_path)
-        text = pytesseract.image_to_string(image, lang=lang)
-        return text.strip()
+        img = Image.open(image_path)
+        img = preprocess_image(img)
+        text = pytesseract.image_to_string(img, lang=lang)
+        return f"✅ 텍스트 추출 성공: {os.path.basename(image_path)}", text.strip()
     except Exception as e:
-        print(f"⚠️ OCR 처리 중 오류 발생: {e}")
-        return ""
+        return f"⚠️ 에러 발생 ({image_path}): {e}", ""
+
+
+def save_text_to_file(text, output_path):
+    with open(output_path, "w", encoding="utf-8") as f:
+        f.write(text)
+    print(f"💾 텍스트 저장 완료: {output_path}")
+
+
+def process_images_in_folder(folder_path, lang="eng"):
+    for file in os.listdir(folder_path):
+        if file.lower().endswith((".png", ".jpg", ".jpeg", ".bmp", ".tiff", ".webp")):
+            image_path = os.path.join(folder_path, file)
+            message, text = extract_text_from_image(image_path, lang=lang)
+            print(message)
+            if text:
+                save_text_to_file(text, f"{image_path}.txt")
 
 
 def main():
-    """사용자 입력을 받아 이미지 텍스트 추출"""
-    img_path = input("🖼️ 텍스트를 추출할 이미지 경로를 입력하세요: ").strip()
-    lang = input("🌐 언어 코드 입력 (기본: eng, 한글: kor): ").strip() or "eng"
+    parser = argparse.ArgumentParser(description="🖼️ 이미지에서 텍스트 추출 (OCR)")
+    parser.add_argument("path", help="이미지 파일 또는 폴더 경로")
+    parser.add_argument("--lang", default="eng", help="OCR 언어 코드 (기본: eng)")
+    args = parser.parse_args()
 
-    print("\n🔍 이미지에서 텍스트를 추출 중...\n")
-    extracted_text = extract_text_from_image(img_path, lang=lang)
+    path = args.path
+    lang = args.lang
 
-    if extracted_text:
-        print("✅ 추출된 텍스트:\n")
-        print(extracted_text)
+    if os.path.isdir(path):
+        process_images_in_folder(path, lang)
+    elif os.path.isfile(path):
+        msg, text = extract_text_from_image(path, lang)
+        print(msg)
+        if text:
+            save_path = f"{path}.txt"
+            save_text_to_file(text, save_path)
     else:
-        print("❌ 텍스트를 추출할 수 없습니다.")
+        print("❌ 유효하지 않은 경로입니다.")
 
 
-# 실행
-main()
+if __name__ == "__main__":
+    main()
