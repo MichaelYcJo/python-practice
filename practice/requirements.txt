@@ -15,6 +15,7 @@ opencv-python==4.11.0.86
 pillow==11.1.0
 pycparser==2.22
 PyDictionary==2.0.1
+PyPDF2==3.0.1
 qrcode==8.0
 regex==2024.11.6
 requests==2.32.3
