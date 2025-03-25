@@ -1,5 +1,6 @@
+from PyPDF2 import PdfMerger, PdfReader
 import os
-from PyPDF2 import PdfMerger
+
 
 """
 여러 개의 PDF 파일을 순서대로 하나로 병합
@@ -10,61 +11,60 @@ from PyPDF2 import PdfMerger
 """
 
 
-def get_pdf_files_from_folder(folder_path):
-    """폴더 내 모든 유효한 PDF 파일 가져오기"""
-    files = [
-        os.path.join(folder_path, f)
-        for f in os.listdir(folder_path)
-        if f.lower().endswith(".pdf")
-    ]
-    return sorted(files)  # 기본은 이름순 정렬
+def is_valid_pdf(file_path):
+    try:
+        PdfReader(file_path)
+        return True
+    except:
+        return False
+
+
+def generate_unique_filename(base_path):
+    """중복된 파일명이 있다면 숫자 붙이기"""
+    if not os.path.exists(base_path):
+        return base_path
+
+    filename, ext = os.path.splitext(base_path)
+    counter = 1
+    while True:
+        new_path = f"{filename}_{counter}{ext}"
+        if not os.path.exists(new_path):
+            return new_path
+        counter += 1
 
 
 def merge_pdfs(pdf_paths, output_path="merged.pdf"):
     merger = PdfMerger()
+    error_files = []
 
     total = len(pdf_paths)
     for idx, pdf in enumerate(pdf_paths, 1):
         if not os.path.exists(pdf):
             print(f"❌ 파일 없음: {pdf}")
+            error_files.append(pdf)
+            continue
+
+        if not is_valid_pdf(pdf):
+            print(f"⚠️ 유효하지 않은 PDF: {pdf}")
+            error_files.append(pdf)
             continue
 
         try:
             merger.append(pdf)
-            print(f"✅ ({idx}/{total}) 병합 추가됨: {os.path.basename(pdf)}")
+            page_count = len(PdfReader(pdf).pages)
+            print(
+                f"✅ ({idx}/{total}) 병합 추가됨: {os.path.basename(pdf)} ({page_count} pages)"
+            )
         except Exception as e:
             print(f"⚠️ 병합 실패: {pdf} ({e})")
+            error_files.append(pdf)
 
+    output_path = generate_unique_filename(output_path)
     merger.write(output_path)
     merger.close()
     print(f"\n📎 병합 완료! 👉 저장 위치: {output_path}")
 
-
-def main():
-    print("📁 병합할 PDF들이 있는 폴더 경로를 입력하세요:")
-    folder_path = input("📂 폴더 경로: ").strip()
-
-    if not os.path.isdir(folder_path):
-        print("❌ 유효한 폴더가 아닙니다.")
-        return
-
-    pdf_files = get_pdf_files_from_folder(folder_path)
-    if not pdf_files:
-        print("❌ PDF 파일이 존재하지 않습니다.")
-        return
-
-    print("\n📑 병합할 파일 목록:")
-    for f in pdf_files:
-        print(" -", os.path.basename(f))
-
-    custom_name = (
-        input("\n💾 결과 파일명을 입력하세요 (기본: merged.pdf): ").strip()
-        or "merged.pdf"
-    )
-    output_path = os.path.join(folder_path, custom_name)
-
-    merge_pdfs(pdf_files, output_path)
-
-
-if __name__ == "__main__":
-    main()
+    if error_files:
+        with open("error_log.txt", "w", encoding="utf-8") as f:
+            f.writelines([line + "\n" for line in error_files])
+        print(f"📄 오류 파일 로그 저장됨: error_log.txt")
