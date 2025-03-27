@@ -28,20 +28,36 @@ def similarity_score(a: str, b: str) -> float:
     return round((1 - distance / max_len) * 100, 2)
 
 
+def jaccard_similarity(a: str, b: str) -> float:
+    """단어 기반 Jaccard 유사도 (%)"""
+    set_a = set(a.lower().split())
+    set_b = set(b.lower().split())
+
+    intersection = set_a & set_b
+    union = set_a | set_b
+
+    if not union:
+        return 0.0
+    return round(len(intersection) / len(union) * 100, 2)
+
+
 def main():
     print("🔍 두 문장의 유사도를 비교합니다.")
     text1 = input("문장 1️⃣: ").strip()
     text2 = input("문장 2️⃣: ").strip()
 
-    score = similarity_score(text1, text2)
-    print(f"\n📊 유사도: {score}%")
+    lev_score = similarity_score(text1, text2)
+    jac_score = jaccard_similarity(text1, text2)
 
-    if score > 90:
-        print("✅ 거의 동일한 문장입니다.")
-    elif score > 60:
-        print("⚠️ 유사한 내용이 있습니다.")
+    print(f"\n📊 문자 기반 유사도 (Levenshtein): {lev_score}%")
+    print(f"📘 단어 기반 유사도 (Jaccard): {jac_score}%")
+
+    if lev_score > 90 and jac_score > 90:
+        print("✅ 두 문장은 거의 완전히 동일합니다.")
+    elif lev_score > 60 or jac_score > 60:
+        print("⚠️ 내용이 유사합니다.")
     else:
-        print("❌ 다른 문장입니다.")
+        print("❌ 의미가 다릅니다.")
 
 
 # 실행
