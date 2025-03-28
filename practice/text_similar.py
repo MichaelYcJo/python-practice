@@ -1,3 +1,6 @@
+from sentence_transformers import SentenceTransformer, util
+
+
 def levenshtein_distance(a: str, b: str) -> int:
     """두 문자열 사이의 레벤슈타인 거리 계산"""
     len_a, len_b = len(a), len(b)
@@ -41,6 +44,16 @@ def jaccard_similarity(a: str, b: str) -> float:
     return round(len(intersection) / len(union) * 100, 2)
 
 
+# 사전 훈련된 다국어 모델 사용 (한글도 지원!)
+model = SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
+
+
+def bert_similarity(text1: str, text2: str) -> float:
+    embeddings = model.encode([text1, text2], convert_to_tensor=True)
+    cosine_sim = util.cos_sim(embeddings[0], embeddings[1])
+    return round(float(cosine_sim[0]) * 100, 2)
+
+
 def main():
     print("🔍 두 문장의 유사도를 비교합니다.")
     text1 = input("문장 1️⃣: ").strip()
@@ -48,16 +61,18 @@ def main():
 
     lev_score = similarity_score(text1, text2)
     jac_score = jaccard_similarity(text1, text2)
+    bert_score = bert_similarity(text1, text2)
 
-    print(f"\n📊 문자 기반 유사도 (Levenshtein): {lev_score}%")
-    print(f"📘 단어 기반 유사도 (Jaccard): {jac_score}%")
+    print(f"\n📊 문자 기반 (Levenshtein): {lev_score}%")
+    print(f"📘 단어 기반 (Jaccard): {jac_score}%")
+    print(f"🧠 의미 기반 (BERT): {bert_score}%")
 
-    if lev_score > 90 and jac_score > 90:
-        print("✅ 두 문장은 거의 완전히 동일합니다.")
-    elif lev_score > 60 or jac_score > 60:
-        print("⚠️ 내용이 유사합니다.")
+    if bert_score > 90:
+        print("✅ 두 문장은 의미적으로 거의 동일합니다.")
+    elif bert_score > 60:
+        print("⚠️ 의미가 꽤 유사합니다.")
     else:
-        print("❌ 의미가 다릅니다.")
+        print("❌ 의미 차이가 큰 문장입니다.")
 
 
 # 실행
