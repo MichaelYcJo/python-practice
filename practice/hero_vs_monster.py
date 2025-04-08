@@ -24,6 +24,7 @@ class Hero(Character):
         self.level = 1
         self.xp = 0
         self.potions = 3
+        self.inventory = []  # 🎒 인벤토리 리스트 추가
 
     def heal(self):
         if self.potions <= 0:
@@ -61,8 +62,8 @@ def battle(hero, monster):
     while hero.is_alive() and monster.is_alive():
         print(f"\n🧙 {hero.name} [HP: {hero.hp}/{hero.max_hp}] - 포션: {hero.potions}")
         print(f"👾 {monster.name} [HP: {monster.hp}]")
-        print("1. 공격 | 2. 회복 | 3. 도망")
-        choice = input("👉 행동 선택: ")
+        print("1. 공격 | 2. 회복 | 3. 도망 | 4. 인벤토리")
+        choice = input("👉 행동 선택: ").strip()
 
         if choice == "1":
             hero.attack(monster)
@@ -74,6 +75,14 @@ def battle(hero, monster):
                 return
             else:
                 print("🚫 도망 실패!")
+        elif choice == "4":
+            if not hero.inventory:
+                print("📭 인벤토리에 아무것도 없습니다.")
+            else:
+                print("🎒 인벤토리 목록:")
+                for item in hero.inventory:
+                    print(f" - {item}")
+            continue  # 인벤토리 보기 후 다시 선택
         else:
             print("❗ 올바른 번호를 입력하세요.")
             continue
@@ -87,6 +96,12 @@ def battle(hero, monster):
     if hero.is_alive():
         print(f"✅ {monster.name} 처치 성공!")
         hero.gain_xp(10)
+
+        # 아이템 드랍 (50% 확률)
+        if random.random() < 0.5:
+            loot = random.choice(["체력 포션", "철검", "가죽 방패", "신비한 돌"])
+            hero.inventory.append(loot)
+            print(f"🎁 {monster.name} 이(가) {loot} 을(를) 떨어뜨렸습니다!")
     else:
         print("💀 당신은 쓰러졌습니다... 게임 오버.")
 
