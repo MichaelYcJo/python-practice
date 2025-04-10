@@ -1,7 +1,7 @@
 import random
 import time
 
-# 무기별 공격력 보너스 설정
+# 무기별 공격력 보너스
 WEAPON_STATS = {"철검": 5, "불검": 8, "용의 검": 12}
 
 
@@ -28,7 +28,7 @@ class Hero(Character):
         self.xp = 0
         self.potions = 3
         self.inventory = []
-        self.equipped_weapon = None  # 🎯 현재 장착한 무기
+        self.equipped_weapon = None
 
     def heal(self):
         if self.potions <= 0:
@@ -84,6 +84,18 @@ class Hero(Character):
 
         print(f"✅ {selected_weapon} 을(를) 장착했습니다! 현재 공격력: {self.atk}")
 
+    def use_potion_from_inventory(self):
+        if "체력 포션" not in self.inventory:
+            print("❌ 인벤토리에 체력 포션이 없습니다!")
+            return
+
+        heal_amount = random.randint(15, 30)
+        self.hp = min(self.max_hp, self.hp + heal_amount)
+        self.inventory.remove("체력 포션")
+        print(
+            f"🧪 체력 포션을 사용하여 {heal_amount} 회복했습니다! (현재 HP: {self.hp})"
+        )
+
 
 def create_monster():
     names = ["고블린", "늑대", "해골 병사", "슬라임", "좀비"]
@@ -101,7 +113,7 @@ def battle(hero, monster):
             f"\n🧙 {hero.name} [HP: {hero.hp}/{hero.max_hp}] - 포션: {hero.potions} - 공격력: {hero.atk}"
         )
         print(f"👾 {monster.name} [HP: {monster.hp}]")
-        print("1. 공격 | 2. 회복 | 3. 도망 | 4. 인벤토리 | 5. 무기 장착")
+        print("1. 공격 | 2. 회복 | 3. 도망 | 4. 인벤토리 | 5. 무기 장착 | 6. 포션 사용")
         choice = input("👉 행동 선택: ").strip()
 
         if choice == "1":
@@ -124,6 +136,9 @@ def battle(hero, monster):
             continue
         elif choice == "5":
             hero.equip_weapon()
+            continue
+        elif choice == "6":
+            hero.use_potion_from_inventory()
             continue
         else:
             print("❗ 올바른 번호를 입력하세요.")
