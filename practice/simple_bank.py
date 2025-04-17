@@ -1,12 +1,23 @@
+import random
+
+
+def generate_account_number(existing_numbers):
+    while True:
+        account_number = "".join([str(random.randint(0, 9)) for _ in range(8)])
+        if account_number not in existing_numbers:
+            return account_number
+
+
 def display_main_menu():
     print("\n=== 🏦 은행 시스템 ===")
-    print("1. 로그인 또는 계좌 생성")
-    print("2. 전체 계좌 목록 보기")
-    print("3. 종료")
+    print("1. 신규 계좌 개설")
+    print("2. 로그인 (계좌번호 입력)")
+    print("3. 전체 계좌 목록 보기")
+    print("4. 종료")
 
 
-def display_account_menu(username):
-    print(f"\n👤 {username} 님의 계좌")
+def display_account_menu(account_number, user_name):
+    print(f"\n👤 {user_name} 님 ({account_number}) 계좌")
     print("1. 입금")
     print("2. 출금")
     print("3. 잔액 확인")
@@ -61,11 +72,12 @@ def view_transaction_log(account):
             print(f"  - {entry}")
 
 
-def account_session(username, accounts):
-    account = accounts[username]
+def account_session(account_number, accounts):
+    account = accounts[account_number]
+    user_name = account["name"]
 
     while True:
-        display_account_menu(username)
+        display_account_menu(account_number, user_name)
         choice = input("선택 (1~5): ").strip()
 
         if choice == "1":
@@ -77,7 +89,7 @@ def account_session(username, accounts):
         elif choice == "4":
             view_transaction_log(account)
         elif choice == "5":
-            print(f"👋 {username} 님 로그아웃되었습니다.")
+            print(f"👋 {user_name} 님 로그아웃되었습니다.")
             break
         else:
             print("❗ 올바른 번호를 입력해주세요.")
@@ -88,27 +100,37 @@ def main():
 
     while True:
         display_main_menu()
-        choice = input("선택 (1~3): ").strip()
+        choice = input("선택 (1~4): ").strip()
 
         if choice == "1":
-            username = input("👤 사용자 이름을 입력하세요: ").strip()
-            if username not in accounts:
-                print("🆕 신규 계좌 생성 중...")
-                accounts[username] = {"balance": 0, "log": []}
-                print(f"✅ {username} 님의 계좌가 생성되었습니다.")
-            else:
-                print(f"🔐 {username} 님 로그인 성공.")
-            account_session(username, accounts)
+            user_name = input("👤 사용자 이름을 입력하세요: ").strip()
+            new_account_number = generate_account_number(accounts)
+            accounts[new_account_number] = {"name": user_name, "balance": 0, "log": []}
+            print(
+                f"✅ 계좌 생성 완료! {user_name} 님의 계좌번호는 {new_account_number} 입니다."
+            )
 
         elif choice == "2":
+            account_number = input("🔐 계좌번호 8자리를 입력하세요: ").strip()
+            if account_number in accounts:
+                print(
+                    f"🔓 로그인 성공! {accounts[account_number]['name']} 님 환영합니다."
+                )
+                account_session(account_number, accounts)
+            else:
+                print("❗ 존재하지 않는 계좌번호입니다.")
+
+        elif choice == "3":
             if not accounts:
                 print("📂 생성된 계좌가 없습니다.")
             else:
                 print("📋 전체 계좌 목록:")
-                for user in accounts:
-                    print(f"  - {user} (잔액: {accounts[user]['balance']}원)")
+                for number, info in accounts.items():
+                    print(
+                        f"  - {info['name']} | 계좌번호: {number} | 잔액: {info['balance']}원"
+                    )
 
-        elif choice == "3":
+        elif choice == "4":
             print("👋 은행 시스템을 종료합니다.")
             break
 
