@@ -11,7 +11,7 @@ def generate_account_number(existing_numbers):
 def display_main_menu():
     print("\n=== 🏦 은행 시스템 ===")
     print("1. 신규 계좌 개설")
-    print("2. 로그인 (계좌번호 입력)")
+    print("2. 로그인 (계좌번호 + 비밀번호)")
     print("3. 전체 계좌 목록 보기")
     print("4. 종료")
 
@@ -95,6 +95,24 @@ def account_session(account_number, accounts):
             print("❗ 올바른 번호를 입력해주세요.")
 
 
+def login(accounts):
+    account_number = input("🔐 계좌번호 8자리를 입력하세요: ").strip()
+    if account_number not in accounts:
+        print("❗ 존재하지 않는 계좌번호입니다.")
+        return
+
+    for attempt in range(3):
+        password = input("🔑 비밀번호를 입력하세요: ").strip()
+        if password == accounts[account_number]["password"]:
+            print(f"✅ 로그인 성공! {accounts[account_number]['name']} 님 환영합니다.")
+            account_session(account_number, accounts)
+            return
+        else:
+            print(f"❗ 비밀번호가 일치하지 않습니다. (남은 시도: {2 - attempt})")
+
+    print("🚫 로그인 3회 실패. 메인 메뉴로 돌아갑니다.")
+
+
 def main():
     accounts = {}
 
@@ -104,21 +122,20 @@ def main():
 
         if choice == "1":
             user_name = input("👤 사용자 이름을 입력하세요: ").strip()
+            password = input("🔑 사용할 비밀번호를 입력하세요: ").strip()
             new_account_number = generate_account_number(accounts)
-            accounts[new_account_number] = {"name": user_name, "balance": 0, "log": []}
+            accounts[new_account_number] = {
+                "name": user_name,
+                "password": password,
+                "balance": 0,
+                "log": [],
+            }
             print(
                 f"✅ 계좌 생성 완료! {user_name} 님의 계좌번호는 {new_account_number} 입니다."
             )
 
         elif choice == "2":
-            account_number = input("🔐 계좌번호 8자리를 입력하세요: ").strip()
-            if account_number in accounts:
-                print(
-                    f"🔓 로그인 성공! {accounts[account_number]['name']} 님 환영합니다."
-                )
-                account_session(account_number, accounts)
-            else:
-                print("❗ 존재하지 않는 계좌번호입니다.")
+            login(accounts)
 
         elif choice == "3":
             if not accounts:
