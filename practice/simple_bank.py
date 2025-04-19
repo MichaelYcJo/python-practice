@@ -22,7 +22,8 @@ def display_account_menu(account_number, user_name):
     print("2. 출금")
     print("3. 잔액 확인")
     print("4. 거래 내역")
-    print("5. 로그아웃")
+    print("5. 이자 계산 및 적용")
+    print("6. 로그아웃")
 
 
 def get_valid_amount(prompt):
@@ -34,6 +35,18 @@ def get_valid_amount(prompt):
         return amount
     except ValueError:
         print("❗ 숫자만 입력해주세요.")
+        return None
+
+
+def get_valid_interest_rate():
+    try:
+        rate = float(input("📈 적용할 이자율을 입력하세요 (예: 3.5): ").strip())
+        if rate < 0:
+            print("❗ 이자율은 0 이상이어야 합니다.")
+            return None
+        return rate
+    except ValueError:
+        print("❗ 숫자 형식으로 입력해주세요.")
         return None
 
 
@@ -72,13 +85,25 @@ def view_transaction_log(account):
             print(f"  - {entry}")
 
 
+def apply_interest(account):
+    rate = account["interest_rate"]
+    interest = int(account["balance"] * (rate / 100))
+    if interest > 0:
+        account["balance"] += interest
+        account["log"].append(f"이자 적용: {interest}원 (이자율 {rate}%)")
+        print(f"💰 {rate}% 이자 적용 완료! 이자 {interest}원이 추가되었습니다.")
+        print(f"💼 현재 잔액: {account['balance']}원")
+    else:
+        print("📉 잔액이 적어 이자가 0원입니다.")
+
+
 def account_session(account_number, accounts):
     account = accounts[account_number]
     user_name = account["name"]
 
     while True:
         display_account_menu(account_number, user_name)
-        choice = input("선택 (1~5): ").strip()
+        choice = input("선택 (1~6): ").strip()
 
         if choice == "1":
             deposit(account)
@@ -89,6 +114,8 @@ def account_session(account_number, accounts):
         elif choice == "4":
             view_transaction_log(account)
         elif choice == "5":
+            apply_interest(account)
+        elif choice == "6":
             print(f"👋 {user_name} 님 로그아웃되었습니다.")
             break
         else:
@@ -123,16 +150,22 @@ def main():
         if choice == "1":
             user_name = input("👤 사용자 이름을 입력하세요: ").strip()
             password = input("🔑 사용할 비밀번호를 입력하세요: ").strip()
+            interest_rate = get_valid_interest_rate()
+            if interest_rate is None:
+                continue
+
             new_account_number = generate_account_number(accounts)
             accounts[new_account_number] = {
                 "name": user_name,
                 "password": password,
+                "interest_rate": interest_rate,
                 "balance": 0,
                 "log": [],
             }
             print(
                 f"✅ 계좌 생성 완료! {user_name} 님의 계좌번호는 {new_account_number} 입니다."
             )
+            print(f"📈 설정된 이자율: {interest_rate}%")
 
         elif choice == "2":
             login(accounts)
@@ -144,7 +177,7 @@ def main():
                 print("📋 전체 계좌 목록:")
                 for number, info in accounts.items():
                     print(
-                        f"  - {info['name']} | 계좌번호: {number} | 잔액: {info['balance']}원"
+                        f"  - {info['name']} | 계좌번호: {number} | 잔액: {info['balance']}원 | 이자율: {info['interest_rate']}%"
                     )
 
         elif choice == "4":
