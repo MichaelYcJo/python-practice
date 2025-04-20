@@ -22,8 +22,9 @@ def display_account_menu(account_number, user_name):
     print("2. 출금")
     print("3. 잔액 확인")
     print("4. 거래 내역")
-    print("5. 이자 계산 및 적용")
-    print("6. 로그아웃")
+    print("5. 이자 1회 적용")
+    print("6. 월별 이자 시뮬레이션")
+    print("7. 로그아웃")
 
 
 def get_valid_amount(prompt):
@@ -85,16 +86,33 @@ def view_transaction_log(account):
             print(f"  - {entry}")
 
 
-def apply_interest(account):
+def apply_interest(account, month=None):
     rate = account["interest_rate"]
     interest = int(account["balance"] * (rate / 100))
     if interest > 0:
         account["balance"] += interest
-        account["log"].append(f"이자 적용: {interest}원 (이자율 {rate}%)")
-        print(f"💰 {rate}% 이자 적용 완료! 이자 {interest}원이 추가되었습니다.")
-        print(f"💼 현재 잔액: {account['balance']}원")
+        if month:
+            account["log"].append(f"{month}개월차 이자: {interest}원")
+            print(
+                f"📅 {month}개월차 → 이자 {interest}원 적용 (잔액: {account['balance']}원)"
+            )
+        else:
+            account["log"].append(f"이자 적용: {interest}원 (이자율 {rate}%)")
+            print(f"💰 {rate}% 이자 적용 완료! 이자 {interest}원이 추가되었습니다.")
+            print(f"💼 현재 잔액: {account['balance']}원")
     else:
         print("📉 잔액이 적어 이자가 0원입니다.")
+
+
+def simulate_monthly_interest(account):
+    months = get_valid_amount("⏳ 몇 개월을 시뮬레이션할까요? ")
+    if not months:
+        return
+
+    print(f"\n🗓️ {months}개월 간 월별 이자 시뮬레이션 시작!")
+    for month in range(1, months + 1):
+        apply_interest(account, month)
+    print(f"✅ 시뮬레이션 종료! 최종 잔액: {account['balance']}원")
 
 
 def account_session(account_number, accounts):
@@ -103,7 +121,7 @@ def account_session(account_number, accounts):
 
     while True:
         display_account_menu(account_number, user_name)
-        choice = input("선택 (1~6): ").strip()
+        choice = input("선택 (1~7): ").strip()
 
         if choice == "1":
             deposit(account)
@@ -116,6 +134,8 @@ def account_session(account_number, accounts):
         elif choice == "5":
             apply_interest(account)
         elif choice == "6":
+            simulate_monthly_interest(account)
+        elif choice == "7":
             print(f"👋 {user_name} 님 로그아웃되었습니다.")
             break
         else:
@@ -163,9 +183,8 @@ def main():
                 "log": [],
             }
             print(
-                f"✅ 계좌 생성 완료! {user_name} 님의 계좌번호는 {new_account_number} 입니다."
+                f"✅ 계좌 생성 완료! 계좌번호: {new_account_number}, 이자율: {interest_rate}%"
             )
-            print(f"📈 설정된 이자율: {interest_rate}%")
 
         elif choice == "2":
             login(accounts)
