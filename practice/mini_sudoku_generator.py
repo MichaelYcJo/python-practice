@@ -33,6 +33,30 @@ def print_sudoku(sudoku):
         print("-" * 11)
 
 
+def is_completed(sudoku):
+    """퍼즐이 완성됐는지 체크 (0이 없어야 함)"""
+    for row in sudoku:
+        if 0 in row:
+            return False
+    return True
+
+
+def get_user_input():
+    """사용자 입력 받기 (행, 열, 값)"""
+    try:
+        row = int(input("행 번호 (1~3): ").strip()) - 1
+        col = int(input("열 번호 (1~3): ").strip()) - 1
+        value = int(input("입력할 숫자 (1~9): ").strip())
+
+        if not (0 <= row < 3 and 0 <= col < 3 and 1 <= value <= 9):
+            print("❗ 범위를 벗어났습니다. 다시 입력하세요.")
+            return None
+        return row, col, value
+    except ValueError:
+        print("❗ 숫자로 정확히 입력해주세요.")
+        return None
+
+
 def main():
     sudoku = generate_sudoku()
 
@@ -46,7 +70,21 @@ def main():
         holes = 2
 
     make_holes(sudoku, holes)
-    print_sudoku(sudoku)
+
+    while True:
+        print_sudoku(sudoku)
+
+        if is_completed(sudoku):
+            print("🎉 퍼즐을 완성했습니다! 축하합니다!")
+            break
+
+        user_input = get_user_input()
+        if user_input:
+            row, col, value = user_input
+            if sudoku[row][col] == 0:
+                sudoku[row][col] = value
+            else:
+                print("❗ 이 칸은 이미 채워져 있습니다.")
 
 
 if __name__ == "__main__":
