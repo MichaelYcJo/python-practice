@@ -1,4 +1,5 @@
 import random
+import copy
 
 
 def generate_sudoku():
@@ -58,7 +59,10 @@ def get_user_input():
 
 
 def main():
+    # 스도쿠 생성
     sudoku = generate_sudoku()
+    # 정답 복사 (deepcopy로 완전히 별개 객체)
+    answer = copy.deepcopy(sudoku)
 
     try:
         holes = int(input("빈칸 개수 (0~5 사이 입력, 기본 2개): ").strip() or 2)
@@ -69,6 +73,7 @@ def main():
         print("❗ 숫자가 아닙니다. 기본값(2개)로 진행합니다.")
         holes = 2
 
+    # 퍼즐에 구멍 뚫기
     make_holes(sudoku, holes)
 
     while True:
@@ -82,7 +87,11 @@ def main():
         if user_input:
             row, col, value = user_input
             if sudoku[row][col] == 0:
-                sudoku[row][col] = value
+                if value == answer[row][col]:
+                    sudoku[row][col] = value
+                    print("✅ 정답입니다! 잘했어요.")
+                else:
+                    print("❌ 틀렸습니다. 다시 시도해보세요.")
             else:
                 print("❗ 이 칸은 이미 채워져 있습니다.")
 
