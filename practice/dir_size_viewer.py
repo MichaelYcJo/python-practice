@@ -1,7 +1,8 @@
 import os
 
-# 제외할 확장자 목록 (소문자로 입력)
+# 설정값
 EXCLUDE_EXTS = [".log", ".tmp", ".ds_store"]
+TOP_N = 10  # 가장 큰 항목 N개 출력
 
 
 def format_size(bytes_size):
@@ -17,6 +18,35 @@ def should_exclude(filename):
     return ext in EXCLUDE_EXTS
 
 
+def get_all_sizes(base_path):
+    size_list = []
+
+    for root, dirs, files in os.walk(base_path):
+        # 파일 사이즈 수집
+        for f in files:
+            if should_exclude(f):
+                continue
+            full_path = os.path.join(root, f)
+            try:
+                size = os.path.getsize(full_path)
+                rel_path = os.path.relpath(full_path, base_path)
+                size_list.append((rel_path, size))
+            except FileNotFoundError:
+                continue
+
+        # 폴더 사이즈 수집
+        for d in dirs:
+            folder_path = os.path.join(root, d)
+            try:
+                folder_size = get_folder_size(folder_path)
+                rel_path = os.path.relpath(folder_path, base_path)
+                size_list.append((rel_path + "/", folder_size))
+            except:
+                continue
+
+    return size_list
+
+
 def get_folder_size(path):
     total = 0
     for root, _, files in os.walk(path):
@@ -24,52 +54,24 @@ def get_folder_size(path):
             if should_exclude(f):
                 continue
             try:
-                fp = os.path.join(root, f)
-                total += os.path.getsize(fp)
+                total += os.path.getsize(os.path.join(root, f))
             except FileNotFoundError:
                 continue
     return total
 
 
-def print_tree(path, prefix=""):
-    if not os.path.exists(path):
-        print(f"❗ 경로 '{path}'가 존재하지 않습니다.")
-        return
-
-    basename = os.path.basename(path) or path
-    if os.path.isdir(path):
-        folder_size = get_folder_size(path)
-        print(f"{prefix}📁 {basename} ({format_size(folder_size)})")
-        try:
-            entries = sorted(os.listdir(path))
-        except PermissionError:
-            print(f"{prefix}  └─ 접근 권한 없음")
-            return
-
-        for i, entry in enumerate(entries):
-            full_path = os.path.join(path, entry)
-            connector = "└── " if i == len(entries) - 1 else "├── "
-            new_prefix = prefix + ("    " if i == len(entries) - 1 else "│   ")
-
-            if os.path.isdir(full_path):
-                print_tree(full_path, prefix + connector)
-            elif not should_exclude(entry):
-                try:
-                    file_size = os.path.getsize(full_path)
-                    print(f"{prefix}{connector}📄 {entry} ({format_size(file_size)})")
-                except FileNotFoundError:
-                    continue
-    else:
-        if not should_exclude(path):
-            file_size = os.path.getsize(path)
-            print(f"{prefix}📄 {basename} ({format_size(file_size)})")
-
-
 def main():
-    base_path = "./"  # 분석 시작 경로
-    print(f"=== 📁 디렉토리 용량 시각화 (확장자 필터 적용) ===")
+    base_path = "./"
+    print(f"=== 📦 디렉토리 용량 TOP {TOP_N} 보기 ===")
     print(f"제외 확장자: {', '.join(EXCLUDE_EXTS)}\n")
-    print_tree(base_path)
+
+    sizes = get_all_sizes(base_path)
+    sizes.sort(key=lambda x: x[1], reverse=True)
+
+    top_items = sizes[:TOP_N]
+
+    for path, size in top_items:
+        print(f"{path:<60} {format_size(size)}")
 
 
 if __name__ == "__main__":
