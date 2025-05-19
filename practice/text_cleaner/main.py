@@ -1,8 +1,10 @@
-from cleantext import clean
-import emoji
+import os
 import re
+import emoji
+from cleantext import clean
+from pathlib import Path
 
-# 간단한 한국어 stopwords 예시
+# 기본 stopwords
 KOR_STOPWORDS = {
     "그리고",
     "하지만",
@@ -17,8 +19,6 @@ KOR_STOPWORDS = {
     "있는",
     "하는",
 }
-
-# 영어 stopwords (일부)
 ENG_STOPWORDS = {
     "and",
     "but",
@@ -37,69 +37,65 @@ ENG_STOPWORDS = {
     "be",
 }
 
+INPUT_DIR = Path("input")
+OUTPUT_DIR = Path("output")
 
-def clean_text_basic(text: str) -> str:
+
+def clean_text(text: str) -> str:
     cleaned = clean(
         text,
         fix_unicode=True,
-        to_ascii=False,
         lower=True,
         no_line_breaks=True,
         no_urls=True,
         no_emails=True,
         no_phone_numbers=True,
-        no_numbers=False,
-        no_digits=False,
         no_currency_symbols=True,
         no_punct=True,
-        replace_with_url="",
-        replace_with_email="",
-        replace_with_phone_number="",
-        replace_with_number="",
-        replace_with_digit="",
-        replace_with_currency_symbol="",
     )
     cleaned = emoji.replace_emoji(cleaned, replace="")
     cleaned = re.sub(r"\s+", " ", cleaned).strip()
+    cleaned = re.sub(r"[^가-힣a-zA-Z0-9\s]", "", cleaned)
     return cleaned
-
-
-def remove_non_kor_eng_num(text: str) -> str:
-    return re.sub(r"[^가-힣a-zA-Z0-9\s]", "", text)
 
 
 def remove_stopwords(text: str) -> str:
     words = text.split()
-    filtered = [
-        word
-        for word in words
-        if word not in KOR_STOPWORDS and word not in ENG_STOPWORDS
-    ]
+    filtered = [w for w in words if w not in KOR_STOPWORDS and w not in ENG_STOPWORDS]
     return " ".join(filtered)
 
 
+def process_file(filepath: Path):
+    with open(filepath, "r", encoding="utf-8") as f:
+        raw = f.read()
+
+    cleaned = clean_text(raw)
+    cleaned = remove_stopwords(cleaned)
+
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    output_path = OUTPUT_DIR / filepath.name
+
+    with open(output_path, "w", encoding="utf-8") as f:
+        f.write(cleaned)
+
+    print(f"✅ {filepath.name} 정제 완료 → {output_path}")
+
+
 def main():
-    print("🧼 텍스트 정리기 + 불용어 제거")
-    text = input("\n정제할 텍스트를 입력하세요:\n\n>>> ")
+    print("📁 텍스트 파일 전체 정제 시작")
+    if not INPUT_DIR.exists():
+        print("❗ input 폴더가 존재하지 않습니다.")
+        return
 
-    print("\n[1] 기본 정리만")
-    print("[2] + 한글/영어/숫자만 남기기")
-    print("[3] + 불용어 제거까지")
-    mode = input("모드 선택 (1/2/3): ").strip()
+    txt_files = list(INPUT_DIR.glob("*.txt"))
+    if not txt_files:
+        print("📭 처리할 텍스트 파일이 없습니다.")
+        return
 
-    cleaned = clean_text_basic(text)
+    for file in txt_files:
+        process_file(file)
 
-    if mode == "2":
-        cleaned = remove_non_kor_eng_num(cleaned)
-
-    if mode == "3":
-        cleaned = remove_non_kor_eng_num(cleaned)
-        cleaned = remove_stopwords(cleaned)
-
-    print("\n🧾 정제 결과:")
-    print("-" * 40)
-    print(cleaned)
-    print("-" * 40)
+    print("\n🎉 전체 정제 완료!")
 
 
 if __name__ == "__main__":
