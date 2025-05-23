@@ -3,12 +3,19 @@ from pytube import YouTube
 from moviepy.editor import AudioFileClip
 from pathlib import Path
 from datetime import datetime
+import re
+
 
 # 설정
 DOWNLOAD_DIR = Path("downloads")
 LOG_FILE = DOWNLOAD_DIR / "log.txt"
 URL_FILE = Path("urls.txt")
 DOWNLOAD_DIR.mkdir(exist_ok=True)
+
+
+def sanitize_filename(title: str) -> str:
+    # 위험 문자 제거
+    return re.sub(r'[\\/*?:"<>|]', "", title)
 
 
 def log_conversion(title: str, url: str, mp3_filename: str):
@@ -30,8 +37,9 @@ def download_youtube_video(url: str) -> tuple[Path, str]:
     return Path(out_path), yt.title
 
 
-def convert_to_mp3(video_path: Path) -> Path:
-    mp3_path = video_path.with_suffix(".mp3")
+def convert_to_mp3(video_path: Path, title: str) -> Path:
+    safe_title = sanitize_filename(title)
+    mp3_path = DOWNLOAD_DIR / f"{safe_title}.mp3"
     print(f"🎧 MP3 변환 중: {mp3_path.name}")
     try:
         audio_clip = AudioFileClip(str(video_path))
@@ -48,7 +56,7 @@ def convert_to_mp3(video_path: Path) -> Path:
 def process_url(url: str):
     try:
         video_path, title = download_youtube_video(url)
-        mp3_path = convert_to_mp3(video_path)
+        mp3_path = convert_to_mp3(video_path, title)
         if mp3_path:
             log_conversion(title, url, mp3_path.name)
     except Exception as e:
