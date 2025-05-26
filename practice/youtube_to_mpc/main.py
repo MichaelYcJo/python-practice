@@ -1,23 +1,24 @@
 import os
 import re
-import tkinter as tk
-from tkinter import messagebox
+import argparse
 from pytube import YouTube
 from moviepy.editor import AudioFileClip
 from pathlib import Path
 from datetime import datetime
-import platform
-import subprocess
 
+# 설정
 DOWNLOAD_DIR = Path("downloads")
 LOG_FILE = DOWNLOAD_DIR / "log.txt"
+URL_FILE = Path("urls.txt")
 DOWNLOAD_DIR.mkdir(exist_ok=True)
 
 
+# 🔐 파일명 정리
 def sanitize_filename(title: str) -> str:
     return re.sub(r'[\\/*?:"<>|]', "", title)
 
 
+# 📝 로그 저장
 def log_conversion(title: str, url: str, mp3_filename: str):
     now = datetime.now().strftime("%Y-%m-%d %H:%M")
     with open(LOG_FILE, "a", encoding="utf-8") as f:
@@ -26,71 +27,98 @@ def log_conversion(title: str, url: str, mp3_filename: str):
         f.write(f"MP3: {mp3_filename}\n\n")
 
 
-def convert_url_to_mp3(url: str) -> str:
+# 🎬 유튜브 다운로드
+def download_youtube_video(url: str) -> tuple[Path, str]:
     yt = YouTube(url)
-    title = yt.title
+    print(f"\n🎬 영상 제목: {yt.title}")
+    video = yt.streams.filter(only_audio=True).first()
+    if not video:
+        raise Exception("❗ 오디오 스트림을 찾을 수 없습니다.")
+    out_path = video.download(output_path=DOWNLOAD_DIR)
+    print(f"⬇️ 다운로드 완료: {out_path}")
+    return Path(out_path), yt.title
+
+
+# 🎧 MP3 변환
+def convert_to_mp3(video_path: Path, title: str) -> Path:
     safe_title = sanitize_filename(title)
     mp3_path = DOWNLOAD_DIR / f"{safe_title}.mp3"
-
-    stream = yt.streams.filter(only_audio=True).first()
-    if not stream:
-        raise Exception("오디오 스트림을 찾을 수 없습니다.")
-
-    video_path = Path(stream.download(output_path=DOWNLOAD_DIR))
-    audio_clip = AudioFileClip(str(video_path))
-    audio_clip.write_audiofile(str(mp3_path), verbose=False, logger=None)
-    audio_clip.close()
-    video_path.unlink()
-
-    log_conversion(title, url, mp3_path.name)
-    return mp3_path.name
+    print(f"🎧 MP3 변환 중: {mp3_path.name}")
+    try:
+        audio_clip = AudioFileClip(str(video_path))
+        audio_clip.write_audiofile(str(mp3_path), verbose=False, logger=None)
+        audio_clip.close()
+        video_path.unlink()
+        print(f"✅ 저장 완료: {mp3_path.name}")
+        return mp3_path
+    except Exception as e:
+        print(f"❗ 변환 실패: {e}")
+        return None
 
 
-def open_folder():
-    if platform.system() == "Windows":
-        os.startfile(DOWNLOAD_DIR)
-    elif platform.system() == "Darwin":
-        subprocess.call(["open", DOWNLOAD_DIR])
-    elif platform.system() == "Linux":
-        subprocess.call(["xdg-open", DOWNLOAD_DIR])
-    else:
-        messagebox.showinfo("알림", "이 OS에서는 폴더 열기 기능을 지원하지 않습니다.")
+# 🔄 URL 처리
+def process_url(url: str, dry_run: bool = False):
+    try:
+        yt = YouTube(url)
+        title = yt.title
+        safe_title = sanitize_filename(title)
+        print(f"\n🎬 {title}")
+        print(f"URL: {url}")
+        print(f"📄 저장 예상 파일명: {safe_title}.mp3")
+
+        if dry_run:
+            print("🧪 Dry-run 모드: 실제 다운로드/변환 생략\n")
+            return
+
+        video = yt.streams.filter(only_audio=True).first()
+        if not video:
+            raise Exception("❗ 오디오 스트림을 찾을 수 없습니다.")
+
+        video_path = Path(video.download(output_path=DOWNLOAD_DIR))
+        print(f"⬇️ 다운로드 완료: {video_path.name}")
+
+        mp3_path = convert_to_mp3(video_path, title)
+        if mp3_path:
+            log_conversion(title, url, mp3_path.name)
+
+    except Exception as e:
+        print(f"❗ [{url}] 오류 발생: {e}")
 
 
-def start_conversion():
-    url = url_entry.get().strip()
-    if not url:
-        messagebox.showwarning("입력 오류", "유튜브 URL을 입력해주세요.")
+# ▶️ 메인 실행
+def main():
+    parser = argparse.ArgumentParser(description="🎶 유튜브 MP3 변환기")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="변환 없이 미리보기만 실행"
+    )
+    args = parser.parse_args()
+
+    print("🎶 YouTube MP3 변환기")
+    if args.dry_run:
+        print("🧪 [Dry-run 모드 활성화]")
+
+    if not URL_FILE.exists():
+        print("❗ 'urls.txt' 파일이 존재하지 않습니다.")
         return
 
-    try:
-        status_var.set("🎬 변환 중입니다...")
-        root.update_idletasks()
-        filename = convert_url_to_mp3(url)
-        status_var.set(f"✅ 변환 완료: {filename}")
-    except Exception as e:
-        status_var.set("❌ 변환 실패")
-        messagebox.showerror("오류 발생", str(e))
+    with open(URL_FILE, "r", encoding="utf-8") as f:
+        urls = [line.strip() for line in f if line.strip()]
+
+    if not urls:
+        print("❗ 'urls.txt'에 유효한 URL이 없습니다.")
+        return
+
+    print(f"🔗 총 {len(urls)}개의 URL 처리 시작...\n")
+
+    for idx, url in enumerate(urls, start=1):
+        print(f"▶️ [{idx}/{len(urls)}] 처리 중...")
+        process_url(url, dry_run=args.dry_run)
+
+    print("\n🎉 전체 작업 완료!")
 
 
-# 🖼️ GUI 구성
-root = tk.Tk()
-root.title("🎶 유튜브 MP3 변환기")
-root.geometry("500x200")
-root.resizable(False, False)
-
-tk.Label(root, text="유튜브 URL 입력:", font=("Arial", 11)).pack(pady=10)
-url_entry = tk.Entry(root, width=60)
-url_entry.pack(pady=5)
-
-tk.Button(root, text="🎧 변환 시작", command=start_conversion, width=20).pack(pady=10)
-tk.Button(root, text="📂 다운로드 폴더 열기", command=open_folder).pack()
-
-status_var = tk.StringVar()
-status_label = tk.Label(root, textvariable=status_var, fg="green", font=("Arial", 10))
-status_label.pack(pady=10)
-
-root.mainloop()
+if __name__ == "__main__":
+    main()
 
 # python youtube_mp3_converter.py
 # python youtube_mp3_converter.py --dry-run
