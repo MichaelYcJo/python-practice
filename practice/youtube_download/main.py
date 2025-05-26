@@ -7,7 +7,7 @@ from urllib.parse import urlparse, urljoin
 import threading
 import subprocess
 
-SAVE_PATH = "downloaded_media"
+SAVE_PATH = "./downloaded"
 PROXY = None  # 필요하면 여기에 프록시 설정 ("http://proxyserver:port")
 
 
@@ -23,7 +23,6 @@ def get_video_urls_from_page(url):
 
     soup = BeautifulSoup(response.text, "html.parser")
 
-    # <video> 태그 내 src 속성 찾기
     video_tags = soup.find_all("video")
     source_tags = soup.find_all("source")
     m3u8_tags = soup.find_all("a", href=True)
@@ -33,7 +32,7 @@ def get_video_urls_from_page(url):
     for tag in video_tags:
         src = tag.get("src")
         if src:
-            video_urls.append(urljoin(url, src))  # 상대경로 처리
+            video_urls.append(urljoin(url, src))
 
     for tag in source_tags:
         src = tag.get("src")
@@ -45,7 +44,18 @@ def get_video_urls_from_page(url):
         if ".m3u8" in href:
             video_urls.append(urljoin(url, href))
 
-    return list(set(video_urls))  # 중복 제거
+    return list(set(video_urls))
+
+
+def progress_hook(d):
+    """다운로드 상태 표시"""
+    if d["status"] == "downloading":
+        percent = d.get("_percent_str", "").strip()
+        speed = d.get("_speed_str", "").strip()
+        eta = d.get("_eta_str", "").strip()
+        print(f"⬇️ {percent} | {speed} | 남은 시간: {eta}", end="\r")
+    elif d["status"] == "finished":
+        print(f"\n✅ 다운로드 완료: {d['filename']}")
 
 
 def download_media(video_url, media_type="video"):
@@ -56,20 +66,20 @@ def download_media(video_url, media_type="video"):
     ydl_opts = {
         "outtmpl": os.path.join(SAVE_PATH, "%(title)s.%(ext)s"),
         "format": (
-            "bestaudio/best"
-            if media_type == "audio"
-            else "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]"
+            "bestaudio/best" if media_type == "audio" else "bestvideo+bestaudio/best"
         ),
         "merge_output_format": "mp3" if media_type == "audio" else "mp4",
+        "progress_hooks": [progress_hook],
+        "quiet": True,  # 일반 로그 출력 제거 (진행률만 표시)
     }
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         try:
             ydl.download([video_url])
             media_type_text = "MP3 오디오" if media_type == "audio" else "MP4 비디오"
-            print(f"✅ {media_type_text} 다운로드 완료! 📂 저장 위치: {SAVE_PATH}")
+            print(f"📂 저장 위치: {SAVE_PATH}")
         except Exception as e:
-            print(f"❌ 다운로드 실패: {e}")
+            print(f"\n❌ 다운로드 실패: {e}")
 
 
 def threaded_download(video_url, media_type):
@@ -82,7 +92,6 @@ def main():
     """사용자 입력을 받아 동영상 또는 오디오 다운로드"""
     website_url = input("🌐 동영상이 포함된 웹페이지 URL을 입력하세요: ").strip()
 
-    # 유튜브, 트위치, 넷플릭스 등 자동 감지
     if any(
         x in website_url
         for x in ["youtube.com", "youtu.be", "twitch.tv", "netflix.com"]
@@ -125,7 +134,7 @@ def main():
 
     if choices == "all":
         for video_url in video_urls:
-            threaded_download(video_url, "video")  # 모든 동영상 다운로드
+            threaded_download(video_url, "video")
     else:
         try:
             selected_indices = [int(x) - 1 for x in choices.split(",")]
@@ -136,5 +145,5 @@ def main():
             print("⚠️ 올바른 번호를 입력하세요!")
 
 
-# 실행
-main()
+if __name__ == "__main__":
+    main()
