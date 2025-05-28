@@ -3,9 +3,8 @@ import re
 import requests
 import yt_dlp
 from bs4 import BeautifulSoup
-from urllib.parse import urlparse, urljoin
-import threading
-import subprocess
+from urllib.parse import urljoin
+from concurrent.futures import ThreadPoolExecutor
 
 SAVE_PATH = "./downloaded"
 PROXY = None  # 필요하면 여기에 프록시 설정 ("http://proxyserver:port")
@@ -22,24 +21,14 @@ def get_video_urls_from_page(url):
         return []
 
     soup = BeautifulSoup(response.text, "html.parser")
-
-    video_tags = soup.find_all("video")
-    source_tags = soup.find_all("source")
-    m3u8_tags = soup.find_all("a", href=True)
-
     video_urls = []
 
-    for tag in video_tags:
+    for tag in soup.find_all("video") + soup.find_all("source"):
         src = tag.get("src")
         if src:
             video_urls.append(urljoin(url, src))
 
-    for tag in source_tags:
-        src = tag.get("src")
-        if src:
-            video_urls.append(urljoin(url, src))
-
-    for tag in m3u8_tags:
+    for tag in soup.find_all("a", href=True):
         href = tag["href"]
         if ".m3u8" in href:
             video_urls.append(urljoin(url, href))
@@ -82,12 +71,6 @@ def download_media(video_url, media_type="video"):
             print(f"\n❌ 다운로드 실패: {e}")
 
 
-def threaded_download(video_url, media_type):
-    """멀티스레드 다운로드 실행"""
-    thread = threading.Thread(target=download_media, args=(video_url, media_type))
-    thread.start()
-
-
 def main():
     """사용자 입력을 받아 동영상 또는 오디오 다운로드"""
     website_url = input("🌐 동영상이 포함된 웹페이지 URL을 입력하세요: ").strip()
@@ -109,7 +92,7 @@ def main():
             print("⚠️ 올바른 옵션을 선택하세요!")
             return
 
-        threaded_download(website_url, media_type)
+        download_media(website_url, media_type)
         return
 
     video_urls = get_video_urls_from_page(website_url)
@@ -121,7 +104,7 @@ def main():
             == "y"
         )
         if use_yt_dlp:
-            threaded_download(website_url, "video")
+            download_media(website_url, "video")
         return
 
     print("\n🎥 찾은 동영상 목록:")
@@ -132,17 +115,30 @@ def main():
         "👉 다운로드할 동영상 번호를 선택하세요 (예: 1,2,3 또는 all): "
     ).strip()
 
+    selected_urls = []
     if choices == "all":
-        for video_url in video_urls:
-            threaded_download(video_url, "video")
+        selected_urls = video_urls
     else:
         try:
-            selected_indices = [int(x) - 1 for x in choices.split(",")]
-            for index in selected_indices:
-                if 0 <= index < len(video_urls):
-                    threaded_download(video_urls[index], "video")
+            selected_indices = [int(x.strip()) - 1 for x in choices.split(",")]
+            selected_urls = [
+                video_urls[i] for i in selected_indices if 0 <= i < len(video_urls)
+            ]
         except ValueError:
             print("⚠️ 올바른 번호를 입력하세요!")
+            return
+
+    if not selected_urls:
+        print("⚠️ 선택된 URL이 없습니다.")
+        return
+
+    print(f"\n🚀 다운로드 시작 (최대 동시 다운로드: 3)")
+
+    with ThreadPoolExecutor(max_workers=3) as executor:
+        for url in selected_urls:
+            executor.submit(download_media, url, "video")
+
+    print("\n🎉 전체 다운로드 요청 완료!")
 
 
 if __name__ == "__main__":
