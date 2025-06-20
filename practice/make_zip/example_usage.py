@@ -20,6 +20,35 @@ def example_basic_usage():
         print(f"❌ 압축 실패: {e}")
 
 
+def example_password_protection():
+    """암호 보호 압축 예제"""
+    print("\n=== 암호 보호 압축 예제 ===")
+    
+    zipper = DirectoryZipper()
+    
+    # 암호로 보호된 압축 파일 생성
+    try:
+        password = "mySecretPassword123"
+        result = zipper.create_zip(
+            "../vocab_quiz", 
+            "vocab_quiz_protected.zip",
+            password=password
+        )
+        print(f"✅ 암호 보호 압축 완료: {result}")
+        
+        # 압축 해제 테스트
+        print("\n📦 암호 보호된 파일 해제 테스트...")
+        extract_result = zipper.extract_zip(
+            "vocab_quiz_protected.zip",
+            "extracted_vocab_quiz",
+            password=password
+        )
+        print(f"✅ 압축 해제 완료: {extract_result}")
+        
+    except Exception as e:
+        print(f"❌ 암호 보호 압축 실패: {e}")
+
+
 def example_with_exclusions():
     """제외 패턴 사용 예제"""
     print("\n=== 제외 패턴 사용 예제 ===")
@@ -97,6 +126,7 @@ if __name__ == "__main__":
     print("디렉토리 압축 도구 예제를 실행합니다...")
     
     example_basic_usage()
+    example_password_protection()
     example_with_exclusions()
     example_programmatic_usage()
     example_extract_zip()

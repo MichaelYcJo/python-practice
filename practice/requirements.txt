@@ -83,3 +83,4 @@ tzdata==2025.2
 urllib3==2.3.0
 yt-dlp==2025.2.19
 zipp==3.22.0
+pyminizip==0.2.6

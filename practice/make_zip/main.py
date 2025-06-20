@@ -3,6 +3,13 @@ import zipfile
 import shutil
 from pathlib import Path
 from datetime import datetime
+import getpass
+try:
+    import pyminizip
+    PYMINIZIP_AVAILABLE = True
+except ImportError:
+    PYMINIZIP_AVAILABLE = False
+    print("⚠️  pyminizip가 설치되지 않았습니다. 암호 보호 기능이 제한됩니다.")
 
 
 class DirectoryZipper:
@@ -13,7 +20,7 @@ class DirectoryZipper:
         self.output_dir = Path.cwd()  # 현재 작업 디렉토리 (make_zip)
         print(f"압축 파일 생성 위치: {self.output_dir}")
     
-    def create_zip(self, source_dir, output_path=None, exclude_patterns=None):
+    def create_zip(self, source_dir, output_path=None, exclude_patterns=None, password=None):
         """
         디렉토리를 ZIP 파일로 압축합니다.
         
@@ -21,6 +28,7 @@ class DirectoryZipper:
             source_dir (str): 압축할 디렉토리 경로 (상대경로 또는 절대경로)
             output_path (str, optional): 출력 ZIP 파일 경로. None이면 자동 생성
             exclude_patterns (list, optional): 제외할 파일/폴더 패턴 리스트
+            password (str, optional): 압축 파일 암호. None이면 암호 없음
         
         Returns:
             str: 생성된 ZIP 파일 경로
@@ -54,6 +62,15 @@ class DirectoryZipper:
                 '*.pyc', '*.pyo', '.venv', 'venv', 'node_modules'
             ]
         
+        # 암호 보호가 요청되고 pyminizip이 사용 가능한 경우
+        if password and PYMINIZIP_AVAILABLE:
+            return self._create_password_protected_zip(source_path, output_path, exclude_patterns, password)
+        
+        # 일반 압축 또는 암호 보호 불가능한 경우
+        if password and not PYMINIZIP_AVAILABLE:
+            print("⚠️  pyminizip가 없어서 암호 보호 없이 압축합니다.")
+            password = None
+        
         try:
             with zipfile.ZipFile(output_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
                 total_files = sum(1 for _ in source_path.rglob('*') if _.is_file())
@@ -84,11 +101,56 @@ class DirectoryZipper:
                             print(f"파일 압축 실패: {file_path} - {e}")
                             continue
                 
-                print(f"압축 완료! 파일 크기: {self._format_size(output_path.stat().st_size)}")
+                protection_msg = "🔒 암호 보호됨" if password else "🔓 암호 없음"
+                print(f"압축 완료! 파일 크기: {self._format_size(output_path.stat().st_size)} ({protection_msg})")
                 return str(output_path)
         
         except Exception as e:
             print(f"압축 중 오류 발생: {e}")
+            # 실패한 경우 생성된 파일 삭제
+            if output_path.exists():
+                output_path.unlink()
+            raise
+    
+    def _create_password_protected_zip(self, source_path, output_path, exclude_patterns, password):
+        """pyminizip을 사용한 암호 보호 압축"""
+        try:
+            # 압축할 파일 목록 수집
+            files_to_compress = []
+            arc_names = []
+            
+            print(f"🔒 암호 보호 압축 시작: {source_path} -> {output_path}")
+            
+            for file_path in source_path.rglob('*'):
+                if file_path.is_file():
+                    # 제외 패턴 확인
+                    if self._should_exclude(file_path, source_path, exclude_patterns):
+                        continue
+                    
+                    files_to_compress.append(str(file_path))
+                    # ZIP 파일 내에서의 상대 경로 계산
+                    arc_name = str(file_path.relative_to(source_path.parent))
+                    arc_names.append(arc_name)
+            
+            if not files_to_compress:
+                raise ValueError("압축할 파일이 없습니다.")
+            
+            print(f"총 {len(files_to_compress)}개 파일 압축 중...")
+            
+            # pyminizip을 사용한 암호 보호 압축
+            pyminizip.compress_multiple(
+                files_to_compress,    # 압축할 파일 목록
+                arc_names,           # ZIP 내에서의 파일명 목록
+                str(output_path),    # 출력 ZIP 파일 경로
+                password,            # 암호
+                5                    # 압축 레벨 (0-9)
+            )
+            
+            print(f"🔒 암호 보호 압축 완료! 파일 크기: {self._format_size(output_path.stat().st_size)}")
+            return str(output_path)
+            
+        except Exception as e:
+            print(f"❌ 암호 보호 압축 실패: {e}")
             # 실패한 경우 생성된 파일 삭제
             if output_path.exists():
                 output_path.unlink()
@@ -128,13 +190,14 @@ class DirectoryZipper:
         
         return f"{size_bytes:.1f}{size_names[i]}"
     
-    def extract_zip(self, zip_path, extract_to=None):
+    def extract_zip(self, zip_path, extract_to=None, password=None):
         """
         ZIP 파일을 압축 해제합니다.
         
         Args:
             zip_path (str): 압축 해제할 ZIP 파일 경로
             extract_to (str, optional): 압축 해제할 디렉토리. None이면 ZIP 파일명으로 생성
+            password (str, optional): 압축 파일 암호. None이면 암호 없음
         
         Returns:
             str: 압축 해제된 디렉토리 경로
@@ -152,13 +215,29 @@ class DirectoryZipper:
         try:
             with zipfile.ZipFile(zip_path, 'r') as zipf:
                 print(f"압축 해제 시작: {zip_path} -> {extract_path}")
-                zipf.extractall(extract_path)
-                print(f"압축 해제 완료: {extract_path}")
                 
+                # 암호가 설정된 경우 적용
+                if password:
+                    print(f"🔒 암호 보호된 파일 해제 중...")
+                    zipf.extractall(extract_path, pwd=password.encode('utf-8'))
+                else:
+                    zipf.extractall(extract_path)
+                
+                print(f"압축 해제 완료: {extract_path}")
                 return str(extract_path)
         
+        except zipfile.BadZipFile:
+            print(f"❌ 잘못된 ZIP 파일입니다: {zip_path}")
+            raise
+        except RuntimeError as e:
+            if "Bad password" in str(e):
+                print(f"❌ 잘못된 암호입니다!")
+                raise ValueError("잘못된 암호입니다.")
+            else:
+                print(f"❌ 압축 해제 중 오류 발생: {e}")
+                raise
         except Exception as e:
-            print(f"압축 해제 중 오류 발생: {e}")
+            print(f"❌ 압축 해제 중 오류 발생: {e}")
             raise
 
 
@@ -191,7 +270,20 @@ def main():
                 if exclude_input:
                     exclude_patterns = [p.strip() for p in exclude_input.split(',')]
                 
-                result = zipper.create_zip(source_dir, output_path, exclude_patterns)
+                # 암호 입력
+                password_choice = input("암호를 설정하시겠습니까? (y/N): ").strip().lower()
+                password = None
+                if password_choice in ['y', 'yes']:
+                    password = getpass.getpass("압축 파일 암호를 입력하세요: ")
+                    if password:
+                        password_confirm = getpass.getpass("암호를 다시 입력하세요: ")
+                        if password != password_confirm:
+                            print("❌ 암호가 일치하지 않습니다.")
+                            continue
+                    else:
+                        print("암호가 입력되지 않아 암호 없이 압축합니다.")
+                
+                result = zipper.create_zip(source_dir, output_path, exclude_patterns, password)
                 print(f"\n✅ 압축 성공: {result}")
                 
             except Exception as e:
@@ -208,9 +300,22 @@ def main():
                 if not extract_to:
                     extract_to = None
                 
-                result = zipper.extract_zip(zip_path, extract_to)
+                # 암호 보호 여부 확인 후 암호 입력
+                password = None
+                password_choice = input("암호 보호된 파일입니까? (y/N): ").strip().lower()
+                if password_choice in ['y', 'yes']:
+                    password = getpass.getpass("압축 파일 암호를 입력하세요: ")
+                
+                result = zipper.extract_zip(zip_path, extract_to, password)
                 print(f"\n✅ 압축 해제 성공: {result}")
                 
+            except ValueError as e:
+                # 잘못된 암호인 경우 재시도 기회 제공
+                if "잘못된 암호" in str(e):
+                    retry_choice = input("다시 시도하시겠습니까? (y/N): ").strip().lower()
+                    if retry_choice in ['y', 'yes']:
+                        continue
+                print(f"❌ 압축 해제 실패: {e}")
             except Exception as e:
                 print(f"❌ 압축 해제 실패: {e}")
         
