@@ -1,15 +1,17 @@
 import os
 import zipfile
 import shutil
+import subprocess
 from pathlib import Path
 from datetime import datetime
 import getpass
+import tempfile
 try:
-    import pyminizip
-    PYMINIZIP_AVAILABLE = True
+    import py7zr
+    PY7ZR_AVAILABLE = True
 except ImportError:
-    PYMINIZIP_AVAILABLE = False
-    print("⚠️  pyminizip가 설치되지 않았습니다. 암호 보호 기능이 제한됩니다.")
+    PY7ZR_AVAILABLE = False
+    print("⚠️  py7zr가 설치되지 않았습니다. 암호 보호 기능이 제한됩니다.")
 
 
 class DirectoryZipper:
@@ -62,14 +64,18 @@ class DirectoryZipper:
                 '*.pyc', '*.pyo', '.venv', 'venv', 'node_modules'
             ]
         
-        # 암호 보호가 요청되고 pyminizip이 사용 가능한 경우
-        if password and PYMINIZIP_AVAILABLE:
-            return self._create_password_protected_zip(source_path, output_path, exclude_patterns, password)
-        
-        # 일반 압축 또는 암호 보호 불가능한 경우
-        if password and not PYMINIZIP_AVAILABLE:
-            print("⚠️  pyminizip가 없어서 암호 보호 없이 압축합니다.")
-            password = None
+        # 암호 보호가 요청된 경우
+        if password:
+            # 1순위: py7zr 사용 (7z 형식)
+            if PY7ZR_AVAILABLE:
+                return self._create_7z_password_protected(source_path, output_path, exclude_patterns, password)
+            # 2순위: 시스템 zip 명령어 사용
+            elif self._check_system_zip():
+                return self._create_system_zip_password_protected(source_path, output_path, exclude_patterns, password)
+            # 3순위: 암호 보호 불가능
+            else:
+                print("⚠️  암호 보호 기능을 사용할 수 없어서 일반 압축으로 진행합니다.")
+                password = None
         
         try:
             with zipfile.ZipFile(output_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
@@ -112,45 +118,121 @@ class DirectoryZipper:
                 output_path.unlink()
             raise
     
-    def _create_password_protected_zip(self, source_path, output_path, exclude_patterns, password):
-        """pyminizip을 사용한 암호 보호 압축"""
+    def _check_system_zip(self):
+        """시스템에 zip 명령어가 있는지 확인"""
         try:
-            # 압축할 파일 목록 수집
-            files_to_compress = []
-            arc_names = []
+            subprocess.run(['zip', '--help'], capture_output=True, check=True)
+            return True
+        except (subprocess.CalledProcessError, FileNotFoundError):
+            return False
+    
+    def _create_7z_password_protected(self, source_path, output_path, exclude_patterns, password):
+        """py7zr을 사용한 7z 형식 암호 보호 압축"""
+        try:
+            # 출력 파일 확장자를 .7z로 변경
+            if output_path.suffix.lower() == '.zip':
+                output_path = output_path.with_suffix('.7z')
             
-            print(f"🔒 암호 보호 압축 시작: {source_path} -> {output_path}")
+            print(f"🔒 7z 암호 보호 압축 시작: {source_path} -> {output_path}")
             
-            for file_path in source_path.rglob('*'):
-                if file_path.is_file():
-                    # 제외 패턴 확인
-                    if self._should_exclude(file_path, source_path, exclude_patterns):
-                        continue
-                    
-                    files_to_compress.append(str(file_path))
-                    # ZIP 파일 내에서의 상대 경로 계산
-                    arc_name = str(file_path.relative_to(source_path.parent))
-                    arc_names.append(arc_name)
+            with py7zr.SevenZipFile(output_path, 'w', password=password) as archive:
+                total_files = 0
+                processed_files = 0
+                
+                # 파일 개수 세기
+                for file_path in source_path.rglob('*'):
+                    if file_path.is_file() and not self._should_exclude(file_path, source_path, exclude_patterns):
+                        total_files += 1
+                
+                print(f"총 {total_files}개 파일 압축 중...")
+                
+                for file_path in source_path.rglob('*'):
+                    if file_path.is_file():
+                        # 제외 패턴 확인
+                        if self._should_exclude(file_path, source_path, exclude_patterns):
+                            continue
+                        
+                        # 7z 파일 내에서의 상대 경로 계산
+                        arc_name = file_path.relative_to(source_path.parent)
+                        
+                        try:
+                            archive.write(file_path, arc_name)
+                            processed_files += 1
+                            
+                            # 진행률 표시
+                            if processed_files % 10 == 0 or processed_files == total_files:
+                                progress = (processed_files / total_files) * 100
+                                print(f"진행률: {progress:.1f}% ({processed_files}/{total_files})")
+                        
+                        except Exception as e:
+                            print(f"파일 압축 실패: {file_path} - {e}")
+                            continue
             
-            if not files_to_compress:
-                raise ValueError("압축할 파일이 없습니다.")
-            
-            print(f"총 {len(files_to_compress)}개 파일 압축 중...")
-            
-            # pyminizip을 사용한 암호 보호 압축
-            pyminizip.compress_multiple(
-                files_to_compress,    # 압축할 파일 목록
-                arc_names,           # ZIP 내에서의 파일명 목록
-                str(output_path),    # 출력 ZIP 파일 경로
-                password,            # 암호
-                5                    # 압축 레벨 (0-9)
-            )
-            
-            print(f"🔒 암호 보호 압축 완료! 파일 크기: {self._format_size(output_path.stat().st_size)}")
+            print(f"🔒 7z 암호 보호 압축 완료! 파일 크기: {self._format_size(output_path.stat().st_size)}")
             return str(output_path)
             
         except Exception as e:
-            print(f"❌ 암호 보호 압축 실패: {e}")
+            print(f"❌ 7z 암호 보호 압축 실패: {e}")
+            # 실패한 경우 생성된 파일 삭제
+            if output_path.exists():
+                output_path.unlink()
+            raise
+    
+    def _create_system_zip_password_protected(self, source_path, output_path, exclude_patterns, password):
+        """시스템 zip 명령어를 사용한 암호 보호 압축"""
+        try:
+            print(f"🔒 시스템 zip을 사용한 암호 보호 압축 시작: {source_path} -> {output_path}")
+            
+            # 임시 디렉토리에서 작업
+            with tempfile.TemporaryDirectory() as temp_dir:
+                temp_source = Path(temp_dir) / "temp_source"
+                temp_source.mkdir()
+                
+                # 제외 패턴을 적용하여 파일 복사
+                copied_files = 0
+                for file_path in source_path.rglob('*'):
+                    if file_path.is_file():
+                        if self._should_exclude(file_path, source_path, exclude_patterns):
+                            continue
+                        
+                        # 상대 경로 계산
+                        rel_path = file_path.relative_to(source_path)
+                        dest_path = temp_source / rel_path
+                        
+                        # 디렉토리 생성
+                        dest_path.parent.mkdir(parents=True, exist_ok=True)
+                        
+                        # 파일 복사
+                        shutil.copy2(file_path, dest_path)
+                        copied_files += 1
+                
+                if copied_files == 0:
+                    raise ValueError("압축할 파일이 없습니다.")
+                
+                print(f"총 {copied_files}개 파일 압축 중...")
+                
+                # zip 명령어로 암호 보호 압축
+                cmd = [
+                    'zip', '-r', '-P', password,  # -P는 암호 옵션
+                    str(output_path.absolute()),
+                    '.'
+                ]
+                
+                result = subprocess.run(
+                    cmd,
+                    cwd=temp_source,
+                    capture_output=True,
+                    text=True
+                )
+                
+                if result.returncode != 0:
+                    raise RuntimeError(f"zip 명령어 실행 실패: {result.stderr}")
+            
+            print(f"🔒 시스템 zip 암호 보호 압축 완료! 파일 크기: {self._format_size(output_path.stat().st_size)}")
+            return str(output_path)
+            
+        except Exception as e:
+            print(f"❌ 시스템 zip 암호 보호 압축 실패: {e}")
             # 실패한 경우 생성된 파일 삭제
             if output_path.exists():
                 output_path.unlink()
@@ -212,9 +294,17 @@ class DirectoryZipper:
         
         extract_path = Path(extract_to)
         
+        # 파일 형식에 따라 다른 해제 방법 사용
+        if zip_path.suffix.lower() == '.7z':
+            return self._extract_7z(zip_path, extract_path, password)
+        else:
+            return self._extract_zip(zip_path, extract_path, password)
+    
+    def _extract_zip(self, zip_path, extract_path, password):
+        """ZIP 파일 해제"""
         try:
             with zipfile.ZipFile(zip_path, 'r') as zipf:
-                print(f"압축 해제 시작: {zip_path} -> {extract_path}")
+                print(f"📦 ZIP 파일 해제 시작: {zip_path} -> {extract_path}")
                 
                 # 암호가 설정된 경우 적용
                 if password:
@@ -223,7 +313,7 @@ class DirectoryZipper:
                 else:
                     zipf.extractall(extract_path)
                 
-                print(f"압축 해제 완료: {extract_path}")
+                print(f"✅ ZIP 파일 해제 완료: {extract_path}")
                 return str(extract_path)
         
         except zipfile.BadZipFile:
@@ -234,10 +324,37 @@ class DirectoryZipper:
                 print(f"❌ 잘못된 암호입니다!")
                 raise ValueError("잘못된 암호입니다.")
             else:
-                print(f"❌ 압축 해제 중 오류 발생: {e}")
+                print(f"❌ ZIP 파일 해제 중 오류 발생: {e}")
                 raise
         except Exception as e:
-            print(f"❌ 압축 해제 중 오류 발생: {e}")
+            print(f"❌ ZIP 파일 해제 중 오류 발생: {e}")
+            raise
+    
+    def _extract_7z(self, zip_path, extract_path, password):
+        """7z 파일 해제"""
+        try:
+            if not PY7ZR_AVAILABLE:
+                raise ImportError("py7zr이 설치되지 않았습니다.")
+            
+            print(f"📦 7z 파일 해제 시작: {zip_path} -> {extract_path}")
+            
+            with py7zr.SevenZipFile(zip_path, mode='r', password=password) as archive:
+                archive.extractall(path=extract_path)
+            
+            print(f"✅ 7z 파일 해제 완료: {extract_path}")
+            return str(extract_path)
+        
+        except py7zr.exceptions.Bad7zFile:
+            print(f"❌ 잘못된 7z 파일입니다: {zip_path}")
+            raise
+        except py7zr.exceptions.PasswordRequired:
+            print(f"❌ 이 파일은 암호가 필요합니다!")
+            raise ValueError("암호가 필요합니다.")
+        except py7zr.exceptions.BadPassword:
+            print(f"❌ 잘못된 암호입니다!")
+            raise ValueError("잘못된 암호입니다.")
+        except Exception as e:
+            print(f"❌ 7z 파일 해제 중 오류 발생: {e}")
             raise
 
 
