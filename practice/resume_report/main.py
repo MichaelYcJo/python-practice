@@ -1,43 +1,59 @@
 import re
+import json
 
-def extract_email(text):
-    match = re.search(r'[\w\.-]+@[\w\.-]+', text)
-    return match.group(0) if match else None
+def extract_emails(text):
+    return re.findall(r'[\w\.-]+@[\w\.-]+\.\w+', text)
 
-def extract_phone(text):
-    match = re.search(r'\+?\d[\d\- ]{7,}\d', text)
-    return match.group(0) if match else None
+def extract_phones(text):
+    return re.findall(r'\+?\d[\d\- ()]{7,}\d', text)
 
 def extract_name(text):
-    lines = text.strip().splitlines()
-    for line in lines:
-        if "name is" in line.lower():
-            return line.split("is")[-1].strip().replace(".", "")
+    patterns = [
+        r"(?:my name is|I'm|I am)\s+([A-Z][a-z]+(?:\s[A-Z][a-z]+)+)",  # 이름은 일반적으로 대문자 시작
+    ]
+    for pattern in patterns:
+        match = re.search(pattern, text, re.IGNORECASE)
+        if match:
+            return match.group(1).strip()
     return None
 
-def extract_skills(text, skill_set):
-    found_skills = []
-    for skill in skill_set:
-        if re.search(rf'\b{re.escape(skill)}\b', text, re.IGNORECASE):
-            found_skills.append(skill)
-    return found_skills
+def extract_skills(text, predefined_skills):
+    # 콤마로 구분된 기술 리스트 추출
+    possible_skills = re.findall(r'([A-Za-z+#]+)', text)
+    found = set()
+    for skill in predefined_skills:
+        if skill.lower() in [s.lower() for s in possible_skills]:
+            found.add(skill)
+    return list(found)
 
 def analyze_resume(text):
-    skills = ["Python", "JavaScript", "React", "Node.js", "SQL", "Java", "Docker"]
-    
-    print("🔍 분석 결과:")
-    print(f"👤 이름: {extract_name(text)}")
-    print(f"📧 이메일: {extract_email(text)}")
-    print(f"📱 전화번호: {extract_phone(text)}")
-    print(f"💻 기술 스택: {', '.join(extract_skills(text, skills))}")
+    skill_set = [
+        "Python", "JavaScript", "React", "Node.js", "SQL", "Java", "C++", "Docker",
+        "Kubernetes", "AWS", "GCP", "Linux", "Django", "Flask", "TypeScript"
+    ]
 
-if __name__ == "__main__":
-    # 샘플 이력서 텍스트 입력
+    result = {
+        "name": extract_name(text),
+        "emails": extract_emails(text),
+        "phones": extract_phones(text),
+        "skills": extract_skills(text, skill_set),
+    }
+
+    return result
+
+def main():
+    # 예제 이력서 텍스트
     resume_text = """
-    Hi, my name is Jane Doe.
-    You can reach me at jane.doe@example.com or +1-234-567-8901.
-    I'm experienced in Python, JavaScript, React, and SQL.
-    Previously worked at XYZ Corp as a backend developer.
+    Hello, I'm Jane Elizabeth Doe.
+    You can reach me at jane.doe@example.com or jane@doe.dev.
+    Contact: +1 (234) 567-8901 or +82-10-1234-5678.
+    Skills: Python, JavaScript, React, SQL, Docker, Kubernetes.
+    Formerly at ACME Corp.
     """
 
-    analyze_resume(resume_text)
+    result = analyze_resume(resume_text)
+    print("📋 분석 결과 (JSON):\n")
+    print(json.dumps(result, indent=2, ensure_ascii=False))
+
+if __name__ == "__main__":
+    main()
