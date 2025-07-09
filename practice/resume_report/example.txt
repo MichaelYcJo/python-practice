@@ -1,6 +1,0 @@
-resume_text = """
-Hi, my name is Jane Doe.
-You can reach me at jane.doe@example.com or +1-234-567-8901.
-I'm experienced in Python, JavaScript, React, and SQL.
-Previously worked at XYZ Corp as a backend developer.
-"""
