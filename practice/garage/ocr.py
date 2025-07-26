@@ -1,12 +1,13 @@
 import pytesseract
 from PIL import Image
 from pdf2image import convert_from_path
-from langdetect import detect
-import argparse
 import os
-import datetime
+import json
+import argparse
+from datetime import datetime
+from langdetect import detect
 
-# Windows 사용자는 필요시 경로 설정
+# 필요시 Windows에서 경로 설정
 # pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 def detect_language(text: str) -> str:
@@ -15,94 +16,86 @@ def detect_language(text: str) -> str:
         print(f"🌐 감지된 언어: {lang}")
         return lang
     except Exception:
-        print("⚠️ 언어 감지 실패. 기본값 'eng' 사용")
         return "eng"
 
-def preprocess_image(image: Image.Image) -> Image.Image:
-    image = image.convert("L")
-    return image.point(lambda x: 0 if x < 140 else 255, '1')
+def extract_structured_data(image: Image.Image, lang: str = "eng"):
+    image = image.convert("L")  # 흑백 변환
+    data = pytesseract.image_to_data(image, lang=lang, output_type=pytesseract.Output.DICT)
 
-def extract_text_from_image(image_path: str, lang="eng", save_box=False) -> str:
+    result = []
+    for i in range(len(data['text'])):
+        word = data['text'][i].strip()
+        if word and int(data['conf'][i]) > 50:
+            result.append({
+                "text": word,
+                "confidence": int(data['conf'][i]),
+                "position": {
+                    "x": data['left'][i],
+                    "y": data['top'][i],
+                    "width": data['width'][i],
+                    "height": data['height'][i]
+                }
+            })
+    return result
+
+def handle_image(image_path: str, lang: str = None):
     image = Image.open(image_path)
-    image = preprocess_image(image)
+    temp_text = pytesseract.image_to_string(image)
+    detected_lang = detect_language(temp_text) if lang is None else lang
+    print(f"🔍 처리 중: {image_path} (언어: {detected_lang})")
+    data = extract_structured_data(image, lang=detected_lang)
+    return data
 
-    if save_box:
-        data = pytesseract.image_to_data(image, lang=lang, output_type=pytesseract.Output.DICT)
-        for i in range(len(data["text"])):
-            if int(data["conf"][i]) > 60 and data["text"][i].strip():
-                print(f"{data['text'][i]} → x: {data['left'][i]}, y: {data['top'][i]}")
-    return pytesseract.image_to_string(image, lang=lang).strip()
-
-def extract_text_from_pdf(pdf_path: str, lang="eng", save_images=False) -> str:
+def handle_pdf(pdf_path: str, lang: str = None):
+    print(f"📕 PDF OCR 시작: {pdf_path}")
     pages = convert_from_path(pdf_path)
-    texts = []
+    all_results = []
+
     for i, page in enumerate(pages):
-        print(f"📄 PDF 페이지 {i+1} OCR 중...")
-        image = preprocess_image(page)
-        if save_images:
-            page_path = f"{os.path.splitext(pdf_path)[0]}_page{i+1}.png"
-            image.save(page_path)
-        text = pytesseract.image_to_string(image, lang=lang)
-        texts.append(text)
-    return "\n\n".join(texts).strip()
+        print(f"🔎 페이지 {i + 1} OCR 중...")
+        temp_text = pytesseract.image_to_string(page)
+        detected_lang = detect_language(temp_text) if lang is None else lang
+        page_data = extract_structured_data(page, lang=detected_lang)
+        all_results.append({
+            "page": i + 1,
+            "results": page_data
+        })
+    return all_results
 
-def save_to_file(text: str, original_path: str):
-    now = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    base = os.path.basename(original_path)
-    name, _ = os.path.splitext(base)
-    output_file = f"{name}_ocr_{now}.txt"
-    with open(output_file, "w", encoding="utf-8") as f:
-        f.write(text)
-    print(f"💾 결과 저장 완료: {output_file}")
-
-def handle_file(path, args):
-    ext = os.path.splitext(path)[-1].lower()
-
-    if ext in [".jpg", ".jpeg", ".png"]:
-        print(f"🖼 이미지 OCR: {path}")
-        text = extract_text_from_image(path, lang=args.lang or "eng", save_box=args.box)
-        if args.lang is None:
-            detected_lang = detect_language(text)
-            if detected_lang != "eng":
-                print(f"🔁 감지된 언어 '{detected_lang}'로 재시도...")
-                text = extract_text_from_image(path, lang=detected_lang, save_box=args.box)
-        print("\n📝 OCR 결과:\n")
-        print(text)
-        if args.save:
-            save_to_file(text, path)
-
-    elif ext == ".pdf":
-        print(f"📕 PDF OCR: {path}")
-        text = extract_text_from_pdf(path, lang=args.lang or "eng", save_images=args.save_pdf_images)
-        if args.lang is None:
-            detected_lang = detect_language(text)
-            if detected_lang != "eng":
-                print(f"🔁 감지된 언어 '{detected_lang}'로 재시도...")
-                text = extract_text_from_pdf(path, lang=detected_lang, save_images=args.save_pdf_images)
-        print("\n📝 OCR 결과:\n")
-        print(text)
-        if args.save:
-            save_to_file(text, path)
-    else:
-        print(f"❌ 지원되지 않는 파일 형식: {path}")
+def save_json(data, original_path):
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    name, _ = os.path.splitext(os.path.basename(original_path))
+    filename = f"{name}_ocr_{timestamp}.json"
+    with open(filename, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+    print(f"💾 JSON 저장 완료: {filename}")
 
 def main():
-    parser = argparse.ArgumentParser(description="🧠 OCR 도구 (이미지/PDF/폴더)")
-    parser.add_argument("path", help="파일 또는 폴더 경로")
-    parser.add_argument("--lang", help="언어 코드 (기본: 자동 감지)")
-    parser.add_argument("--box", action="store_true", help="텍스트 위치 박스 출력")
-    parser.add_argument("--save", action="store_true", help="OCR 결과를 .txt로 저장")
-    parser.add_argument("--save-pdf-images", action="store_true", help="PDF 페이지 이미지를 저장")
+    parser = argparse.ArgumentParser(description="🧠 OCR → 구조화된 JSON")
+    parser.add_argument("path", help="이미지/PDF 경로")
+    parser.add_argument("--lang", help="OCR 언어 코드 (기본값: 자동 감지)")
+    parser.add_argument("--save", action="store_true", help="JSON으로 저장")
 
     args = parser.parse_args()
+    path = args.path
+    ext = os.path.splitext(path)[-1].lower()
 
-    if os.path.isdir(args.path):
-        for fname in os.listdir(args.path):
-            fpath = os.path.join(args.path, fname)
-            if os.path.isfile(fpath) and fname.lower().endswith((".jpg", ".png", ".jpeg", ".pdf")):
-                handle_file(fpath, args)
+    if not os.path.exists(path):
+        print("❌ 경로를 찾을 수 없습니다.")
+        return
+
+    if ext in [".jpg", ".jpeg", ".png"]:
+        result = handle_image(path, args.lang)
+    elif ext == ".pdf":
+        result = handle_pdf(path, args.lang)
     else:
-        handle_file(args.path, args)
+        print("❌ 지원되지 않는 파일 형식입니다.")
+        return
+
+    if args.save:
+        save_json(result, path)
+    else:
+        print(json.dumps(result, indent=2, ensure_ascii=False))
 
 if __name__ == "__main__":
     main()
