@@ -1,101 +1,58 @@
-import pytesseract
-from PIL import Image
-from pdf2image import convert_from_path
-import os
-import json
 import argparse
-from datetime import datetime
-from langdetect import detect
+import pytesseract
+from pdf2image import convert_from_path
+from PIL import Image
+import json
+from typing import List, Dict
+from pathlib import Path
 
-# 필요시 Windows에서 경로 설정
-# pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+def pdf_to_images(pdf_path: str, dpi: int = 300) -> List[Image.Image]:
+    return convert_from_path(pdf_path, dpi=dpi)
 
-def detect_language(text: str) -> str:
-    try:
-        lang = detect(text)
-        print(f"🌐 감지된 언어: {lang}")
-        return lang
-    except Exception:
-        return "eng"
+def extract_text_from_image(image: Image.Image, conf_threshold: int = 50) -> List[Dict]:
+    data = pytesseract.image_to_data(image, output_type=pytesseract.Output.DICT, lang="eng")
+    results = []
 
-def extract_structured_data(image: Image.Image, lang: str = "eng"):
-    image = image.convert("L")  # 흑백 변환
-    data = pytesseract.image_to_data(image, lang=lang, output_type=pytesseract.Output.DICT)
-
-    result = []
     for i in range(len(data['text'])):
         word = data['text'][i].strip()
-        if word and int(data['conf'][i]) > 50:
-            result.append({
+        conf = int(data['conf'][i])
+        if word and conf >= conf_threshold:
+            results.append({
                 "text": word,
-                "confidence": int(data['conf'][i]),
-                "position": {
-                    "x": data['left'][i],
-                    "y": data['top'][i],
-                    "width": data['width'][i],
-                    "height": data['height'][i]
-                }
+                "conf": conf,
+                "left": data['left'][i],
+                "top": data['top'][i],
+                "width": data['width'][i],
+                "height": data['height'][i]
             })
-    return result
+    return results
 
-def handle_image(image_path: str, lang: str = None):
-    image = Image.open(image_path)
-    temp_text = pytesseract.image_to_string(image)
-    detected_lang = detect_language(temp_text) if lang is None else lang
-    print(f"🔍 처리 중: {image_path} (언어: {detected_lang})")
-    data = extract_structured_data(image, lang=detected_lang)
-    return data
-
-def handle_pdf(pdf_path: str, lang: str = None):
-    print(f"📕 PDF OCR 시작: {pdf_path}")
-    pages = convert_from_path(pdf_path)
+def process_pdf(pdf_path: str, dpi: int, conf_threshold: int) -> Dict:
+    pages = pdf_to_images(pdf_path, dpi=dpi)
     all_results = []
 
-    for i, page in enumerate(pages):
-        print(f"🔎 페이지 {i + 1} OCR 중...")
-        temp_text = pytesseract.image_to_string(page)
-        detected_lang = detect_language(temp_text) if lang is None else lang
-        page_data = extract_structured_data(page, lang=detected_lang)
+    for idx, image in enumerate(pages):
+        text_blocks = extract_text_from_image(image, conf_threshold=conf_threshold)
         all_results.append({
-            "page": i + 1,
-            "results": page_data
+            "page": idx + 1,
+            "results": text_blocks
         })
-    return all_results
 
-def save_json(data, original_path):
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    name, _ = os.path.splitext(os.path.basename(original_path))
-    filename = f"{name}_ocr_{timestamp}.json"
-    with open(filename, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
-    print(f"💾 JSON 저장 완료: {filename}")
+    return {
+        "type": "pdf",
+        "file": str(Path(pdf_path).name),
+        "pages": all_results
+    }
 
 def main():
-    parser = argparse.ArgumentParser(description="🧠 OCR → 구조화된 JSON")
-    parser.add_argument("path", help="이미지/PDF 경로")
-    parser.add_argument("--lang", help="OCR 언어 코드 (기본값: 자동 감지)")
-    parser.add_argument("--save", action="store_true", help="JSON으로 저장")
-
+    parser = argparse.ArgumentParser(description="PDF OCR with DPI adjustment")
+    parser.add_argument("pdf", type=str, help="PDF 파일 경로")
+    parser.add_argument("--dpi", type=int, default=300, help="이미지 변환 시 DPI 값 (기본값: 300)")
+    parser.add_argument("--conf", type=int, default=50, help="텍스트 신뢰도 필터 기준 (기본값: 50)")
     args = parser.parse_args()
-    path = args.path
-    ext = os.path.splitext(path)[-1].lower()
 
-    if not os.path.exists(path):
-        print("❌ 경로를 찾을 수 없습니다.")
-        return
-
-    if ext in [".jpg", ".jpeg", ".png"]:
-        result = handle_image(path, args.lang)
-    elif ext == ".pdf":
-        result = handle_pdf(path, args.lang)
-    else:
-        print("❌ 지원되지 않는 파일 형식입니다.")
-        return
-
-    if args.save:
-        save_json(result, path)
-    else:
-        print(json.dumps(result, indent=2, ensure_ascii=False))
+    result = process_pdf(args.pdf, dpi=args.dpi, conf_threshold=args.conf)
+    print(json.dumps(result, indent=2, ensure_ascii=False))
 
 if __name__ == "__main__":
     main()
