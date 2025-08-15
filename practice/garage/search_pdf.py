@@ -1,17 +1,16 @@
-import argparse, os, json, math, logging
+import argparse, os, json, logging, math
 from pathlib import Path
 from typing import List, Dict, Optional, Tuple
 from io import BytesIO
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
-import numpy as np
-from PIL import Image, ImageOps
 import pytesseract
+from PIL import Image, ImageOps
 from pdf2image import convert_from_path
 from pypdf import PdfReader, PdfWriter
 from tqdm import tqdm
 
-# (Windows 사용시 필요하면 경로 명시)
+# (Windows 사용자는 필요시 주석 해제 후 경로 지정)
 # pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 try:
@@ -20,9 +19,7 @@ except Exception:
     lang_detect = None
 
 
-# ─────────────────────────────
-# 로깅
-# ─────────────────────────────
+# ───────────── 로깅 ─────────────
 def setup_logger(outdir: Path):
     outdir.mkdir(parents=True, exist_ok=True)
     log_file = outdir / "ocr_log.txt"
@@ -35,79 +32,29 @@ def setup_logger(outdir: Path):
     return log_file
 
 
-# ─────────────────────────────
-# 전처리: 그레이스케일/대비/이진화
-# ─────────────────────────────
+# ───────────── 전처리 ─────────────
 def preprocess(img: Image.Image) -> Image.Image:
     img = ImageOps.grayscale(img)
     img = ImageOps.autocontrast(img)
-    # 간단 Otsu 유사 임계(고정 140) – 문서에 따라 조절 가능
+    # 단순 이진화(문서에 따라 130~170 사이 조정해도 좋음)
     img = img.point(lambda x: 0 if x < 140 else 255, "1")
     return img
 
 
-# ─────────────────────────────
-# 자동 회전(orientation) + 스큐 교정(deskew)
-# ─────────────────────────────
-def autorotate_and_deskew(img: Image.Image, enable_autorotate: bool, enable_deskew: bool) -> Image.Image:
-    np_img = np.array(img.convert("L"))
-
-    # 1) 자동 회전 (Tesseract OSD)
-    if enable_autorotate:
-        try:
-            osd = pytesseract.image_to_osd(Image.fromarray(np_img))
-            # “Rotate: 90” 같은 형식
-            for line in osd.splitlines():
-                if "Rotate:" in line:
-                    angle = int(line.split(":")[-1].strip())
-                    if angle != 0:
-                        img = img.rotate(-angle, expand=True)  # 반대 방향으로 보정
-                        np_img = np.array(img.convert("L"))
-                    break
-        except Exception:
-            pass
-
-    # 2) 스큐 교정 (Hough 변환 대신 모멘트 기반 간단 추정)
-    if enable_deskew:
-        try:
-            # 이진화
-            bw = (np_img < 200).astype(np.uint8) * 255
-            coords = np.column_stack(np.where(bw > 0))
-            if len(coords) > 0:
-                rect = cv2_min_area_rect(coords)
-                angle = rect[2]
-                # OpenCV 없는 환경용 간단 deskew: -45~45 내 보정
-                if angle < -45:
-                    angle = -(90 + angle)
-                else:
-                    angle = -angle
-                if abs(angle) > 0.5:
-                    img = img.rotate(angle, expand=True, fillcolor=255)
-        except Exception:
-            pass
-
-    return img
-
-def cv2_min_area_rect(coords: np.ndarray) -> Tuple[Tuple[float,float], Tuple[float,float], float]:
-    """
-    OpenCV 없이 최소 외접 사각형의 각도를 근사하기 위한 작은 헬퍼.
-    PCA를 이용해 주성분 각도로 근사한다.
-    """
-    # 중앙화
-    mean = coords.mean(axis=0)
-    centered = coords - mean
-    # 공분산 + 고유벡터
-    cov = np.cov(centered.T)
-    eigvals, eigvecs = np.linalg.eig(cov)
-    major = eigvecs[:, np.argmax(eigvals)]
-    angle = math.degrees(math.atan2(major[0], major[1]))  # y,x 순서 보정
-    # Rect 형식 흉내(각도만 사용)
-    return ((0,0),(0,0), angle)
+# ───────────── 언어자동감지(옵션) ─────────────
+def detect_language_from_image(img: Image.Image, fallback: str = "eng") -> str:
+    if lang_detect is None:
+        return fallback
+    try:
+        temp = pytesseract.image_to_string(img, lang=fallback)
+        if temp.strip():
+            return lang_detect(temp)
+        return fallback
+    except Exception:
+        return fallback
 
 
-# ─────────────────────────────
-# OCR 헬퍼
-# ─────────────────────────────
+# ───────────── OCR helper ─────────────
 def image_to_pdf_bytes(img: Image.Image, lang: str) -> bytes:
     return pytesseract.image_to_pdf_or_hocr(img, lang=lang, extension="pdf")
 
@@ -134,193 +81,272 @@ def image_to_words(img: Image.Image, lang: str, conf_threshold: int) -> List[Dic
             })
     return out
 
-def detect_language_from_image(img: Image.Image, fallback: str = "eng") -> str:
-    if lang_detect is None:
-        return fallback
-    try:
-        temp = pytesseract.image_to_string(img, lang=fallback)
-        if temp.strip():
-            return lang_detect(temp)
-        return fallback
-    except Exception:
-        return fallback
 
-
-# ─────────────────────────────
-# PDF 바이트 병합 (순서 보장)
-# ─────────────────────────────
-def merge_pdf_bytes_list(pages: List[Tuple[int, bytes]]) -> bytes:
-    writer = PdfWriter()
-    for _, b in sorted(pages, key=lambda x: x[0]):
-        reader = PdfReader(BytesIO(b))
-        for p in reader.pages:
-            writer.add_page(p)
-    out = BytesIO()
-    writer.write(out)
-    return out.getvalue()
-
-
-# ─────────────────────────────
-# 자동 DPI 선택 (단어 수 기준)
-# ─────────────────────────────
-def pick_best_dpi(pdf_path: Path, candidates: List[int], lang: str, conf: int, page_limit: int = 2) -> int:
-    best = candidates[0]
-    best_score = -1
-    for dpi in candidates:
-        try:
-            pages = convert_from_path(str(pdf_path), dpi=dpi)[:page_limit]
-            score = 0
-            for pg in pages:
-                pre = preprocess(pg)
-                words = image_to_words(pre, lang=lang, conf_threshold=conf)
-                score += len(words)
-            if score > best_score:
-                best_score, best = score, dpi
-        except Exception:
-            continue
+# ───────────── DPI 자동 선택(샘플 페이지 텍스트량 기준) ─────────────
+def pick_best_dpi(pdf_path: Path, candidates: List[int], lang: str, conf: int, sample_pages: int = 2) -> int:
+    best, best_score = candidates[0], -1
+    # 앞쪽 몇 페이지만 샘플링
+    with tqdm(total=min(sample_pages, get_pdf_num_pages(pdf_path)), desc="🔎 Auto-DPI probe", unit="page") as bar:
+        page_idx = 1
+        for _ in range(min(sample_pages, get_pdf_num_pages(pdf_path))):
+            for dpi in candidates:
+                try:
+                    imgs = convert_from_path(str(pdf_path), dpi=dpi, first_page=page_idx, last_page=page_idx)
+                    if not imgs:
+                        continue
+                    pre = preprocess(imgs[0])
+                    words = image_to_words(pre, lang=lang, conf_threshold=conf)
+                    score = len(words)
+                    if score > best_score:
+                        best_score, best = score, dpi
+                except Exception:
+                    pass
+            page_idx += 1
+            bar.update(1)
     return best
 
+def get_pdf_num_pages(pdf_path: Path) -> int:
+    r = PdfReader(str(pdf_path))
+    return len(r.pages)
 
-# ─────────────────────────────
-# 페이지 단위 작업자 (병렬)
-# ─────────────────────────────
-def ocr_page_worker(idx: int,
-                    pil_bytes: bytes,
-                    lang_opt: str,
-                    conf: int,
-                    autorotate: bool,
-                    deskew: bool,
-                    save_json: bool) -> Tuple[int, Optional[bytes], Optional[Dict]]:
+
+# ───────────── 체크포인트 매니페스트 ─────────────
+def load_or_init_manifest(ckpt_dir: Path, pdf_path: Path, dpi: int, lang_opt: str, conf: int) -> Dict:
+    ckpt_dir.mkdir(parents=True, exist_ok=True)
+    manifest_path = ckpt_dir / "manifest.json"
+    if manifest_path.exists():
+        return json.loads(manifest_path.read_text(encoding="utf-8"))
+    total_pages = get_pdf_num_pages(pdf_path)
+    manifest = {
+        "file": pdf_path.name,
+        "dpi": dpi,
+        "lang_opt": lang_opt,
+        "conf": conf,
+        "total_pages": total_pages,
+        "completed_pages": []  # 1-based indices
+    }
+    manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
+    return manifest
+
+def save_manifest(ckpt_dir: Path, manifest: Dict):
+    (ckpt_dir / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+# ───────────── 단일 페이지 처리(작업자) ─────────────
+def ocr_pdf_page_worker(pdf_path: str,
+                        page_index_1based: int,
+                        dpi: int,
+                        lang_opt: str,
+                        conf: int,
+                        save_json: bool,
+                        ckpt_dir: str) -> Tuple[int, bool, Optional[str]]:
+    """
+    반환: (페이지번호, 성공여부, 오류메시지)
+    """
     try:
-        img = Image.open(BytesIO(pil_bytes))
-        img = autorotate_and_deskew(img, enable_autorotate=autorotate, enable_deskew=deskew)
-        img = preprocess(img)
+        imgs = convert_from_path(pdf_path, dpi=dpi, first_page=page_index_1based, last_page=page_index_1based)
+        if not imgs:
+            return page_index_1based, False, "pdf2image returned no image"
+        pre = preprocess(imgs[0])
 
         lang = lang_opt
         if lang_opt == "auto":
-            lang = detect_language_from_image(img, fallback="eng")
+            lang = detect_language_from_image(pre, fallback="eng")
 
-        pdf_b = image_to_pdf_bytes(img, lang=lang)
-        sidecar = None
+        # OCR PDF 저장(체크포인트)
+        page_pdf = image_to_pdf_bytes(pre, lang=lang)
+        page_pdf_path = Path(ckpt_dir) / f"page_{page_index_1based:05d}.pdf"
+        page_pdf_path.write_bytes(page_pdf)
+
+        # 사이드카 JSON (옵션)
         if save_json:
-            sidecar = {"page": idx + 1, "lang": lang, "words": image_to_words(img, lang=lang, conf_threshold=conf)}
-        return idx, pdf_b, sidecar
+            words = image_to_words(pre, lang=lang, conf_threshold=conf)
+            page_json = {
+                "page": page_index_1based,
+                "lang": lang,
+                "words": words
+            }
+            page_json_path = Path(ckpt_dir) / f"page_{page_index_1based:05d}.json"
+            page_json_path.write_text(json.dumps(page_json, ensure_ascii=False, indent=2), encoding="utf-8")
+
+        return page_index_1based, True, None
     except Exception as e:
-        logging.error(f"Page {idx+1} OCR failed: {e}")
-        return idx, None, None
+        return page_index_1based, False, str(e)
 
 
-# ─────────────────────────────
-# 파일 처리 (PDF/이미지)
-# ─────────────────────────────
-def process_pdf(path: Path, outdir: Path, args):
-    out_pdf = outdir / f"{path.stem}_searchable.pdf"
-    out_json = outdir / f"{path.stem}_ocr.json"
+# ───────────── 최종 병합 ─────────────
+def finalize_merge(pdf_path: Path, ckpt_dir: Path, out_pdf: Path, save_json: bool):
+    writer = PdfWriter()
+    pages = sorted(ckpt_dir.glob("page_*.pdf"))
+    if not pages:
+        raise RuntimeError("No checkpointed pages to merge.")
+    for p in pages:
+        reader = PdfReader(str(p))
+        for pg in reader.pages:
+            writer.add_page(pg)
+    out_pdf.write_bytes(write_pdf_to_bytes(writer))
 
-    if args.resume and out_pdf.exists():
-        logging.info(f"[SKIP] Already exists (resume): {out_pdf.name}")
+    # JSON 병합
+    if save_json:
+        merged = {"type": "pdf", "file": pdf_path.name, "pages": []}
+        for j in sorted(ckpt_dir.glob("page_*.json")):
+            merged["pages"].append(json.loads(j.read_text(encoding="utf-8")))
+        out_json = out_pdf.with_suffix(".json")
+        out_json.write_text(json.dumps(merged, ensure_ascii=False, indent=2), encoding="utf-8")
+
+def write_pdf_to_bytes(writer: PdfWriter) -> bytes:
+    bio = BytesIO()
+    writer.write(bio)
+    return bio.getvalue()
+
+
+# ───────────── 메인 처리 ─────────────
+def process_pdf_with_checkpoint(pdf_path: Path,
+                                outdir: Path,
+                                dpi: int,
+                                auto_dpi: bool,
+                                lang_opt: str,
+                                conf: int,
+                                save_json: bool,
+                                workers: int,
+                                resume: bool,
+                                keep_ckpt: bool):
+    outdir.mkdir(parents=True, exist_ok=True)
+    out_pdf = outdir / f"{pdf_path.stem}_searchable.pdf"
+
+    # 체크포인트 디렉토리
+    ckpt_root = outdir / ".checkpoints"
+    ckpt_dir = ckpt_root / pdf_path.stem
+    ckpt_dir.mkdir(parents=True, exist_ok=True)
+
+    # 매니페스트 로드/초기화
+    manifest = load_or_init_manifest(ckpt_dir, pdf_path, dpi, lang_opt, conf)
+
+    # DPI 자동 선택 (매니페스트 초기화 직후에만)
+    if auto_dpi and not manifest.get("dpi_finalized"):
+        probe_lang = "eng" if lang_opt == "auto" else lang_opt
+        chosen = pick_best_dpi(pdf_path, [200, 300, 400], probe_lang, conf)
+        manifest["dpi"] = chosen
+        manifest["dpi_finalized"] = True
+        save_manifest(ckpt_dir, manifest)
+        logging.info(f"Auto-DPI selected: {chosen}")
+
+    dpi = manifest["dpi"]
+    total_pages = manifest["total_pages"]
+    completed = set(manifest.get("completed_pages", []))
+
+    # 이미 최종 산출물이 있으면 바로 리턴(Resume)
+    if resume and out_pdf.exists() and len(completed) == total_pages:
+        logging.info(f"[RESUME] Already completed: {pdf_path.name}")
         return
 
-    probe_lang = "eng" if args.lang == "auto" else args.lang
-    dpi = args.dpi
-    if args.auto_dpi:
-        dpi = pick_best_dpi(path, [200, 300, 400], probe_lang, args.conf)
-        logging.info(f"Auto DPI -> {dpi}")
+    # 이미 존재하는 페이지 조각 스캔 (파일 기준으로도 복구)
+    for p in ckpt_dir.glob("page_*.pdf"):
+        try:
+            idx = int(p.stem.split("_")[1])
+            completed.add(idx)
+        except Exception:
+            pass
+    manifest["completed_pages"] = sorted(list(completed))
+    save_manifest(ckpt_dir, manifest)
 
-    try:
-        pages = convert_from_path(str(path), dpi=dpi)
-    except Exception as e:
-        logging.error(f"PDF to images failed: {path.name} ({e})")
+    # 처리할 페이지 인덱스
+    todo = [i for i in range(1, total_pages + 1) if i not in completed]
+    if not todo:
+        logging.info("No remaining pages. Merging…")
+        finalize_merge(pdf_path, ckpt_dir, out_pdf, save_json)
+        if not keep_ckpt:
+            for f in ckpt_dir.glob("*"):
+                try:
+                    f.unlink()
+                except Exception:
+                    pass
+            try:
+                ckpt_dir.rmdir()
+            except Exception:
+                pass
+        logging.info(f"✅ Done: {out_pdf}")
         return
 
-    # 병렬 처리 준비
-    jobs = []
-    with ProcessPoolExecutor(max_workers=args.workers) as ex:
-        for i, pg in enumerate(pages):
-            buf = BytesIO()
-            pg.save(buf, format="PNG")
-            jobs.append(ex.submit(
-                ocr_page_worker, i, buf.getvalue(), args.lang, args.conf,
-                args.autorotate, args.deskew, args.save_json
-            ))
+    logging.info(f"Start OCR: {pdf_path.name} | pages: {total_pages}, todo: {len(todo)}, dpi={dpi}, lang={lang_opt}")
 
-        pdf_pages: List[Tuple[int, bytes]] = []
-        sidecar_pages: List[Dict] = []
+    # 병렬 처리
+    with ProcessPoolExecutor(max_workers=workers) as ex:
+        futures = [
+            ex.submit(
+                ocr_pdf_page_worker,
+                str(pdf_path),
+                idx,
+                dpi,
+                lang_opt,
+                conf,
+                save_json,
+                str(ckpt_dir)
+            ) for idx in todo
+        ]
+        for fut in tqdm(as_completed(futures), total=len(futures), desc=f"📕 {pdf_path.name}", unit="page"):
+            page_idx, ok, err = fut.result()
+            if ok:
+                completed.add(page_idx)
+                manifest["completed_pages"] = sorted(list(completed))
+                save_manifest(ckpt_dir, manifest)
+            else:
+                logging.error(f"Page {page_idx} failed: {err}")
 
-        for f in tqdm(as_completed(jobs), total=len(jobs), desc=f"📕 {path.name}", unit="page"):
-            idx, pdf_b, side = f.result()
-            if pdf_b:
-                pdf_pages.append((idx, pdf_b))
-            if side:
-                sidecar_pages.append(side)
-
-    if not pdf_pages:
-        logging.warning(f"No OCR pages produced: {path.name}")
-        return
-
-    merged = merge_pdf_bytes_list(pdf_pages)
-    out_pdf.write_bytes(merged)
-    logging.info(f"PDF saved: {out_pdf.name}")
-
-    if args.save_json:
-        data = {"type": "pdf", "file": path.name, "dpi": dpi, "pages": sorted(sidecar_pages, key=lambda x: x['page'])}
-        out_json.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
-        logging.info(f"JSON saved: {out_json.name}")
+    # 완료 여부 확인 후 병합
+    if len(completed) == total_pages:
+        logging.info("Merging all pages…")
+        finalize_merge(pdf_path, ckpt_dir, out_pdf, save_json)
+        if not keep_ckpt:
+            for f in ckpt_dir.glob("*"):
+                try:
+                    f.unlink()
+                except Exception:
+                    pass
+            try:
+                ckpt_dir.rmdir()
+            except Exception:
+                pass
+        logging.info(f"✅ Done: {out_pdf}")
+    else:
+        logging.info(f"Partial complete. Resume later with --resume (done {len(completed)}/{total_pages}).")
 
 
-def process_image(path: Path, outdir: Path, args):
-    out_pdf = outdir / f"{path.stem}_searchable.pdf"
-    out_json = outdir / f"{path.stem}_ocr.json"
+# ───────────── 이미지 파일도 지원(간단) ─────────────
+def process_image_simple(img_path: Path, outdir: Path, lang_opt: str, conf: int, save_json: bool):
+    out_pdf = outdir / f"{img_path.stem}_searchable.pdf"
+    img = Image.open(img_path)
+    pre = preprocess(img)
 
-    if args.resume and out_pdf.exists():
-        logging.info(f"[SKIP] Already exists (resume): {out_pdf.name}")
-        return
+    lang = lang_opt
+    if lang_opt == "auto":
+        lang = detect_language_from_image(pre, fallback="eng")
 
-    try:
-        img = Image.open(path)
-    except Exception as e:
-        logging.error(f"Open image failed: {path.name} ({e})")
-        return
-
-    img = autorotate_and_deskew(img, enable_autorotate=args.autorotate, enable_deskew=args.deskew)
-    img = preprocess(img)
-
-    lang = args.lang
-    if args.lang == "auto":
-        lang = detect_language_from_image(img, fallback="eng")
-
-    try:
-        pdf_b = image_to_pdf_bytes(img, lang=lang)
-    except Exception as e:
-        logging.error(f"OCR failed: {path.name} ({e})")
-        return
-
+    pdf_b = image_to_pdf_bytes(pre, lang=lang)
     out_pdf.write_bytes(pdf_b)
-    logging.info(f"PDF saved: {out_pdf.name}")
 
-    if args.save_json:
-        words = image_to_words(img, lang=lang, conf_threshold=args.conf)
-        data = {"type": "image", "file": path.name, "pages": [{"page": 1, "lang": lang, "words": words}]}
+    if save_json:
+        words = image_to_words(pre, lang=lang, conf_threshold=conf)
+        out_json = out_pdf.with_suffix(".json")
+        data = {"type": "image", "file": img_path.name, "pages": [{"page": 1, "lang": lang, "words": words}]}
         out_json.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
-        logging.info(f"JSON saved: {out_json.name}")
+
+    logging.info(f"✅ Image done: {out_pdf}")
 
 
-# ─────────────────────────────
-# 메인
-# ─────────────────────────────
+# ───────────── 엔트리 ─────────────
 def main():
-    ap = argparse.ArgumentParser(description="Ultra OCR: searchable PDF (batch, auto-DPI/lang, rotate/deskew, parallel).")
+    ap = argparse.ArgumentParser(description="Searchable PDF maker with robust checkpointing/resume for large PDFs.")
     ap.add_argument("--input", required=True, help="입력 경로(파일 또는 폴더)")
-    ap.add_argument("--outdir", default="./output", help="출력 폴더")
-    ap.add_argument("--lang", default="auto", help="Tesseract 언어 (예: eng, kor, eng+kor, auto)")
-    ap.add_argument("--dpi", type=int, default=300, help="PDF→이미지 DPI(기본 300)")
+    ap.add_argument("--outdir", default="./output", help="출력 폴더 (기본 ./output)")
+    ap.add_argument("--lang", default="auto", help="Tesseract 언어 (예: eng, kor, eng+kor, auto=자동)")
+    ap.add_argument("--dpi", type=int, default=300, help="PDF→이미지 변환 DPI(기본 300)")
     ap.add_argument("--auto-dpi", action="store_true", help="200/300/400 중 자동 선택")
     ap.add_argument("--conf", type=int, default=50, help="단어 confidence 임계값(기본 50)")
-    ap.add_argument("--save-json", action="store_true", help="좌표/신뢰도 JSON 저장")
-    ap.add_argument("--workers", type=int, default=os.cpu_count() or 4, help="병렬 작업 프로세스 수")
-    ap.add_argument("--autorotate", action="store_true", help="자동 회전 보정")
-    ap.add_argument("--deskew", action="store_true", help="스큐(기울기) 보정")
-    ap.add_argument("--resume", action="store_true", help="기존 산출물 있으면 건너뛰기")
+    ap.add_argument("--save-json", action="store_true", help="페이지 단어/좌표 JSON 사이드카 저장")
+    ap.add_argument("--workers", type=int, default=os.cpu_count() or 4, help="병렬 프로세스 수")
+    ap.add_argument("--resume", action="store_true", help="체크포인트 기반 재개")
+    ap.add_argument("--keep-ckpt", action="store_true", help="최종 병합 후 체크포인트 보존")
 
     args = ap.parse_args()
 
@@ -344,9 +370,15 @@ def main():
     for p in targets:
         try:
             if p.suffix.lower() == ".pdf":
-                process_pdf(p, outdir, args)
+                process_pdf_with_checkpoint(
+                    p, outdir,
+                    dpi=args.dpi, auto_dpi=args.auto_dpi,
+                    lang_opt=args.lang, conf=args.conf,
+                    save_json=args.save_json, workers=args.workers,
+                    resume=args.resume, keep_ckpt=args.keep_ckpt
+                )
             else:
-                process_image(p, outdir, args)
+                process_image_simple(p, outdir, args.lang, args.conf, args.save_json)
         except Exception as e:
             logging.exception(f"Failed: {p.name} ({e})")
 
@@ -357,9 +389,12 @@ if __name__ == "__main__":
     main()
 
     """
-    # PDF 폴더 배치 처리, 자동 DPI/언어, 자동 회전+스큐, 병렬 6개, JSON 저장
-python make_searchable_pdf_ultra.py --input ./scans --auto-dpi --autorotate --deskew --workers 6 --save-json
+    # 대용량 PDF에 체크포인트 활성 + 자동 DPI + 병렬 6개
+python make_searchable_pdf_checkpoint.py --input ./bigdoc.pdf --resume --auto-dpi --workers 6
 
-# 단일 이미지, 한글+영문 수동 지정, 리줌
-python make_searchable_pdf_ultra.py --input ./page.png --lang eng+kor --resume
+# 폴더 일괄 처리 + JSON 사이드카 저장, 완료 후에도 체크포인트 보존
+python make_searchable_pdf_checkpoint.py --input ./scans --save-json --keep-ckpt
+
+# 중도 중단 → 다시 이어서
+python make_searchable_pdf_checkpoint.py --input ./bigdoc.pdf --resume
     """
