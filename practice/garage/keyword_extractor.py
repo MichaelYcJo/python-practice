@@ -5,25 +5,27 @@ from typing import List, Tuple, Dict, Optional
 
 class KeywordExtractor:
     """
-    간단한 키워드 추출기 (사용자 불용어 지원)
+    간단한 키워드 추출기 (사용자 불용어 병합 지원)
     - stopwords_override: 사용자가 직접 지정한 불용어 세트(dict 또는 set)
     """
 
     def __init__(self, lang: str = "auto", to_lower: bool = True,
-                 stopwords_override: Optional[Dict[str, set]] = None):
+                 stopwords_override: Optional[Dict[str, set] | set] = None):
         self.lang = lang
         self.to_lower = to_lower
         self.stopwords = self._build_stopwords()
 
-        # 사용자 덮어쓰기: dict 또는 set 허용
+        # 사용자 지정 불용어 병합
         if stopwords_override:
             if isinstance(stopwords_override, dict):
                 for k, v in stopwords_override.items():
-                    self.stopwords[k] = set(v)
+                    if k in self.stopwords:
+                        self.stopwords[k] = self.stopwords[k].union(set(v))
+                    else:
+                        self.stopwords[k] = set(v)
             elif isinstance(stopwords_override, set):
-                # 언어 자동 감지 기반 적용
                 detected = "ko" if any(re.search(r"[가-힣]", w) for w in stopwords_override) else "en"
-                self.stopwords[detected] = set(stopwords_override)
+                self.stopwords[detected] = self.stopwords[detected].union(stopwords_override)
 
     # ───────── 내부 유틸 ─────────
     def _build_stopwords(self) -> Dict[str, set]:
@@ -47,7 +49,7 @@ class KeywordExtractor:
 
     def _tokenize(self, text: str, lang: str) -> List[str]:
         tokens = text.split()
-        tokens = [t for t in tokens if len(t) > 1]  # 한 글자 제거
+        tokens = [t for t in tokens if len(t) > 1]
         tokens = [t for t in tokens if t not in self.stopwords[lang]]
         return tokens
 
@@ -68,10 +70,10 @@ if __name__ == "__main__":
     ke_default = KeywordExtractor()
     print(ke_default.extract_unigrams(text))
 
-    print("\n=== 사용자 불용어 override (dict) ===")
-    ke_custom = KeywordExtractor(stopwords_override={"ko": {"ai", "기술", "빠르게"}})
+    print("\n=== 사용자 불용어 merge (dict) ===")
+    ke_custom = KeywordExtractor(stopwords_override={"ko": {"ai", "기술"}})
     print(ke_custom.extract_unigrams(text))
 
-    print("\n=== 사용자 불용어 override (set) ===")
+    print("\n=== 사용자 불용어 merge (set) ===")
     ke_custom_set = KeywordExtractor(stopwords_override={"ai", "특히"})
     print(ke_custom_set.extract_unigrams(text))
