@@ -15,6 +15,9 @@ from datetime import datetime, timedelta
 from urllib.parse import urlparse, urljoin
 from itertools import combinations
 import time
+import weakref
+import gc
+from contextlib import contextmanager
 
 
 @dataclass
@@ -35,6 +38,51 @@ class KeywordTrend:
     frequency_history: List[Tuple[datetime, int]]
     trend_score: float
     is_trending: bool
+
+
+class MemoryManager:
+    """메모리 사용량 최적화를 위한 관리자"""
+    
+    def __init__(self, max_cache_size: int = 1000):
+        self.max_cache_size = max_cache_size
+        self._cache_refs = weakref.WeakValueDictionary()
+        self._access_times = {}
+        self._lock = threading.Lock()
+    
+    @contextmanager
+    def memory_cleanup(self):
+        """메모리 정리를 위한 컨텍스트 매니저"""
+        try:
+            yield
+        finally:
+            self._cleanup_cache()
+            gc.collect()
+    
+    def _cleanup_cache(self):
+        """캐시 정리"""
+        with self._lock:
+            if len(self._cache_refs) > self.max_cache_size:
+                # 가장 오래된 항목들 제거
+                sorted_items = sorted(self._access_times.items(), key=lambda x: x[1])
+                to_remove = len(self._cache_refs) - self.max_cache_size + 100
+                
+                for key, _ in sorted_items[:to_remove]:
+                    if key in self._cache_refs:
+                        del self._cache_refs[key]
+                    if key in self._access_times:
+                        del self._access_times[key]
+    
+    def get_or_create(self, key: str, factory: Callable):
+        """캐시에서 가져오거나 새로 생성"""
+        with self._lock:
+            if key in self._cache_refs:
+                self._access_times[key] = time.time()
+                return self._cache_refs[key]
+            
+            value = factory()
+            self._cache_refs[key] = value
+            self._access_times[key] = time.time()
+            return value
 
 
 class RakeAlgorithm:
@@ -99,30 +147,63 @@ class RakeAlgorithm:
 
 
 class SemanticAnalyzer:
-    """의미론적 분석기 (간단한 word2vec 유사도)"""
+    """향상된 의미론적 분석기"""
     
-    def __init__(self):
+    def __init__(self, vector_dim: int = 128):
+        self.vector_dim = vector_dim
         self.word_vectors = {}
         self.similarity_cache = {}
+        self.memory_manager = MemoryManager()
     
-    def _simple_word_vector(self, word: str) -> List[float]:
-        """간단한 단어 벡터 생성 (문자 기반)"""
-        if word in self.word_vectors:
-            return self.word_vectors[word]
+    def _enhanced_word_vector(self, word: str) -> List[float]:
+        """향상된 단어 벡터 생성"""
+        cache_key = f"vector_{word}_{self.vector_dim}"
         
-        # 단어의 문자 빈도를 기반으로 벡터 생성
-        vector = [0.0] * 100  # 100차원 벡터
-        for i, char in enumerate(word.lower()):
-            if i < len(vector):
-                vector[i] = ord(char) / 255.0
+        def create_vector():
+            vector = [0.0] * self.vector_dim
+            
+            # 문자 기반 특성
+            for i, char in enumerate(word.lower()):
+                if i < self.vector_dim - 10:  # 마지막 10개는 다른 특성용
+                    vector[i] = ord(char) / 255.0
+            
+            # 단어 길이 특성 (정규화)
+            vector[-10] = min(len(word) / 20.0, 1.0)
+            
+            # 첫 글자와 마지막 글자 특성
+            if len(word) > 0:
+                vector[-9] = ord(word[0]) / 255.0
+                vector[-8] = ord(word[-1]) / 255.0
+            
+            # 자음/모음 비율 (한국어)
+            if re.search(r'[가-힣]', word):
+                consonant_count = len(re.findall(r'[ㄱ-ㅎ]', word))
+                vowel_count = len(re.findall(r'[ㅏ-ㅣ]', word))
+                total = consonant_count + vowel_count
+                if total > 0:
+                    vector[-7] = consonant_count / total
+                    vector[-6] = vowel_count / total
+            
+            # 영어 알파벳 비율
+            alpha_count = len(re.findall(r'[a-zA-Z]', word))
+            vector[-5] = alpha_count / len(word) if word else 0
+            
+            # 숫자 포함 여부
+            vector[-4] = 1.0 if re.search(r'\d', word) else 0.0
+            
+            # 대문자 비율
+            upper_count = len(re.findall(r'[A-Z]', word))
+            vector[-3] = upper_count / len(word) if word else 0
+            
+            # 특수문자 포함 여부
+            vector[-2] = 1.0 if re.search(r'[^a-zA-Z가-힣0-9]', word) else 0.0
+            
+            # 단어 복잡도 (고유 문자 수)
+            vector[-1] = len(set(word.lower())) / len(word) if word else 0
+            
+            return vector
         
-        # 단어 길이와 첫 글자로 추가 특성
-        if len(word) > 0:
-            vector[95] = len(word) / 20.0  # 정규화된 길이
-            vector[96] = ord(word[0]) / 255.0  # 첫 글자
-        
-        self.word_vectors[word] = vector
-        return vector
+        return self.memory_manager.get_or_create(cache_key, create_vector)
     
     def calculate_similarity(self, word1: str, word2: str) -> float:
         """두 단어의 코사인 유사도 계산"""
