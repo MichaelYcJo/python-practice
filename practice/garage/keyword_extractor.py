@@ -206,14 +206,15 @@ class SemanticAnalyzer:
         return self.memory_manager.get_or_create(cache_key, create_vector)
     
     def calculate_similarity(self, word1: str, word2: str) -> float:
-        """두 단어의 코사인 유사도 계산"""
+        """두 단어의 향상된 코사인 유사도 계산"""
         cache_key = tuple(sorted([word1, word2]))
         if cache_key in self.similarity_cache:
             return self.similarity_cache[cache_key]
         
-        vec1 = self._simple_word_vector(word1)
-        vec2 = self._simple_word_vector(word2)
+        vec1 = self._enhanced_word_vector(word1)
+        vec2 = self._enhanced_word_vector(word2)
         
+        # 코사인 유사도 계산
         dot_product = sum(a * b for a, b in zip(vec1, vec2))
         magnitude1 = sqrt(sum(a * a for a in vec1))
         magnitude2 = sqrt(sum(a * a for a in vec2))
@@ -223,8 +224,16 @@ class SemanticAnalyzer:
         else:
             similarity = dot_product / (magnitude1 * magnitude2)
         
-        self.similarity_cache[cache_key] = similarity
-        return similarity
+        # 추가 유사도 메트릭 (자카드 유사도)
+        set1 = set(word1.lower())
+        set2 = set(word2.lower())
+        jaccard_sim = len(set1 & set2) / len(set1 | set2) if set1 | set2 else 0
+        
+        # 두 메트릭의 가중 평균
+        final_similarity = 0.7 * similarity + 0.3 * jaccard_sim
+        
+        self.similarity_cache[cache_key] = final_similarity
+        return final_similarity
     
     def cluster_keywords(self, keywords: List[str], threshold: float = 0.7) -> Dict[str, List[str]]:
         """키워드를 유사도 기반으로 클러스터링"""
@@ -322,12 +331,21 @@ class KeywordExtractor:
                  stopwords_override: Optional[Union[Dict[str, Set[str]], Set[str]]] = None,
                  enable_logging: bool = False,
                  enable_semantic_analysis: bool = True,
-                 domain_stopwords: Optional[Dict[str, Set[str]]] = None):
+                 domain_stopwords: Optional[Dict[str, Set[str]]] = None,
+                 max_text_length: int = 1000000,
+                 memory_limit_mb: int = 500):
         if lang not in ("auto", "en", "ko"):
             raise ValueError(f"Unsupported language: {lang}. Supported: 'auto', 'en', 'ko'")
         
+        if max_text_length <= 0:
+            raise ValueError("max_text_length must be positive")
+        if memory_limit_mb <= 0:
+            raise ValueError("memory_limit_mb must be positive")
+        
         self.lang = lang
         self.to_lower = to_lower
+        self.max_text_length = max_text_length
+        self.memory_limit_mb = memory_limit_mb
         self.stopwords = self._build_stopwords()
         self.document_corpus = []  # TF-IDF를 위한 문서 집합
         self.keyword_history = defaultdict(list)  # 트렌드 분석용
@@ -337,6 +355,7 @@ class KeywordExtractor:
         self.semantic_analyzer = SemanticAnalyzer() if enable_semantic_analysis else None
         self.rake = None  # 나중에 초기화
         self.scraper = WebScraper()
+        self.memory_manager = MemoryManager()
         
         # 로깅 설정
         self.logger = self._setup_logging(enable_logging)
@@ -455,14 +474,34 @@ class KeywordExtractor:
         korean_ratio = korean_chars / total_chars
         return "ko" if korean_ratio > 0.1 else "en"
 
-    def _clean_text(self, text: str, remove_numbers: bool = True, aggressive: bool = False) -> str:
-        """향상된 텍스트 정제"""
+    def _validate_text(self, text: str) -> str:
+        """텍스트 유효성 검사 및 전처리"""
         if not isinstance(text, str):
             raise TypeError("Input text must be a string")
         
-        text = text.strip()
-        if not text:
-            return ""
+        if len(text) > self.max_text_length:
+            self.logger.warning(f"Text length ({len(text)}) exceeds limit ({self.max_text_length}). Truncating.")
+            text = text[:self.max_text_length]
+        
+        if not text.strip():
+            raise ValueError("Input text is empty or contains only whitespace")
+        
+        return text.strip()
+    
+    def _check_memory_usage(self) -> bool:
+        """메모리 사용량 체크"""
+        try:
+            import psutil
+            process = psutil.Process()
+            memory_mb = process.memory_info().rss / 1024 / 1024
+            return memory_mb < self.memory_limit_mb
+        except ImportError:
+            # psutil이 없으면 체크하지 않음
+            return True
+    
+    def _clean_text(self, text: str, remove_numbers: bool = True, aggressive: bool = False) -> str:
+        """향상된 텍스트 정제"""
+        text = self._validate_text(text)
         
         if self.to_lower:
             text = text.lower()
@@ -652,7 +691,10 @@ class KeywordExtractor:
                         min_length: int = 2,
                         max_length: int = 20,
                         include_stats: bool = True,
-                        advanced_scoring: bool = False) -> ExtractionResult:
+                        advanced_scoring: bool = False,
+                        filter_keywords: bool = False,
+                        min_score: float = 0.0,
+                        exclude_patterns: List[str] = None) -> ExtractionResult:
         """통합 키워드 추출 메서드"""
         if not isinstance(text, str):
             raise TypeError("Input text must be a string")
@@ -663,78 +705,97 @@ class KeywordExtractor:
         if top_k <= 0:
             raise ValueError("top_k must be positive")
         
-        if not text.strip():
-            return ExtractionResult([], {}, method, {})
+        # 메모리 체크
+        if not self._check_memory_usage():
+            self.logger.warning("Memory usage is high. Consider reducing text size or clearing cache.")
         
-        self.logger.info(f"Extracting keywords using method={method}, n_gram={n_gram}")
-        
-        # 키워드 추출
-        if method == "rake":
-            keywords = self.rake.extract_keywords(text, top_k)
-        else:
-            # 기존 방법들
-            lang = self._detect_lang(text)
-            clean = self._clean_text(text, aggressive=(method == "tfidf"))
-            tokens = self._tokenize(clean, lang, min_length, max_length)
-            
-            if not tokens:
+        with self.memory_manager.memory_cleanup():
+            if not text.strip():
                 return ExtractionResult([], {}, method, {})
             
-            if n_gram == 1:
-                ngrams = tokens
-            else:
-                ngrams = self._generate_ngrams(tokens, n_gram)
+            self.logger.info(f"Extracting keywords using method={method}, n_gram={n_gram}")
             
-            if method == "frequency":
-                counts = Counter(ngrams)
-                keywords = counts.most_common(top_k)
-            elif method == "tfidf":
-                current_doc = set(ngrams)
-                if text not in [doc for doc, _ in self.document_corpus]:
-                    self.document_corpus.append((text, current_doc))
+            # 키워드 추출
+            if method == "rake":
+                keywords = self.rake.extract_keywords(text, top_k)
+            else:
+                # 기존 방법들
+                lang = self._detect_lang(text)
+                clean = self._clean_text(text, aggressive=(method == "tfidf"))
+                tokens = self._tokenize(clean, lang, min_length, max_length)
                 
-                term_freq = Counter(ngrams)
-                doc_count = len(self.document_corpus)
-                term_doc_count = {}
+                if not tokens:
+                    return ExtractionResult([], {}, method, {})
                 
-                for _, doc_terms in self.document_corpus:
-                    for term in doc_terms:
-                        term_doc_count[term] = term_doc_count.get(term, 0) + 1
+                if n_gram == 1:
+                    ngrams = tokens
+                else:
+                    ngrams = self._generate_ngrams(tokens, n_gram)
                 
-                tfidf_scores = self._calculate_tfidf(term_freq, doc_count, term_doc_count)
-                keywords = sorted(tfidf_scores.items(), key=lambda x: x[1], reverse=True)[:top_k]
-        
-        # 고급 점수 계산
-        if advanced_scoring and method != "rake":
-            keywords = self._calculate_advanced_scores(keywords, text)[:top_k]
-        
-        # 키워드 히스토리 업데이트 (트렌드 분석용)
-        timestamp = datetime.now()
-        for keyword, score in keywords:
-            self.keyword_history[keyword].append((timestamp, score))
-        
-        # 통계 정보
-        stats = {}
-        if include_stats:
-            stats = self.get_stats(text)
-            if method != "rake":
-                stats.update({
-                    "method": method,
-                    "n_gram": n_gram,
-                    "total_ngrams": len(ngrams) if 'ngrams' in locals() else 0,
-                    "unique_ngrams": len(set(ngrams)) if 'ngrams' in locals() else 0
-                })
-        
-        parameters = {
-            "method": method,
-            "n_gram": n_gram,
-            "top_k": top_k,
-            "min_length": min_length,
-            "max_length": max_length,
-            "advanced_scoring": advanced_scoring
-        }
-        
-        return ExtractionResult(keywords, stats, method, parameters)
+                if method == "frequency":
+                    counts = Counter(ngrams)
+                    keywords = counts.most_common(top_k)
+                elif method == "tfidf":
+                    current_doc = set(ngrams)
+                    if text not in [doc for doc, _ in self.document_corpus]:
+                        self.document_corpus.append((text, current_doc))
+                    
+                    term_freq = Counter(ngrams)
+                    doc_count = len(self.document_corpus)
+                    term_doc_count = {}
+                    
+                    for _, doc_terms in self.document_corpus:
+                        for term in doc_terms:
+                            term_doc_count[term] = term_doc_count.get(term, 0) + 1
+                    
+                    tfidf_scores = self._calculate_tfidf(term_freq, doc_count, term_doc_count)
+                    keywords = sorted(tfidf_scores.items(), key=lambda x: x[1], reverse=True)[:top_k]
+            
+            # 키워드 필터링
+            if filter_keywords:
+                keywords = self.filter_keywords(
+                    keywords, 
+                    min_score=min_score, 
+                    exclude_patterns=exclude_patterns
+                )
+            
+            # 고급 점수 계산
+            if advanced_scoring and method != "rake":
+                keywords = self._calculate_advanced_scores(keywords, text)[:top_k]
+            
+            # 키워드 히스토리 업데이트 (트렌드 분석용)
+            timestamp = datetime.now()
+            for keyword, score in keywords:
+                self.keyword_history[keyword].append((timestamp, score))
+            
+            # 통계 정보
+            stats = {}
+            if include_stats:
+                stats = self.get_stats(text)
+                if method != "rake":
+                    stats.update({
+                        "method": method,
+                        "n_gram": n_gram,
+                        "total_ngrams": len(ngrams) if 'ngrams' in locals() else 0,
+                        "unique_ngrams": len(set(ngrams)) if 'ngrams' in locals() else 0
+                    })
+                
+                # 키워드 품질 분석 추가
+                quality_analysis = self.analyze_keyword_quality(keywords)
+                stats["keyword_quality"] = quality_analysis
+            
+            parameters = {
+                "method": method,
+                "n_gram": n_gram,
+                "top_k": top_k,
+                "min_length": min_length,
+                "max_length": max_length,
+                "advanced_scoring": advanced_scoring,
+                "filter_keywords": filter_keywords,
+                "min_score": min_score
+            }
+            
+            return ExtractionResult(keywords, stats, method, parameters)
 
     def extract_with_rake(self, text: str, top_k: int = 10) -> List[Tuple[str, float]]:
         """RAKE 알고리즘으로 키워드 추출"""
@@ -874,6 +935,113 @@ class KeywordExtractor:
         """키워드 히스토리 초기화"""
         self.keyword_history.clear()
         self.logger.info("Keyword history cleared")
+    
+    def filter_keywords(self, 
+                       keywords: List[Tuple[str, Union[int, float]]], 
+                       min_score: float = 0.0,
+                       max_keywords: int = None,
+                       exclude_patterns: List[str] = None,
+                       include_patterns: List[str] = None) -> List[Tuple[str, Union[int, float]]]:
+        """키워드 필터링 및 정제"""
+        if not keywords:
+            return []
+        
+        filtered = keywords.copy()
+        
+        # 점수 기준 필터링
+        if min_score > 0:
+            filtered = [(kw, score) for kw, score in filtered if float(score) >= min_score]
+        
+        # 제외 패턴 필터링
+        if exclude_patterns:
+            for pattern in exclude_patterns:
+                filtered = [(kw, score) for kw, score in filtered if not re.search(pattern, kw, re.IGNORECASE)]
+        
+        # 포함 패턴 필터링
+        if include_patterns:
+            for pattern in include_patterns:
+                filtered = [(kw, score) for kw, score in filtered if re.search(pattern, kw, re.IGNORECASE)]
+        
+        # 최대 키워드 수 제한
+        if max_keywords and len(filtered) > max_keywords:
+            filtered = filtered[:max_keywords]
+        
+        return filtered
+    
+    def get_keyword_suggestions(self, 
+                              text: str, 
+                              current_keywords: List[str],
+                              suggestion_count: int = 5) -> List[str]:
+        """현재 키워드와 관련된 추가 키워드 제안"""
+        if not self.enable_semantic:
+            return []
+        
+        # 텍스트에서 모든 키워드 추출
+        all_keywords = self.extract_keywords(text, method="frequency", top_k=50)
+        candidate_keywords = [kw for kw, _ in all_keywords.keywords if kw not in current_keywords]
+        
+        suggestions = []
+        for candidate in candidate_keywords:
+            # 현재 키워드들과의 평균 유사도 계산
+            similarities = []
+            for current_kw in current_keywords:
+                sim = self.semantic_analyzer.calculate_similarity(candidate, current_kw)
+                similarities.append(sim)
+            
+            if similarities:
+                avg_similarity = sum(similarities) / len(similarities)
+                if avg_similarity > 0.3:  # 임계값
+                    suggestions.append((candidate, avg_similarity))
+        
+        # 유사도 순으로 정렬하여 상위 제안 반환
+        suggestions.sort(key=lambda x: x[1], reverse=True)
+        return [kw for kw, _ in suggestions[:suggestion_count]]
+    
+    def analyze_keyword_quality(self, keywords: List[Tuple[str, Union[int, float]]]) -> Dict[str, Any]:
+        """키워드 품질 분석"""
+        if not keywords:
+            return {"quality_score": 0.0, "issues": ["No keywords provided"]}
+        
+        issues = []
+        quality_factors = []
+        
+        # 키워드 길이 분석
+        lengths = [len(kw.split()) for kw, _ in keywords]
+        avg_length = sum(lengths) / len(lengths)
+        if avg_length > 3:
+            issues.append("Keywords are too long on average")
+            quality_factors.append(0.8)
+        else:
+            quality_factors.append(1.0)
+        
+        # 점수 분포 분석
+        scores = [float(score) for _, score in keywords]
+        score_variance = sum((s - sum(scores)/len(scores))**2 for s in scores) / len(scores)
+        if score_variance < 0.01:
+            issues.append("Low score variance - keywords may be too similar")
+            quality_factors.append(0.7)
+        else:
+            quality_factors.append(1.0)
+        
+        # 중복 키워드 체크
+        unique_keywords = set(kw.lower() for kw, _ in keywords)
+        if len(unique_keywords) < len(keywords):
+            issues.append("Duplicate keywords detected")
+            quality_factors.append(0.9)
+        else:
+            quality_factors.append(1.0)
+        
+        # 최종 품질 점수
+        quality_score = sum(quality_factors) / len(quality_factors)
+        
+        return {
+            "quality_score": round(quality_score, 3),
+            "issues": issues,
+            "avg_keyword_length": round(avg_length, 2),
+            "score_variance": round(score_variance, 4),
+            "unique_keywords": len(unique_keywords),
+            "total_keywords": len(keywords)
+        }
 
 
 # ───────── 실행 예시 ─────────
@@ -894,7 +1062,7 @@ if __name__ == "__main__":
     are transforming transportation paradigms.
     """
     
-    print("=== 최첨단 키워드 추출기 데모 ===")
+    print("=== 최첨단 키워드 추출기 데모 (개선된 버전) ===")
     
     # 도메인별 불용어 설정
     tech_stopwords = {
@@ -905,7 +1073,9 @@ if __name__ == "__main__":
     ke = KeywordExtractor(
         enable_logging=True, 
         enable_semantic_analysis=True,
-        domain_stopwords=tech_stopwords
+        domain_stopwords=tech_stopwords,
+        max_text_length=50000,
+        memory_limit_mb=200
     )
     
     print("\n1. RAKE 알고리즘")
@@ -940,13 +1110,34 @@ if __name__ == "__main__":
     trend = ke.analyze_trends("인공지능", days=30)
     print(f"Trend for '인공지능': score={trend.trend_score:.3f}, trending={trend.is_trending}")
     
-    print("\n6. 상세 통계")
+    print("\n6. 키워드 필터링")
+    filtered_result = ke.extract_keywords(
+        text1, 
+        method="frequency", 
+        top_k=10, 
+        filter_keywords=True,
+        min_score=2.0,
+        exclude_patterns=[r"^\d+$", r"^.{1,2}$"]  # 숫자만, 1-2글자 제외
+    )
+    print("Filtered keywords:", filtered_result.keywords[:5])
+    
+    print("\n7. 키워드 제안")
+    current_keywords = ["인공지능", "머신러닝"]
+    suggestions = ke.get_keyword_suggestions(text1, current_keywords, suggestion_count=3)
+    print(f"Suggestions for {current_keywords}: {suggestions}")
+    
+    print("\n8. 키워드 품질 분석")
+    quality = ke.analyze_keyword_quality(advanced_result.keywords)
+    print(f"Quality score: {quality['quality_score']}")
+    print(f"Issues: {quality['issues']}")
+    
+    print("\n9. 상세 통계")
     stats = ke.get_stats(text1)
     important_stats = {k: v for k, v in stats.items() 
                       if k in ['lexical_diversity', 'avg_sentence_length', 'sentence_count']}
     print("Advanced stats:", important_stats)
     
-    print("\n7. 웹 스크래핑 예시 (주석 처리됨)")
+    print("\n10. 웹 스크래핑 예시 (주석 처리됨)")
     # urls = ["https://example.com"]  # 실제 사용시 활성화
     # web_results = ke.extract_from_web(urls)
     # print("Web extraction results:", web_results)
@@ -954,3 +1145,12 @@ if __name__ == "__main__":
     # 결과 저장 예시
     # ke.save_results(advanced_result, "advanced_keywords.json", "json")
     # print("\n결과가 advanced_keywords.json에 저장되었습니다.")
+    
+    print("\n=== 개선사항 요약 ===")
+    print("✅ 메모리 관리 최적화")
+    print("✅ 향상된 의미 분석")
+    print("✅ 키워드 필터링 기능")
+    print("✅ 키워드 품질 분석")
+    print("✅ 키워드 제안 기능")
+    print("✅ 강화된 에러 핸들링")
+    print("✅ 입력 검증 개선")
