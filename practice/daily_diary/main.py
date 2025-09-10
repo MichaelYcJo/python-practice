@@ -184,7 +184,67 @@ class DailyDiary:
     def list_dates(self) -> List[str]:
         """일기가 있는 날짜 목록"""
         return sorted(self.diaries.keys(), reverse=True)
-
+    
+    def edit_diary(self, diary_id: str, new_content: str = None, new_mood: str = None, new_tags: List[str] = None) -> bool:
+        """일기 수정"""
+        try:
+            for date_str, diaries in self.diaries.items():
+                for i, diary in enumerate(diaries):
+                    if diary["id"] == diary_id:
+                        if new_content is not None:
+                            diary["content"] = new_content
+                            diary["word_count"] = len(new_content.split())
+                        if new_mood is not None:
+                            diary["mood"] = new_mood
+                        if new_tags is not None:
+                            diary["tags"] = new_tags
+                        diary["updated_at"] = datetime.now().isoformat()
+                        
+                        self.save_diaries()
+                        self.logger.info(f"일기 수정 완료: {diary_id}")
+                        return True
+            return False
+        except Exception as e:
+            self.logger.error(f"일기 수정 중 오류 발생: {e}")
+            return False
+    
+    def delete_diary(self, diary_id: str) -> bool:
+        """일기 삭제"""
+        try:
+            for date_str, diaries in self.diaries.items():
+                for i, diary in enumerate(diaries):
+                    if diary["id"] == diary_id:
+                        del diaries[i]
+                        if not diaries:  # 해당 날짜에 일기가 없으면 날짜도 삭제
+                            del self.diaries[date_str]
+                        self.save_diaries()
+                        self.logger.info(f"일기 삭제 완료: {diary_id}")
+                        return True
+            return False
+        except Exception as e:
+            self.logger.error(f"일기 삭제 중 오류 발생: {e}")
+            return False
+    
+    def get_diary_by_id(self, diary_id: str) -> Optional[Dict]:
+        """ID로 일기 조회"""
+        for diaries in self.diaries.values():
+            for diary in diaries:
+                if diary["id"] == diary_id:
+                    return diary
+        return None
+    
+    def validate_date(self, date_str: str) -> bool:
+        """날짜 형식 검증"""
+        try:
+            datetime.strptime(date_str, '%Y-%m-%d')
+            return True
+        except ValueError:
+            return False
+    
+    def validate_mood(self, mood: str) -> bool:
+        """기분 값 검증"""
+        valid_moods = ["매우 좋음", "좋음", "보통", "나쁨", "매우 나쁨"]
+        return mood in valid_moods
 
 
 def main():
