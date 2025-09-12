@@ -143,13 +143,43 @@ class DailyDiary:
         
         return self.diaries.get(target_date, [])
     
-    def search_diaries(self, keyword: str) -> List[Dict]:
-        """키워드로 일기 검색"""
+    def search_diaries(self, keyword: str = None, mood: str = None, tags: List[str] = None, 
+                      start_date: str = None, end_date: str = None, case_sensitive: bool = False) -> List[Dict]:
+        """고급 일기 검색"""
         results = []
+        
         for date_str, diaries in self.diaries.items():
+            # 날짜 범위 필터링
+            if start_date and date_str < start_date:
+                continue
+            if end_date and date_str > end_date:
+                continue
+            
             for diary in diaries:
-                if keyword.lower() in diary["content"].lower():
+                match = True
+                
+                # 키워드 검색
+                if keyword:
+                    content = diary["content"]
+                    if not case_sensitive:
+                        content = content.lower()
+                        keyword = keyword.lower()
+                    if keyword not in content:
+                        match = False
+                
+                # 기분 검색
+                if mood and diary["mood"] != mood:
+                    match = False
+                
+                # 태그 검색
+                if tags:
+                    diary_tags = set(diary.get("tags", []))
+                    if not any(tag in diary_tags for tag in tags):
+                        match = False
+                
+                if match:
                     results.append(diary)
+        
         return results
     
     def get_statistics(self) -> Dict[str, Any]:
