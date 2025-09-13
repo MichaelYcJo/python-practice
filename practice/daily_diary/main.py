@@ -203,13 +203,62 @@ class DailyDiary:
         
         most_used_tags = sorted(tag_counts.items(), key=lambda x: x[1], reverse=True)[:5]
         
+        # 기분 통계
+        mood_counts = {}
+        for diaries in self.diaries.values():
+            for diary in diaries:
+                mood = diary.get("mood", "보통")
+                mood_counts[mood] = mood_counts.get(mood, 0) + 1
+        
+        # 월별 통계
+        monthly_stats = self._get_monthly_statistics()
+        
         return {
             "total_diaries": total_diaries,
             "total_words": total_words,
             "total_days": len(self.diaries),
             "most_used_tags": most_used_tags,
+            "mood_distribution": mood_counts,
+            "monthly_stats": monthly_stats,
             "average_words_per_diary": total_words / total_diaries if total_diaries > 0 else 0
         }
+    
+    def _get_monthly_statistics(self) -> Dict[str, Dict[str, Any]]:
+        """월별 통계 계산"""
+        monthly_data = {}
+        
+        for date_str, diaries in self.diaries.items():
+            year_month = date_str[:7]  # YYYY-MM
+            
+            if year_month not in monthly_data:
+                monthly_data[year_month] = {
+                    "diary_count": 0,
+                    "word_count": 0,
+                    "moods": {},
+                    "tags": []
+                }
+            
+            monthly_data[year_month]["diary_count"] += len(diaries)
+            
+            for diary in diaries:
+                monthly_data[year_month]["word_count"] += diary.get("word_count", 0)
+                
+                # 기분 통계
+                mood = diary.get("mood", "보통")
+                monthly_data[year_month]["moods"][mood] = monthly_data[year_month]["moods"].get(mood, 0) + 1
+                
+                # 태그 수집
+                monthly_data[year_month]["tags"].extend(diary.get("tags", []))
+        
+        # 태그 빈도 계산
+        for month_data in monthly_data.values():
+            tag_counts = {}
+            for tag in month_data["tags"]:
+                tag_counts[tag] = tag_counts.get(tag, 0) + 1
+            month_data["top_tags"] = sorted(tag_counts.items(), key=lambda x: x[1], reverse=True)[:3]
+            del month_data["tags"]  # 원본 태그 리스트는 삭제
+        
+        return monthly_data
     
     def list_dates(self) -> List[str]:
         """일기가 있는 날짜 목록"""
@@ -275,12 +324,94 @@ class DailyDiary:
         """기분 값 검증"""
         valid_moods = ["매우 좋음", "좋음", "보통", "나쁨", "매우 나쁨"]
         return mood in valid_moods
+    
+    def export_diary(self, diary_id: str, format: str = "txt") -> str:
+        """일기 내보내기"""
+        diary_entry = self.get_diary_by_id(diary_id)
+        if not diary_entry:
+            return None
+        
+        export_dir = self.data_dir / "exports"
+        export_dir.mkdir(exist_ok=True)
+        
+        if format == "txt":
+            filename = f"diary_{diary_id}.txt"
+            filepath = export_dir / filename
+            
+            with open(filepath, 'w', encoding='utf-8') as f:
+                f.write(f"일기 ID: {diary_entry['id']}\n")
+                f.write(f"날짜: {diary_entry['date']}\n")
+                f.write(f"기분: {diary_entry['mood']}\n")
+                f.write(f"태그: {', '.join(diary_entry['tags'])}\n")
+                f.write(f"단어 수: {diary_entry['word_count']}\n")
+                f.write(f"작성 시간: {diary_entry['created_at']}\n")
+                if 'updated_at' in diary_entry:
+                    f.write(f"수정 시간: {diary_entry['updated_at']}\n")
+                f.write("\n" + "="*50 + "\n")
+                f.write(diary_entry['content'])
+            
+            return str(filepath)
+        
+        elif format == "json":
+            filename = f"diary_{diary_id}.json"
+            filepath = export_dir / filename
+            
+            with open(filepath, 'w', encoding='utf-8') as f:
+                json.dump(diary_entry, f, ensure_ascii=False, indent=2)
+            
+            return str(filepath)
+        
+        return None
+    
+    def export_all_diaries(self, format: str = "txt") -> str:
+        """모든 일기 내보내기"""
+        export_dir = self.data_dir / "exports"
+        export_dir.mkdir(exist_ok=True)
+        
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        
+        if format == "txt":
+            filename = f"all_diaries_{timestamp}.txt"
+            filepath = export_dir / filename
+            
+            with open(filepath, 'w', encoding='utf-8') as f:
+                f.write("=== 모든 일기 모음 ===\n\n")
+                
+                for date_str in sorted(self.diaries.keys()):
+                    f.write(f"📅 {date_str}\n")
+                    f.write("="*50 + "\n")
+                    
+                    for diary in self.diaries[date_str]:
+                        f.write(f"\n[ID: {diary['id']}]\n")
+                        f.write(f"기분: {diary['mood']}\n")
+                        f.write(f"태그: {', '.join(diary['tags'])}\n")
+                        f.write(f"단어 수: {diary['word_count']}\n")
+                        f.write(f"작성 시간: {diary['created_at']}\n")
+                        if 'updated_at' in diary:
+                            f.write(f"수정 시간: {diary['updated_at']}\n")
+                        f.write(f"\n내용:\n{diary['content']}\n")
+                        f.write("\n" + "-"*30 + "\n")
+                    
+                    f.write("\n\n")
+            
+            return str(filepath)
+        
+        elif format == "json":
+            filename = f"all_diaries_{timestamp}.json"
+            filepath = export_dir / filename
+            
+            with open(filepath, 'w', encoding='utf-8') as f:
+                json.dump(self.diaries, f, ensure_ascii=False, indent=2)
+            
+            return str(filepath)
+        
+        return None
 
 
 def main():
     """메인 함수"""
     parser = argparse.ArgumentParser(description="개인 일기 관리 시스템")
-    parser.add_argument("command", choices=["write", "read", "search", "stats", "list", "edit", "delete", "show"], 
+    parser.add_argument("command", choices=["write", "read", "search", "stats", "list", "edit", "delete", "show", "export", "export-all"], 
                        help="실행할 명령어")
     parser.add_argument("--date", help="날짜 (YYYY-MM-DD 형식)")
     parser.add_argument("--keyword", help="검색할 키워드")
@@ -290,6 +421,11 @@ def main():
     parser.add_argument("--content", help="새로운 내용")
     parser.add_argument("--new-mood", help="새로운 기분")
     parser.add_argument("--new-tags", nargs="*", help="새로운 태그들")
+    parser.add_argument("--start-date", help="검색 시작 날짜 (YYYY-MM-DD)")
+    parser.add_argument("--end-date", help="검색 종료 날짜 (YYYY-MM-DD)")
+    parser.add_argument("--case-sensitive", action="store_true", help="대소문자 구분 검색")
+    parser.add_argument("--format", choices=["txt", "json"], default="txt", help="내보내기 형식")
+    parser.add_argument("--month", help="월별 통계 (YYYY-MM 형식)")
     
     args = parser.parse_args()
     
