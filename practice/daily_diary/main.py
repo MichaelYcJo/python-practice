@@ -476,33 +476,97 @@ def main():
             print("해당 날짜에 일기가 없습니다.")
     
     elif args.command == "search":
-        if not args.keyword:
-            print("검색할 키워드를 입력하세요: --keyword 키워드")
+        # 날짜 범위 검증
+        if args.start_date and not diary.validate_date(args.start_date):
+            print(f"❌ 잘못된 시작 날짜 형식입니다. YYYY-MM-DD 형식으로 입력하세요.")
+            return
+        if args.end_date and not diary.validate_date(args.end_date):
+            print(f"❌ 잘못된 종료 날짜 형식입니다. YYYY-MM-DD 형식으로 입력하세요.")
             return
         
-        results = diary.search_diaries(args.keyword)
+        # 기분 검증
+        if args.mood and not diary.validate_mood(args.mood):
+            print(f"❌ 잘못된 기분입니다. 사용 가능한 기분: 매우 좋음, 좋음, 보통, 나쁨, 매우 나쁨")
+            return
+        
+        results = diary.search_diaries(
+            keyword=args.keyword,
+            mood=args.mood if args.mood != "보통" else None,
+            tags=args.tags,
+            start_date=args.start_date,
+            end_date=args.end_date,
+            case_sensitive=args.case_sensitive
+        )
+        
         if results:
-            print(f"\n=== '{args.keyword}' 검색 결과 ({len(results)}개) ===")
+            print(f"\n=== 검색 결과 ({len(results)}개) ===")
+            if args.keyword:
+                print(f"키워드: '{args.keyword}'")
+            if args.mood and args.mood != "보통":
+                print(f"기분: {args.mood}")
+            if args.tags:
+                print(f"태그: {', '.join(args.tags)}")
+            if args.start_date or args.end_date:
+                print(f"날짜 범위: {args.start_date or '시작'} ~ {args.end_date or '종료'}")
+            if args.case_sensitive:
+                print("대소문자 구분: 예")
+            
+            print("\n" + "="*60)
             for diary_entry in results:
-                print(f"\n[날짜: {diary_entry['date']}] [ID: {diary_entry['id']}]")
-                print(f"기분: {diary_entry['mood']}")
-                print(f"내용: {diary_entry['content'][:100]}...")
-                print("-" * 50)
+                print(f"\n📅 [날짜: {diary_entry['date']}] [ID: {diary_entry['id']}]")
+                print(f"😊 기분: {diary_entry['mood']}")
+                if diary_entry['tags']:
+                    print(f"🏷️  태그: {', '.join(diary_entry['tags'])}")
+                print(f"📝 내용: {diary_entry['content'][:100]}...")
+                print("-" * 60)
         else:
-            print("검색 결과가 없습니다.")
+            print("❌ 검색 결과가 없습니다.")
     
     elif args.command == "stats":
         stats = diary.get_statistics()
-        print("\n=== 일기 통계 ===")
-        print(f"총 일기 수: {stats['total_diaries']}개")
-        print(f"총 단어 수: {stats['total_words']}개")
-        print(f"일기를 쓴 날: {stats['total_days']}일")
-        print(f"일기당 평균 단어 수: {stats['average_words_per_diary']:.1f}개")
         
-        if stats['most_used_tags']:
-            print("\n인기 태그:")
-            for tag, count in stats['most_used_tags']:
-                print(f"  {tag}: {count}회")
+        if args.month:
+            # 특정 월 통계
+            if args.month in stats['monthly_stats']:
+                month_data = stats['monthly_stats'][args.month]
+                print(f"\n=== {args.month} 월별 통계 ===")
+                print(f"일기 수: {month_data['diary_count']}개")
+                print(f"총 단어 수: {month_data['word_count']}개")
+                print(f"평균 단어 수: {month_data['word_count'] / month_data['diary_count']:.1f}개")
+                
+                print("\n기분 분포:")
+                for mood, count in month_data['moods'].items():
+                    print(f"  {mood}: {count}회")
+                
+                if month_data['top_tags']:
+                    print("\n인기 태그:")
+                    for tag, count in month_data['top_tags']:
+                        print(f"  {tag}: {count}회")
+            else:
+                print(f"❌ {args.month} 월의 데이터가 없습니다.")
+        else:
+            # 전체 통계
+            print("\n=== 전체 일기 통계 ===")
+            print(f"📊 총 일기 수: {stats['total_diaries']}개")
+            print(f"📝 총 단어 수: {stats['total_words']}개")
+            print(f"📅 일기를 쓴 날: {stats['total_days']}일")
+            print(f"📈 일기당 평균 단어 수: {stats['average_words_per_diary']:.1f}개")
+            
+            if stats['mood_distribution']:
+                print("\n😊 기분 분포:")
+                for mood, count in stats['mood_distribution'].items():
+                    percentage = (count / stats['total_diaries']) * 100
+                    print(f"  {mood}: {count}회 ({percentage:.1f}%)")
+            
+            if stats['most_used_tags']:
+                print("\n🏷️  인기 태그:")
+                for tag, count in stats['most_used_tags']:
+                    print(f"  {tag}: {count}회")
+            
+            if stats['monthly_stats']:
+                print("\n📅 월별 요약:")
+                for month, data in sorted(stats['monthly_stats'].items()):
+                    print(f"  {month}: {data['diary_count']}개 일기, {data['word_count']}단어")
     
     elif args.command == "list":
         dates = diary.list_dates()
@@ -608,6 +672,24 @@ def main():
             print(f"\n내용:\n{diary_entry['content']}")
         else:
             print(f"일기를 찾을 수 없습니다: {args.id}")
+    
+    elif args.command == "export":
+        if not args.id:
+            print("내보낼 일기 ID를 입력하세요: --id 일기ID")
+            return
+        
+        filepath = diary.export_diary(args.id, args.format)
+        if filepath:
+            print(f"✅ 일기가 내보내기되었습니다: {filepath}")
+        else:
+            print(f"❌ 일기를 찾을 수 없습니다: {args.id}")
+    
+    elif args.command == "export-all":
+        filepath = diary.export_all_diaries(args.format)
+        if filepath:
+            print(f"✅ 모든 일기가 내보내기되었습니다: {filepath}")
+        else:
+            print("❌ 내보내기에 실패했습니다.")
 
 
 if __name__ == "__main__":

@@ -7,14 +7,15 @@
 ### 기본 기능
 - ✅ 일기 작성, 읽기, 수정, 삭제
 - ✅ 날짜별 일기 조회
-- ✅ 키워드 검색
+- ✅ 고급 검색 (키워드, 기분, 태그, 날짜 범위)
 - ✅ 기분 태그 시스템 (매우 좋음, 좋음, 보통, 나쁨, 매우 나쁨)
 - ✅ 태그 시스템
 - ✅ 단어 수 자동 계산
-- ✅ 기본 통계 기능
+- ✅ 고급 통계 기능 (월별, 기분 분포)
 - ✅ 에러 처리 및 로깅
 - ✅ 자동 백업 시스템
 - ✅ 입력 데이터 검증
+- ✅ 일기 내보내기 (TXT, JSON)
 
 ## 사용법
 
@@ -34,12 +35,22 @@ python main.py read --date 2024-01-15
 
 ### 3. 일기 검색
 ```bash
+# 기본 키워드 검색
 python main.py search --keyword "운동"
+
+# 고급 검색 (기분, 태그, 날짜 범위)
+python main.py search --keyword "운동" --mood "좋음" --tags "건강" "운동"
+python main.py search --start-date "2024-01-01" --end-date "2024-01-31"
+python main.py search --keyword "Python" --case-sensitive
 ```
 
 ### 4. 통계 보기
 ```bash
+# 전체 통계
 python main.py stats
+
+# 특정 월 통계
+python main.py stats --month 2024-01
 ```
 
 ### 5. 날짜 목록 보기
@@ -66,6 +77,17 @@ python main.py delete --id 2024-01-15_143022
 python main.py show --id 2024-01-15_143022
 ```
 
+### 9. 일기 내보내기
+```bash
+# 특정 일기 내보내기
+python main.py export --id 2024-01-15_143022 --format txt
+python main.py export --id 2024-01-15_143022 --format json
+
+# 모든 일기 내보내기
+python main.py export-all --format txt
+python main.py export-all --format json
+```
+
 ## 향후 추가 예정 기능 (1일 1커밋)
 
 ### Week 1: 기본 기능 완성 ✅
@@ -74,13 +96,16 @@ python main.py show --id 2024-01-15_143022
 - [x] 에러 처리 및 로깅
 - [ ] 일기 내보내기 (PDF, TXT)
 
-### Week 2: 검색 및 필터링
-- [ ] 고급 검색 (날짜 범위, 태그, 기분)
+### Week 2: 검색 및 필터링 ✅
+- [x] 고급 검색 (날짜 범위, 태그, 기분)
+- [x] 대소문자 구분 검색
 - [ ] 일기 정렬 기능
 - [ ] 즐겨찾기 일기
 
-### Week 3: 통계 및 분석
-- [ ] 월별/연도별 통계
+### Week 3: 통계 및 분석 ✅
+- [x] 월별/연도별 통계
+- [x] 기분 분포 분석
+- [x] 태그 빈도 분석
 - [ ] 기분 변화 그래프
 - [ ] 단어 빈도 분석
 - [ ] 일기 작성 패턴 분석
@@ -95,6 +120,7 @@ python main.py show --id 2024-01-15_143022
 - [ ] 자동 태그 제안
 - [ ] 일기 연관성 분석
 - [ ] 감정 분석 기능
+- [x] 일기 내보내기 (TXT, JSON)
 
 ### Week 6: 데이터 관리
 - [ ] 데이터베이스 연동
